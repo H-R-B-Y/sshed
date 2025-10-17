@@ -4,15 +4,17 @@ CFLAGS			:= -Wextra -Wall -Werror -g3 -O0 -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
 
 MAKEFLAGS		+= --no-print-directory
 
-LIBFLAGS		:= -lnotcurses -lnotcurses-core -lncurses -ltinfo 
+LIBFLAGS		:= -lnotcurses -lnotcurses-core -lncurses -ltinfo -L./lib/libft -lft
 
-INCLUDES		:= -I$(abspath ./include)
+INCLUDES		:= -I$(abspath ./include) -I$(abspath ./lib/libft/include)
 
 LIB_DIR			:= ./lib
+LIBFT_DIR		:= $(LIB_DIR)/libft
 
 SRC_DIR			:= ./src
 
 SRCS			:= \
+				src/cards/init_cards.c \
 				\
 
 
@@ -27,8 +29,11 @@ MAIN			:= $(SRC_DIR)/main.c
 
 all: $(NAME)
 
-$(NAME): $(MAIN) $(OBJS)
+$(NAME): $(MAIN) $(OBJS) libft
 		$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFLAGS) -o $(NAME)
+
+libft:
+		@$(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" 
 
 %.o: %.c
 		@$(CC) $(CFLAGS) -o $@ -c $< $(INCLUDES)

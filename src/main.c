@@ -1,7 +1,54 @@
 
-#include "test.h"
+#include "game.h"
+#include "cards.h"
 #include <unistd.h>
 #include <stdio.h>
+
+int	init_cards(void);
+
+int	render_cards_default(struct notcurses *nc, struct ncplane *plane)
+{
+	unsigned int	suit_idx;
+	unsigned int	rank_idx;
+	t_card			*card;
+	ncplane_erase(plane);
+	suit_idx = 0;
+	while (suit_idx < SUIT_COUNT)
+	{
+		rank_idx = 0;
+		while (rank_idx < RANK_COUNT)
+		{
+			card = hm_get_value(&cardmap, &(t_card_desc){
+				.suit = (t_suit)suit_idx,
+				.rank = (t_rank)rank_idx
+			});
+			if (card && card->graphic)
+			{
+				struct ncvisual_options vopts = {
+					.n = plane,
+					.x = rank_idx * 9,
+					.y = suit_idx * 6,
+					.blitter = NCBLIT_PIXEL,
+					.flags = NCVISUAL_OPTION_CHILDPLANE,
+				};
+				// dprintf(STDERR_FILENO, "Rendering card: %s of %s at (%u, %u)\n",
+				// 	rank_str[card->rank], suit_str[card->suit],
+				// 	vopts.x, vopts.y);
+				ncvisual_blit(nc, card->graphic, &vopts);
+			}
+			else
+			{
+				dprintf(STDERR_FILENO, "Card not found: %s of %s\n",
+					rank_str[(t_rank)rank_idx], suit_str[(t_suit)suit_idx]);
+			}
+			rank_idx++;
+		}
+		suit_idx++;
+	}
+	if (notcurses_render(nc) != 0)
+		return (1);
+	return (0);
+}
 
 int main(void)
 {
@@ -15,53 +62,51 @@ int main(void)
 		printf("Failed to init notcurses\n");
 		return 1;
 	}
+	// this needs to take up the whole screen so we need to get the size of the terminal
 
-	struct ncvisual *ncv = ncvisual_from_file("Joker Black.png");
-	if (!ncv) {
-		notcurses_stop(nc);
-		printf("Failed open the file\n");
-		return 1;
-	}
-
-	
-
-	// Render the visual centered on the screen
-	struct ncvisual_options vopts = {
-		.n = notcurses_stdplane(nc),             // create a new plane
-		.scaling = NCSCALE_NONE, // scale to fit screen
-		.blitter = NCBLIT_PIXEL,
-		.y = 0,
-		.x = 0,
-		.flags = NCVISUAL_OPTION_CHILDPLANE,
-	};
-
-	struct ncplane *plane = ncvisual_blit(nc, ncv, &vopts);
-	if (!plane) {
-		ncvisual_destroy(ncv);
-		notcurses_stop(nc);
-		printf("Failed to blit image\n");
-		return 1;
-	}
-
-	// if (ncplane_putstr_yx(plane, 2, 2, "This is a test") < 1)
-	// {
-	// 	ncvisual_destroy(ncv);
-	// 	notcurses_stop(nc);
-	// 	printf("Failed to write text");
-	// 	return (1);
-	// }
 	unsigned int rows, cols;
-
 	notcurses_term_dim_yx(nc, &rows, &cols);
-	char *str = calloc(10000, sizeof(char));
-	sprintf(str, "size is %u, %u", rows, cols);
-	ncplane_putstr_yx(notcurses_stdplane(nc), 0, 0, str);
-	free(str);
 
-	notcurses_render(nc);
-	sleep(3); // keep it visible for a few seconds
+	struct ncplane_options nopts = {
+		.x = 0,
+		.y = 0,
+		.rows = rows,
+		.cols = cols,
+		// .flags = NCPLANE_OPTION_HORALIGNED | NCPLANE_OPTION_VERALIGNED,
+	};
+	struct ncplane *plane = ncplane_create(notcurses_stdplane(nc), &nopts);
+	if (!plane)
+	{
+		notcurses_stop(nc);
+		dprintf(STDERR_FILENO, "Failed to create ncplane\n");
+		return 1;
+	}
 
-	ncvisual_destroy(ncv);
+	// need to draw the plane
+	if (notcurses_render(nc) != 0)
+	{
+		notcurses_stop(nc);
+		dprintf(STDERR_FILENO, "Failed to render ncplane\n");
+		return 1;
+	}
+
+	if (init_cards() != 0)
+	{
+		notcurses_stop(nc);
+		dprintf(STDERR_FILENO, "Failed to init cards\n");
+		return 1;
+	}
+
+	// render all the cards
+	if (render_cards_default(nc, plane) != 0)
+	{
+		notcurses_stop(nc);
+		dprintf(STDERR_FILENO, "Failed to render cards\n");
+		return 1;
+	}
+
+	notcurses_get_blocking(nc, NULL);
 	notcurses_stop(nc);
+	// should really unload the cards here but whatever
 	return 0;
 }
