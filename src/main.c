@@ -118,11 +118,8 @@ int	init_cards(void);
 int main(void)
 {
 	struct notcurses_options opts = {
-		.flags = NCOPTION_SUPPRESS_BANNERS | 
-				NCOPTION_NO_ALTERNATE_SCREEN | 
-				NCOPTION_NO_CLEAR_BITMAPS |
-				NCOPTION_NO_QUIT_SIGHANDLERS,
-		.loglevel = NCLOGLEVEL_ERROR,
+		.flags = NCOPTION_SUPPRESS_BANNERS,
+		.loglevel = NCLOGLEVEL_WARNING,
 	};
 
 	printf("Initializing notcurses...\n");
@@ -180,7 +177,7 @@ int main(void)
 	// }
 	// render_deck(nc, plane);
 	struct s_hand	*hand;
-	if (hand_create(&hand, plane, cols, 0, 0) != 0)
+	if (hand_create(&hand, plane, cols, rows - 7, 0) != 0)
 	{
 		notcurses_stop(nc);
 		dprintf(STDERR_FILENO, "Failed to create hand\n");
@@ -212,8 +209,42 @@ int main(void)
 	hand->card_selected = 2; // select the third card
 	hand_render(nc, hand);
 	notcurses_render(nc);
+	// notcurses_get_blocking(nc, NULL);
 	notcurses_get_blocking(nc, NULL);
-	notcurses_stop(nc);
+	for (int i = 0; i < 5; i++)
+	{
+		t_card_desc	*card_desc = deck_draw_card(deck);
+		if (!card_desc)
+			break ;
+		if (hand_add_card(hand, card_desc) != 0)
+		{
+			deck_destroy(deck);
+			hand_destroy(hand);
+			notcurses_stop(nc);
+			dprintf(STDERR_FILENO, "Failed to add card to hand\n");
+			return 1;
+		}
+	}
+	hand->card_selected = 4; // select the fifth card
+	hand_render(nc, hand);
+	notcurses_render(nc);
+	notcurses_get_blocking(nc, NULL);
+	hand_remove_card(hand, ((struct s_card_plane *)hand->cards->content)->card_desc);
+	ncplane_erase(plane);
+	hand_render(nc, hand);
+	hand_remove_card(hand, ((struct s_card_plane *)hand->cards->content)->card_desc);
+	hand_render(nc, hand);
+	hand_remove_card(hand, ((struct s_card_plane *)hand->cards->content)->card_desc);
+	hand_render(nc, hand);
+	hand_remove_card(hand, ((struct s_card_plane *)hand->cards->content)->card_desc);
+	hand_render(nc, hand);
+	hand_remove_card(hand, ((struct s_card_plane *)hand->cards->content)->card_desc);
+	hand_render(nc, hand);
+	// notcurses_refresh(nc, NULL, NULL);
+	hand_render(nc, hand);
+	notcurses_get_blocking(nc, NULL);
+	notcurses_get_blocking(nc, NULL);
 	// should really unload the cards here but whatever
+	notcurses_stop(nc);
 	return 0;
 }

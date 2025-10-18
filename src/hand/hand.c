@@ -11,15 +11,15 @@ int hand_create(struct s_hand **hand, struct ncplane *parent, int max_width, int
 	if (!hand || !parent)
 		return (1);
 	new_hand = ft_calloc(1, sizeof(struct s_hand));
-	new_hand->hand_dirty = 0;
 	if (!new_hand)
 		return (1);
+	new_hand->hand_dirty = 0;
 	new_hand->hand_plane = ncplane_create(parent, &(struct ncplane_options){
 		.y = y,
 		.x = x,
 		.rows = hand_height,
 		.cols = hand_width,
-		.flags = NCPLANE_OPTION_HORALIGNED | NCPLANE_OPTION_VERALIGNED,
+		.flags = 0,
 	});
 	if (!new_hand->hand_plane)
 		return (free(new_hand), 1);

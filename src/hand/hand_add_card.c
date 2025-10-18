@@ -70,7 +70,12 @@ void hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 				prev->next = to_remove->next;
 			}
 			if (card_plane->plane)
+			{
+				// Clear the plane completely before destroying it
+				ncplane_erase(card_plane->plane);
+				// Force a render to ensure the erase takes effect
 				ncplane_destroy(card_plane->plane);
+			}
 			return_free_list(&hand->allocator, card_plane);
 			return_free_list(&hand->allocator, to_remove);
 			hand->card_count--;
