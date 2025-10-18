@@ -3,19 +3,38 @@
 
 t_hashmap	cardmap;
 
-unsigned int hash_card(t_card_desc *card_desc)
+static int	_load_jokers(void)
 {
-	return ((unsigned int)card_desc->suit * RANK_COUNT + (unsigned int)card_desc->rank);
+	char	*img_path = malloc(1024);
+	t_card	*card;
+
+	card = ft_calloc(1, sizeof(t_card));
+	if (!card)
+		return (1);
+	card->rank = RANK_JOKER_BLACK;
+	card->suit = SUIT_JOKER;
+	sprintf(img_path, "images/Medium/%s %s.png",
+		suit_image_str[card->suit], rank_image_string[card->rank]
+	);
+	card->graphic = ncvisual_from_file(img_path);
+	if (hm_add_value(&cardmap, (t_card_desc *)card, card) != 0)
+		return (1);
+	card = ft_calloc(1, sizeof(t_card));
+	if (!card)
+		return (1);
+	card->rank = RANK_JOKER_RED;
+	card->suit = SUIT_JOKER;
+	sprintf(img_path, "images/Medium/%s %s.png",
+		suit_image_str[card->suit], rank_image_string[card->rank]
+	);
+	card->graphic = ncvisual_from_file(img_path);
+	free(img_path);
+	if (hm_add_value(&cardmap, (t_card_desc *)card, card) != 0)
+		return (1);
+	return (0);
 }
 
-int		compare_card(t_card_desc *a, t_card_desc *b)
-{
-	if (a->rank == b->rank && a->suit == b->suit)
-		return (0);
-	return (1);
-}
-
-int	load_cards(void)
+static int	_load_cards(void)
 {
 	int		suit_idx;
 	int		rank_idx;
@@ -23,10 +42,10 @@ int	load_cards(void)
 	t_card	*card;
 
 	suit_idx = 0;
-	while (suit_idx < SUIT_COUNT)
+	while (suit_idx < SUIT_JOKER)
 	{
 		rank_idx = 0;
-		while (rank_idx < RANK_COUNT)
+		while (rank_idx < RANK_JOKER_BLACK)
 		{
 			card = ft_calloc(1, sizeof(t_card));
 			if (!card)
@@ -61,7 +80,8 @@ int	init_cards(void)
 	cardmap.pairs = ft_calloc(cardmap.max_hashes + 1, sizeof(t_hashpair *));
 	if (!cardmap.pairs)
 		return (1);
-	load_cards();
+	_load_cards();
+	_load_jokers();
 	return (0);
 }
 

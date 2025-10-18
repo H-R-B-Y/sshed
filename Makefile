@@ -15,6 +15,10 @@ SRC_DIR			:= ./src
 
 SRCS			:= \
 				src/cards/init_cards.c \
+				src/deck/deck.c src/deck/deck_shuffle.c src/deck/deck_draw.c \
+				src/hand/hand_add_card.c \
+				src/hand/hand_render.c \
+				src/hand/hand.c \
 				\
 
 
@@ -48,9 +52,6 @@ clean:
 
 rm:
 		@$(MAKE) --directory $(LIBFT_DIR) fclean
-		@$(MAKE) --directory $(MLX_DIR) clean
-		@$(MAKE) --directory $(MLX_WRAPPER_DIR) fclean
-		@$(MAKE) --directory $(TRANSPIPE_DIR) fclean
 		@rm -rf $(NAME)
 		@rm -rf $(LIB_DIR)/libft.a $(LIB_DIR)/libmlx.a $(LIB_DIR)/libmlxwrap.a $(LIB_DIR)/*.a
 

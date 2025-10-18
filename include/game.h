@@ -1,6 +1,6 @@
 
-#ifndef TEST_H
-# define TEST_H
+#ifndef GAME_H
+# define GAME_H
 
 # include <notcurses/notcurses.h>
 
@@ -8,6 +8,9 @@
 # include "libft.h"
 
 
+#include "cards.h"
+#include "deck.h"
+#include "hand.h"
 
 
 #endif
