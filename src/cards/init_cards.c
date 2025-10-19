@@ -72,6 +72,19 @@ static int	_load_cards(void)
 	return (0);
 }
 
+void	*cardbacks[2] = {NULL, NULL};
+
+static int _load_cardbacks(void)
+{
+	cardbacks[0] = ncvisual_from_file("images/Medium/Back Blue 2.png");
+	if (!cardbacks[0])
+		return (1);
+	cardbacks[1] = ncvisual_from_file("images/Medium/Back Red 2.png");
+	if (!cardbacks[1])
+		return (1);
+	return (0);
+}
+
 int	init_cards(void)
 {
 	cardmap.hash_cmp = (t_hashcmp)compare_card;
@@ -82,6 +95,7 @@ int	init_cards(void)
 		return (1);
 	_load_cards();
 	_load_jokers();
+	_load_cardbacks();
 	return (0);
 }
 

@@ -3,7 +3,6 @@
 # define FT_INCLUDE_ALL
 # include "libft.h"
 
-
 typedef enum e_suit
 {
 	SUIT_CLUBS,
@@ -79,7 +78,7 @@ typedef struct s_card
 } t_card;
 
 // Hash function for cards including jokers
-static inline unsigned int hash_card(t_card_desc *card_desc)
+static inline unsigned int	hash_card(t_card_desc *card_desc)
 {
 	// For jokers, we use a special calculation
 	if (card_desc->rank == RANK_JOKER_BLACK)
@@ -91,7 +90,7 @@ static inline unsigned int hash_card(t_card_desc *card_desc)
 	return ((unsigned int)card_desc->suit * RANK_COUNT + (unsigned int)card_desc->rank);
 }
 
-static inline int compare_card(t_card_desc *a, t_card_desc *b)
+static inline int			compare_card(t_card_desc *a, t_card_desc *b)
 {
 	if (a->rank == b->rank && a->suit == b->suit)
 		return 0;
@@ -99,22 +98,24 @@ static inline int compare_card(t_card_desc *a, t_card_desc *b)
 }
 
 // Utility functions to check if a card is a joker
-static inline int is_joker(t_card *card)
+static inline int			is_joker(t_card *card)
 {
 	return (card->rank == RANK_JOKER_BLACK || card->rank == RANK_JOKER_RED);
 }
 
-static inline int is_black_joker(t_card *card)
+static inline int			is_black_joker(t_card *card)
 {
 	return (card->rank == RANK_JOKER_BLACK);
 }
 
-static inline int is_red_joker(t_card *card)
+static inline int			is_red_joker(t_card *card)
 {
 	return (card->rank == RANK_JOKER_RED);
 }
 
-extern t_hashmap cardmap;
+extern t_hashmap	cardmap;
+
+extern void			*cardbacks[2];
 
 #endif
 

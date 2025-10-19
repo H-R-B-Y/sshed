@@ -21,12 +21,14 @@ int hand_create(struct s_hand **hand, struct ncplane *parent, int max_width, int
 		.cols = hand_width,
 		.flags = 0,
 	});
+	ncplane_set_name(new_hand->hand_plane, "hand_plane");
 	if (!new_hand->hand_plane)
 		return (free(new_hand), 1);
 	new_hand->cards = NULL;
 	new_hand->card_count = 0;
-	new_hand->card_selected = -1;
-	if (init_free_list(&new_hand->allocator, 54 * (sizeof(struct s_card_plane) + sizeof(t_list) + sizeof(t_free_list_node))) == RETURN_FATAL)
+	ft_memset(new_hand->card_selected, -1, sizeof(new_hand->card_selected));
+	new_hand->status = HAND_DISPLAY_HAND;
+	if (init_free_list(&new_hand->allocator, HAND_ARENA_ALLOCATOR_SIZE) == RETURN_FATAL)
 	{
 		ncplane_destroy(new_hand->hand_plane);
 		free(new_hand);

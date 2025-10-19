@@ -1,0 +1,38 @@
+
+#include "hand.h"
+
+int	_hand_add_card(struct s_hand *hand, t_card_desc *card_desc)
+{
+	struct s_card_plane	*card_plane;
+	t_list				*card_list_node;
+
+	if (!hand || !card_desc)
+		return (1);
+	card_plane = card_plane_create(hand, card_desc);
+	if (!card_plane)
+		return (1);
+	card_list_node = checkout_free_list(&hand->allocator, sizeof(t_list));
+	if (!card_list_node)
+	{
+		card_plane_destroy(card_plane);
+		return_free_list(&hand->allocator, card_plane);
+		return (1);
+	}
+	card_list_node->content = card_plane;
+	card_list_node->next = NULL;
+	ft_lstadd_back(&hand->cards, card_list_node);
+	hand->card_count++;
+	hand->hand_dirty = 1;
+	return (0);
+}
+
+int	hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc)
+{
+	int	ret;
+	(void)nc;
+	hand_clear_screen(nc, hand);
+	ret = _hand_add_card(hand, card_desc);
+	hand_render(nc, hand);
+	return (ret);
+}
+

@@ -18,9 +18,8 @@ SRC_DIR			:= ./src
 SRCS			:= \
 				src/cards/init_cards.c \
 				src/deck/deck.c src/deck/deck_shuffle.c src/deck/deck_draw.c \
-				src/hand/hand_add_card.c \
-				src/hand/hand_render.c \
-				src/hand/hand.c \
+				src/hand/card_planes/card_plane_create.c src/hand/card_planes/card_plane_show.c src/hand/hand/hand_add_card.c src/hand/hand/hand_remove_card.c src/hand/change_display.c src/hand/hand_clear.c src/hand/hand_render.c src/hand/hand.c src/hand/shed/hand_add_card_shed.c src/hand/shed/hand_remove_card_shed.c \
+				src/hand/hand_debug.c \
 				\
 
 
@@ -38,7 +37,10 @@ all: $(NAME)
 $(NAME): $(MAIN) $(OBJS) libft images/Small/Diamonds\ 1.png
 		$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFLAGS) -o $(NAME)
 
-images/Small/Diamonds\ 1.png: cards
+images/Small/Diamonds\ 1.png:
+		@if [ ! -f "images/Small/Diamonds 1.png" ]; then \
+			$(MAKE) cards; \
+		fi
 
 libft:
 		@$(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" 
@@ -56,10 +58,8 @@ clean:
 
 rm:
 		@$(MAKE) --directory $(LIBFT_DIR) fclean
-		@rm -rf .cache
 		@rm -rf $(NAME)
 		@rm -rf $(LIB_DIR)/libft.a $(LIB_DIR)/*.a
-		@rm -rf images/Small images/Medium images/Large
 
 fclean: clean rm pre post
 
@@ -71,10 +71,12 @@ re: fclean all
 	@echo "Cards.zip downloaded to .cache/cards.zip"
 	@cd ..
 
-cards: .cache/cards.zip
-	@mkdir -p images
+images:
+	mkdir -p images
+
+cards: images .cache/cards.zip
 	@cp .cache/cards.zip images/
-	@unzip -o images/cards.zip -d images/cards
+	@unzip images/cards.zip -d images/cards
 	@mv images/cards/PNG/* images
 	@rm -rf images/cards
 	@rm images/cards.zip
@@ -92,7 +94,9 @@ cards: .cache/cards.zip
 	done
 	@echo "Cards downloaded and extracted successfully"
 
-
+delete-cards:
+	@rm -rf .cache/cards.zip
+	@rm -rf images
 
 # Check submodule status
 submodule-status:
@@ -142,4 +146,9 @@ else
 	@find . -name '*.gcno' -delete
 endif
 
-.PHONY: all clean fclean re submodule-status install-submodules pull-submodules pre post coverage cards
+.PHONY: all clean fclean \
+	re submodule-status \
+	install-submodules \
+	pull-submodules pre \
+	post coverage cards \
+	delete-cards
