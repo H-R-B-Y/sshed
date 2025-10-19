@@ -8,7 +8,7 @@
 			"name": "(gdb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceRoot}/test_project",
+			"program": "${workspaceRoot}/sshed_client.out",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",

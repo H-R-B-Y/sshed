@@ -1,6 +1,8 @@
-NAME			:= test_project
+NAME			:= sshed_client.out
 CC 				:= gcc
 CFLAGS			:= -Wextra -Wall -Werror -g3 -O0 -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
+
+SHELL			:= /bin/bash
 
 MAKEFLAGS		+= --no-print-directory
 
@@ -33,8 +35,10 @@ MAIN			:= $(SRC_DIR)/main.c
 
 all: $(NAME)
 
-$(NAME): $(MAIN) $(OBJS) libft
+$(NAME): $(MAIN) $(OBJS) libft images/Small/Diamonds\ 1.png
 		$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFLAGS) -o $(NAME)
+
+images/Small/Diamonds\ 1.png: cards
 
 libft:
 		@$(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" 
@@ -52,12 +56,43 @@ clean:
 
 rm:
 		@$(MAKE) --directory $(LIBFT_DIR) fclean
+		@rm -rf .cache
 		@rm -rf $(NAME)
-		@rm -rf $(LIB_DIR)/libft.a $(LIB_DIR)/libmlx.a $(LIB_DIR)/libmlxwrap.a $(LIB_DIR)/*.a
+		@rm -rf $(LIB_DIR)/libft.a $(LIB_DIR)/*.a
+		@rm -rf images/Small images/Medium images/Large
 
 fclean: clean rm pre post
 
 re: fclean all
+
+.cache/cards.zip:
+	@mkdir -p .cache
+	@cd .cache && curl https://opengameart.org/sites/default/files/Cards%20Pack.zip > cards.zip
+	@echo "Cards.zip downloaded to .cache/cards.zip"
+	@cd ..
+
+cards: .cache/cards.zip
+	@mkdir -p images
+	@cp .cache/cards.zip images/
+	@unzip -o images/cards.zip -d images/cards
+	@mv images/cards/PNG/* images
+	@rm -rf images/cards
+	@rm images/cards.zip
+	cd images/Small && \
+	for i in Diamond*.png; do \
+		 mv "$$i" "$${i/Diamond/Diamonds}"; \
+	done && \
+	cd ../Medium && \
+	for i in Diamond*.png; do \
+		 mv "$$i" "$${i/Diamond/Diamonds}"; \
+	done && \
+	cd ../Large && \
+	for i in Diamond*.png; do \
+		 mv "$$i" "$${i/Diamond/Diamonds}"; \
+	done
+	@echo "Cards downloaded and extracted successfully"
+
+
 
 # Check submodule status
 submodule-status:
@@ -107,4 +142,4 @@ else
 	@find . -name '*.gcno' -delete
 endif
 
-.PHONY: all clean fclean re  submodule-status install-submodules pull-submodules pre post coverage
+.PHONY: all clean fclean re submodule-status install-submodules pull-submodules pre post coverage cards
