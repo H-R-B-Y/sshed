@@ -1,7 +1,6 @@
 
 #include "hand.h"
 
-// Not the most elegant way to do this, but it works for now
 void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 {
 	for (t_list *current = hand->cards; current != NULL; current = current->next)
@@ -33,7 +32,6 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc)
 {
 	(void)nc;
-	hand_clear_screen(nc, hand);
 	_hand_remove_card(hand, card_desc);
 	hand_render(nc, hand);
 }

@@ -11,7 +11,7 @@ void	hand_show_hand(struct notcurses *nc, struct s_hand *hand)
 		for (unsigned int idx = 0; idx < hand->shed_count; idx++)
 		{
 			struct s_card_plane *card_plane = hand->shed[idx];
-			hide_card(nc, hand, card_plane);
+			hide_card_plane(nc, hand->hand_plane, card_plane);
 		}
 		hand->hand_dirty = 1;
 	}
@@ -27,7 +27,7 @@ void	hand_show_shed(struct notcurses *nc, struct s_hand *hand)
 		for (t_list *current = hand->cards; current != NULL; current = current->next)
 		{
 			struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-			hide_card(nc, hand, card_plane);
+			hide_card_plane(nc, hand->hand_plane, card_plane);
 		}
 		hand->hand_dirty = 1;
 	}

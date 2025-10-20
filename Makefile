@@ -1,6 +1,6 @@
 NAME			:= sshed_client.out
 CC 				:= gcc
-CFLAGS			:= -Wextra -Wall -Werror -g3 -O0 -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
+CFLAGS			:= -Wextra -Wall -g3 -O0 -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
 
 SHELL			:= /bin/bash
 
@@ -16,10 +16,30 @@ LIBFT_DIR		:= $(LIB_DIR)/libft
 SRC_DIR			:= ./src
 
 SRCS			:= \
-				src/cards/init_cards.c \
-				src/deck/deck.c src/deck/deck_shuffle.c src/deck/deck_draw.c \
-				src/hand/card_planes/card_plane_create.c src/hand/card_planes/card_plane_show.c src/hand/hand/hand_add_card.c src/hand/hand/hand_remove_card.c src/hand/change_display.c src/hand/hand_clear.c src/hand/hand_render.c src/hand/hand.c src/hand/shed/hand_add_card_shed.c src/hand/shed/hand_remove_card_shed.c \
+				src/pdisplay/pdisplay.c \
+				src/init/init.c \
+				src/hand/hand.c \
+				src/hand/hand_return_to_deck.c \
+				src/hand/hand_render.c \
 				src/hand/hand_debug.c \
+				src/hand/hand_clear.c \
+				src/hand/change_display.c \
+				src/hand/shed/hand_remove_card_shed.c \
+				src/hand/shed/hand_add_card_shed.c \
+				src/hand/hand/hand_remove_card.c \
+				src/hand/hand/hand_add_card.c \
+				src/deck/deck.c \
+				src/deck/deck_shuffle.c \
+				src/deck/deck_draw.c \
+				src/cards/init_cards.c \
+				src/card_planes/card_plane_show.c \
+				src/card_planes/card_plane_flip.c \
+				src/card_planes/card_plane_create.c \
+				src/pdisplay/pdisplay_render.c \
+				src/pdisplay/pdisplay_shed/pdisplay_add_hand.c \
+				src/pdisplay/pdisplay_shed/pdisplay_add_hand_anon.c \
+				src/pdisplay/pdisplay_hand/pdisplay_add_shed.c \
+				src/pdisplay/pdisplay_hand/pdisplay_add_shed_anon.c \
 				\
 
 
@@ -34,7 +54,7 @@ MAIN			:= $(SRC_DIR)/main.c
 
 all: $(NAME)
 
-$(NAME): $(MAIN) $(OBJS) libft images/Small/Diamonds\ 1.png
+$(NAME): $(MAIN) $(OBJS) lib/libft/libft.a images/Small/Diamonds\ 1.png
 		$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFLAGS) -o $(NAME)
 
 images/Small/Diamonds\ 1.png:
@@ -42,8 +62,8 @@ images/Small/Diamonds\ 1.png:
 			$(MAKE) cards; \
 		fi
 
-libft:
-		@$(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" 
+lib/libft/libft.a:
+		@$(MAKE) -j10 --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBFT_DIR) fclean && $(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)"
 
 %.o: %.c
 		@$(CC) $(CFLAGS) -o $@ -c $< $(INCLUDES)

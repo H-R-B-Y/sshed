@@ -1,12 +1,10 @@
 
 #include "hand.h"
 
-int hand_create(struct s_hand **hand, struct ncplane *parent, int max_width, int y, int x)
+int	hand_create(struct s_hand **hand, struct ncplane *parent)
 {
 	struct s_hand	*new_hand;
-	// TODO: Figure out how best to handle the size of the cards like a macro maybe?
-	int				hand_height = 7 * 2; // Assuming card height is 7
-	int				hand_width = max_width;
+	unsigned int	width, height;
 
 	if (!hand || !parent)
 		return (1);
@@ -14,16 +12,17 @@ int hand_create(struct s_hand **hand, struct ncplane *parent, int max_width, int
 	if (!new_hand)
 		return (1);
 	new_hand->hand_dirty = 0;
+	ncplane_dim_yx(parent, &height, &width);
 	new_hand->hand_plane = ncplane_create(parent, &(struct ncplane_options){
-		.y = y,
-		.x = x,
-		.rows = hand_height,
-		.cols = hand_width,
+		.y = HAND_AREA_Y(width, height),
+		.x = HAND_AREA_X(width, height),
+		.rows = HAND_AREA_HEIGHT(width, height),
+		.cols = HAND_AREA_WIDTH(width, height),
 		.flags = 0,
 	});
-	ncplane_set_name(new_hand->hand_plane, "hand_plane");
 	if (!new_hand->hand_plane)
 		return (free(new_hand), 1);
+	ncplane_set_name(new_hand->hand_plane, "hand_plane");
 	new_hand->cards = NULL;
 	new_hand->card_count = 0;
 	ft_memset(new_hand->card_selected, -1, sizeof(new_hand->card_selected));
@@ -51,13 +50,7 @@ void hand_destroy(struct s_hand *hand)
 	{
 		next = current->next;
 		card_plane = (struct s_card_plane *)current->content;
-		if (card_plane)
-		{
-			if (card_plane->plane)
-				ncplane_destroy(card_plane->plane);
-			return_free_list(&hand->allocator, card_plane);
-			current->content = NULL;
-		}
+		card_plane_destroy(card_plane);
 		return_free_list(&hand->allocator, current);
 		current = next;
 	}

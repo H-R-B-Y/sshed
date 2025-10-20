@@ -11,6 +11,15 @@
 #include "cards.h"
 #include "deck.h"
 #include "hand.h"
+#include "card_plane.h"
+#include "pdisplay.h"
+
+// SUBJECT TO CHANGE
+int	init_client(
+	struct notcurses **nc,
+	struct s_deck **deck,
+	struct s_hand **hand
+);
 
 
 #endif

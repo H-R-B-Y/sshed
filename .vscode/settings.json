@@ -1,5 +1,7 @@
 {
 	"files.associations": {
-		"unistd.h": "c"
+		"unistd.h": "c",
+		"card_plane.h": "c",
+		"cards.h": "c"
 	}
 }

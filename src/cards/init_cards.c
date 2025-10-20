@@ -5,8 +5,8 @@ t_hashmap	cardmap;
 
 static int	_load_jokers(void)
 {
-	char	*img_path = malloc(1024);
-	t_card	*card;
+	char			*img_path = malloc(1024);
+	t_card			*card;
 
 	card = ft_calloc(1, sizeof(t_card));
 	if (!card)
@@ -17,6 +17,10 @@ static int	_load_jokers(void)
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic = ncvisual_from_file(img_path);
+	sprintf(img_path, "images/Medium/%s %s_rot.png",
+		suit_image_str[card->suit], rank_image_string[card->rank]
+	);
+	card->graphic_h = ncvisual_from_file(img_path);;
 	if (hm_add_value(&cardmap, (t_card_desc *)card, card) != 0)
 		return (1);
 	card = ft_calloc(1, sizeof(t_card));
@@ -28,6 +32,10 @@ static int	_load_jokers(void)
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic = ncvisual_from_file(img_path);
+	sprintf(img_path, "images/Medium/%s %s_rot.png",
+		suit_image_str[card->suit], rank_image_string[card->rank]
+	);
+	card->graphic_h = ncvisual_from_file(img_path);;
 	free(img_path);
 	if (hm_add_value(&cardmap, (t_card_desc *)card, card) != 0)
 		return (1);
@@ -54,8 +62,10 @@ static int	_load_cards(void)
 			card->rank = (t_rank)rank_idx;
 			sprintf(img_path, "images/Medium/%s %s.png", 
 				suit_image_str[card->suit], rank_image_string[card->rank]);
-			// dprintf(STDERR_FILENO, "Loading card image: %s\n", img_path);
 			card->graphic = ncvisual_from_file(img_path);
+			sprintf(img_path, "images/Medium/%s %s_rot.png", 
+				suit_image_str[card->suit], rank_image_string[card->rank]);
+			card->graphic_h = ncvisual_from_file(img_path);
 			if (!card->graphic)
 			{
 				dprintf(STDERR_FILENO, "Failed to load image: %s\n", img_path);
@@ -72,15 +82,21 @@ static int	_load_cards(void)
 	return (0);
 }
 
-void	*cardbacks[2] = {NULL, NULL};
+void	*cardbacks[4] = {NULL, NULL, NULL, NULL};
 
 static int _load_cardbacks(void)
 {
 	cardbacks[0] = ncvisual_from_file("images/Medium/Back Blue 2.png");
 	if (!cardbacks[0])
 		return (1);
+	cardbacks[0 + 2] = ncvisual_from_file("images/Medium/Back Blue 2_rot.png");
+	if (!cardbacks[0 + 2])
+		return (1);
 	cardbacks[1] = ncvisual_from_file("images/Medium/Back Red 2.png");
 	if (!cardbacks[1])
+		return (1);
+	cardbacks[1 + 2] = ncvisual_from_file("images/Medium/Back Red 2_rot.png");
+	if (!cardbacks[1 + 2])
 		return (1);
 	return (0);
 }

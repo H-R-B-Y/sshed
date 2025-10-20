@@ -74,7 +74,8 @@ typedef struct s_card
 {
 	t_rank	rank;
 	t_suit	suit;
-	void			*graphic;
+	void	*graphic;
+	void	*graphic_h; // Horizontal version for displaying on the side planes
 } t_card;
 
 // Hash function for cards including jokers
@@ -113,9 +114,11 @@ static inline int			is_red_joker(t_card *card)
 	return (card->rank == RANK_JOKER_RED);
 }
 
-extern t_hashmap	cardmap;
+extern t_hashmap			cardmap;
 
-extern void			*cardbacks[2];
+extern void					*cardbacks[4];
+
+int							init_cards(void);
 
 #endif
 
