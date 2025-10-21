@@ -8,7 +8,9 @@ MAKEFLAGS		+= --no-print-directory
 
 LIBFLAGS		:= -lnotcurses -lnotcurses-core -lncurses -ltinfo -L./lib/libft -lft
 
-INCLUDES		:= -I$(abspath ./include) -I$(abspath ./lib/libft/include)
+INCLUDES		:= -I$(abspath ./include) -I$(abspath ./lib/libft/include) \
+				  -I$(abspath ./include/card) -I$(abspath ./include/hand) \
+				  -I$(abspath ./include/pdisplay)
 
 LIB_DIR			:= ./lib
 LIBFT_DIR		:= $(LIB_DIR)/libft
@@ -23,7 +25,7 @@ SRCS			:= \
 				src/hand/hand_render.c \
 				src/hand/hand_debug.c \
 				src/hand/hand_clear.c \
-				src/hand/change_display.c \
+				src/hand/hand_change_display.c \
 				src/hand/shed/hand_remove_card_shed.c \
 				src/hand/shed/hand_add_card_shed.c \
 				src/hand/hand/hand_remove_card.c \
@@ -40,6 +42,13 @@ SRCS			:= \
 				src/pdisplay/pdisplay_shed/pdisplay_add_hand_anon.c \
 				src/pdisplay/pdisplay_hand/pdisplay_add_shed.c \
 				src/pdisplay/pdisplay_hand/pdisplay_add_shed_anon.c \
+				src/pdisplay/pdisplay_change_display.c \
+				src/pile_display/pile_display.c \
+				src/pile_display/pile_display_render.c \
+				src/pile_display/pile_display_move.c \
+				src/pile_display/pile_display_clear.c \
+				src/pile_display/pile_display_add.c \
+				src/hand/hand_get_selected.c \
 				\
 
 

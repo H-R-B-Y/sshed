@@ -58,8 +58,8 @@ void	render_hand_cards(struct notcurses *nc, struct s_hand *hand)
 			redisplay_card(nc, hand->hand_plane, card_plane);
 			ncplane_move_yx(card_plane->plane,
 				(hand->card_selected[0] == (int)idx) ? 0 : 1,
-				(width / 2) - ((hand->card_count * 9) / 2)
-				+ ((idx - 1) * 9));
+				(width / 2) - ((hand->card_count * CARD_WIDTH) / 2)
+				+ ((idx - 1) * CARD_WIDTH));
 		}
 		idx++;
 		current = current->next;
@@ -86,6 +86,6 @@ void	hand_render(struct notcurses *nc, struct s_hand *hand)
 		default:
 			break ;
 	}
-	notcurses_render(nc);
+	// notcurses_render(nc);
 }
 

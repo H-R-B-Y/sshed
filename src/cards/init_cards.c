@@ -1,7 +1,8 @@
 #include "cards.h"
 #include "game.h"
 
-t_hashmap	cardmap;
+t_hashmap		cardmap;
+unsigned int	card_dimensions[4] = {0, 0, 0, 0}; // width, height, h_width, h_height
 
 static int	_load_jokers(void)
 {
@@ -13,11 +14,11 @@ static int	_load_jokers(void)
 		return (1);
 	card->rank = RANK_JOKER_BLACK;
 	card->suit = SUIT_JOKER;
-	sprintf(img_path, "images/Medium/%s %s.png",
+	sprintf(img_path, "%s%s %s.png", CARD_LOAD_PATH,
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic = ncvisual_from_file(img_path);
-	sprintf(img_path, "images/Medium/%s %s_rot.png",
+	sprintf(img_path, "%s%s %s_rot.png", CARD_LOAD_PATH,
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic_h = ncvisual_from_file(img_path);;
@@ -28,11 +29,11 @@ static int	_load_jokers(void)
 		return (1);
 	card->rank = RANK_JOKER_RED;
 	card->suit = SUIT_JOKER;
-	sprintf(img_path, "images/Medium/%s %s.png",
+	sprintf(img_path, "%s%s %s.png", CARD_LOAD_PATH,
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic = ncvisual_from_file(img_path);
-	sprintf(img_path, "images/Medium/%s %s_rot.png",
+	sprintf(img_path, "%s%s %s_rot.png", CARD_LOAD_PATH,
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic_h = ncvisual_from_file(img_path);;
@@ -60,10 +61,10 @@ static int	_load_cards(void)
 				return (1);
 			card->suit = (t_suit)suit_idx;
 			card->rank = (t_rank)rank_idx;
-			sprintf(img_path, "images/Medium/%s %s.png", 
+			sprintf(img_path, "%s%s %s.png",  CARD_LOAD_PATH,
 				suit_image_str[card->suit], rank_image_string[card->rank]);
 			card->graphic = ncvisual_from_file(img_path);
-			sprintf(img_path, "images/Medium/%s %s_rot.png", 
+			sprintf(img_path, "%s%s %s_rot.png",  CARD_LOAD_PATH,
 				suit_image_str[card->suit], rank_image_string[card->rank]);
 			card->graphic_h = ncvisual_from_file(img_path);
 			if (!card->graphic)
@@ -86,22 +87,27 @@ void	*cardbacks[4] = {NULL, NULL, NULL, NULL};
 
 static int _load_cardbacks(void)
 {
-	cardbacks[0] = ncvisual_from_file("images/Medium/Back Blue 2.png");
+	char	img_path[1024];
+	sprintf(img_path, "%sBack Blue 2.png", CARD_LOAD_PATH);
+	cardbacks[0] = ncvisual_from_file(img_path);
 	if (!cardbacks[0])
 		return (1);
-	cardbacks[0 + 2] = ncvisual_from_file("images/Medium/Back Blue 2_rot.png");
+	sprintf(img_path, "%sBack Blue 2_rot.png", CARD_LOAD_PATH);
+	cardbacks[0 + 2] = ncvisual_from_file(img_path);
 	if (!cardbacks[0 + 2])
 		return (1);
-	cardbacks[1] = ncvisual_from_file("images/Medium/Back Red 2.png");
+	sprintf(img_path, "%sBack Red 2.png", CARD_LOAD_PATH);
+	cardbacks[1] = ncvisual_from_file(img_path);
 	if (!cardbacks[1])
 		return (1);
-	cardbacks[1 + 2] = ncvisual_from_file("images/Medium/Back Red 2_rot.png");
+	sprintf(img_path, "%sBack Red 2_rot.png", CARD_LOAD_PATH);
+	cardbacks[1 + 2] = ncvisual_from_file(img_path);
 	if (!cardbacks[1 + 2])
 		return (1);
 	return (0);
 }
 
-int	init_cards(void)
+int	init_cards(void *nc)
 {
 	cardmap.hash_cmp = (t_hashcmp)compare_card;
 	cardmap.hash_key = (t_hashfnc)hash_card;
@@ -112,6 +118,20 @@ int	init_cards(void)
 	_load_cards();
 	_load_jokers();
 	_load_cardbacks();
+	struct ncvisual_options vopts = {
+		.n = notcurses_stdplane((struct notcurses *)nc),
+		.x = 0,
+		.y = 0,
+		.blitter = NCBLIT_PIXEL,
+		.scaling = NCSCALE_NONE,
+		.flags = NCVISUAL_OPTION_CHILDPLANE,
+	};
+	struct ncplane *pl = ncvisual_blit(nc, cardbacks[0], &vopts);
+	ncplane_dim_yx(pl, &card_dimensions[1], &card_dimensions[0]);
+	ncplane_destroy(pl);
+	pl = ncvisual_blit(nc, cardbacks[2], &vopts);
+	ncplane_dim_yx(pl, &card_dimensions[3], &card_dimensions[2]);
+	ncplane_destroy(pl);
 	return (0);
 }
 

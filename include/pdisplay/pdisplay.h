@@ -19,12 +19,12 @@ are in the hand, and how many cards are in the shed (both face up and face down)
 /// @brief If we are left or right, the width is the height of the card with margin, else its the full width of the parent
 # define PDISPLAY_AREA_WIDTH(orientation, parent_width, parent_height) \
 	((orientation == PDISPLAY_ORIENTATION_LEFT || orientation == PDISPLAY_ORIENTATION_RIGHT) ? \
-		(CARD_HEIGHT + 1) : (parent_width))
+		(CARD_H_WIDTH + 3) : (parent_width))
 
 /// @brief If we are top or bottom, the height is the height of the card with margin, else its the full height of the parent
 # define PDISPLAY_AREA_HEIGHT(orientation, parent_width, parent_height) \
 	((orientation == PDISPLAY_ORIENTATION_LEFT || orientation == PDISPLAY_ORIENTATION_RIGHT) ? \
-		(parent_height - 2) : (CARD_HEIGHT + 4))
+		(parent_height) : (CARD_HEIGHT + 2))
 
 /// @brief X position based on orientation
 /// If left, x = 0
@@ -32,7 +32,7 @@ are in the hand, and how many cards are in the shed (both face up and face down)
 /// If top then x = 0
 # define PDISPLAY_AREA_X(orientation, parent_width, parent_height) \
 	((orientation == PDISPLAY_ORIENTATION_LEFT) ? 0 : \
-	(orientation == PDISPLAY_ORIENTATION_RIGHT) ? (parent_width - (CARD_HEIGHT + 1)) : 0)
+	(orientation == PDISPLAY_ORIENTATION_RIGHT) ? (parent_width - (CARD_H_WIDTH + 3)) : 0)
 
 /// @brief Y position is just 0 because all the planes are aligned to the top
 # define PDISPLAY_AREA_Y(orientation, parent_width, parent_height) 0
@@ -92,6 +92,10 @@ int		pdisplay_clear_screen(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
+
+int pdisplay_show_hand(struct notcurses *nc, struct s_pdisplay *pdisplay);
+int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay);
+int pdisplay_toggle_display(struct notcurses *nc, struct s_pdisplay *pdisplay);
 
 /*
 Adding and removing cards from the pdisplay 

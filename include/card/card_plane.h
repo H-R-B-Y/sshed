@@ -6,17 +6,19 @@
 # include <notcurses/notcurses.h>
 
 // TODO: This only works for the vertical cards but we cant just swap the values for horizontal cards because the size is in characters not pixels.
-# define CARD_WIDTH 8
-# define CARD_HEIGHT 5
+# define CARD_WIDTH card_dimensions[0]
+# define CARD_HEIGHT card_dimensions[1]
+# define CARD_H_WIDTH card_dimensions[2]
+# define CARD_H_HEIGHT card_dimensions[3]
 
-# define CARD_PADDING 5
+# define CARD_PADDING 1
 
 # define DEFAULT_PLANE_OPTS(orientation)\
 	{ \
 		.y = 0, \
 		.x = 0, \
-		.rows = (orientation == CARD_ORIENTATION_VERTICAL) ? CARD_HEIGHT : CARD_WIDTH, \
-		.cols = (orientation == CARD_ORIENTATION_VERTICAL) ? CARD_WIDTH : CARD_HEIGHT, \
+		.rows = (orientation == CARD_ORIENTATION_VERTICAL) ? CARD_HEIGHT : CARD_H_HEIGHT, \
+		.cols = (orientation == CARD_ORIENTATION_VERTICAL) ? CARD_WIDTH : CARD_H_WIDTH, \
 		.flags = 0, \
 	}
 

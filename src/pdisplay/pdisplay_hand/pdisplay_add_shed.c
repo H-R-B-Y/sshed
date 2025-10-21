@@ -12,8 +12,14 @@ int	_pdisplay_add_card_shed(
 	pdisplay->shed[pdisplay->shed_count] = card_plane_create(card_desc);
 	if (!pdisplay->shed[pdisplay->shed_count])
 		return (1);
+	if (pdisplay->shed_count < 3)
+		pdisplay->shed[pdisplay->shed_count]->is_face_down = 1;
+	if (pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT
+		|| pdisplay->orientation == PDISPLAY_ORIENTATION_RIGHT)
+		pdisplay->shed[pdisplay->shed_count]->orientation = CARD_ORIENTATION_HORIZONTAL;
 	pdisplay->shed_count++;
-	pdisplay->pdisplay_dirty = 1;
+	if (pdisplay->status == PDISPLAY_SHED)
+		pdisplay->pdisplay_dirty = 1;
 	return (0);
 }
 
@@ -45,7 +51,8 @@ int	_pdisplay_remove_card_shed(
 			card_plane_destroy(card_plane);
 			pdisplay->shed[idx] = NULL;
 			pdisplay->shed_count--;
-			pdisplay->pdisplay_dirty = 1;
+			if (pdisplay->status == PDISPLAY_SHED)
+				pdisplay->pdisplay_dirty = 1;
 			return (0);
 		}
 	}

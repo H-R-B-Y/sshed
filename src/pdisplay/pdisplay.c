@@ -53,6 +53,12 @@ void	pdisplay_destroy(
 		free(current); // TODO: make this use a free list
 		current = next;
 	}
+	for (int i = 0; i < 6; i++)
+	{
+		struct s_card_plane *card_plane = pdisplay->shed[i];
+		if (card_plane)
+			card_plane_destroy(card_plane);
+	}
 	free(pdisplay);
 }
 

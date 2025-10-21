@@ -1,7 +1,10 @@
-#ifndef CARDS2_H
-#define CARDS2_H
+#ifndef CARDS_H
+# define CARDS_H
 # define FT_INCLUDE_ALL
 # include "libft.h"
+
+
+# define CARD_LOAD_PATH "images/Small/"
 
 typedef enum e_suit
 {
@@ -118,7 +121,9 @@ extern t_hashmap			cardmap;
 
 extern void					*cardbacks[4];
 
-int							init_cards(void);
+extern unsigned int			card_dimensions[4]; // width, height, h_width, h_height
+
+int							init_cards(void *nc);
 
 #endif
 

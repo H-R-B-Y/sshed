@@ -7,12 +7,24 @@
 # define FT_INCLUDE_ALL
 # include "libft.h"
 
-
+// Status: ongoing development
 #include "cards.h"
+
+// Status: working
 #include "deck.h"
+
+// Status: working (testing for edge cases needed)
 #include "hand.h"
+
+// Status: working (api needs expanding)
 #include "card_plane.h"
+
+// Status: ongoing development
 #include "pdisplay.h"
+
+// Status: ongoing development
+#include "pile_display.h"
+
 
 // SUBJECT TO CHANGE
 int	init_client(

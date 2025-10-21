@@ -16,8 +16,8 @@ int _pdisplay_render_shed_left_right(
 			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				(height / 2)
-				- (pdisplay->card_count * (CARD_WIDTH + 2)) / 2 // total height of all cards
-				+ ((idx - 1) * (CARD_WIDTH + 2)), // adjust for size of card
+				- (3 * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
+				+ ((idx) * (CARD_H_HEIGHT + 1)), // adjust for size of card
 				1
 			);
 		}
@@ -26,9 +26,9 @@ int _pdisplay_render_shed_left_right(
 			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				(height / 2)
-				- (pdisplay->card_count * (CARD_WIDTH + 2)) / 2 // total height of all cards
-				+ ((idx - 4) * (CARD_WIDTH + 2)), // adjust for size of card
-				2
+				- (3 * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
+				+ ((idx - 3) * (CARD_H_HEIGHT + 1)), // adjust for size of card
+				3
 			);
 		}
 	}
@@ -51,8 +51,8 @@ int _pdisplay_render_shed_top(
 			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				1,
-				(height / 2)
-				- (pdisplay->card_count * (CARD_WIDTH + 2)) / 2 // total height of all cards
+				(width / 2)
+				- (3 * (CARD_WIDTH + 2)) / 2 
 				+ ((idx - 1) * (CARD_WIDTH + 2)) // adjust for size of card
 			);
 		}
@@ -61,8 +61,8 @@ int _pdisplay_render_shed_top(
 			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				2,
-				(height / 2)
-				- (pdisplay->card_count * (CARD_WIDTH + 2)) / 2 // total height of all cards
+				(width / 2)
+				- (3 * (CARD_WIDTH + 2)) / 2
 				+ ((idx - 4) * (CARD_WIDTH + 2)) // adjust for size of card
 			);
 		}
@@ -87,9 +87,9 @@ int _pdisplay_render_left_right(
 			redisplay_card(nc, pdisplay->plane, card_plane);
 			ncplane_move_yx(card_plane->plane,
 				(height / 2)
-				- (pdisplay->card_count * (CARD_WIDTH + 2)) / 2 // total height of all cards
-				+ (idx * (CARD_WIDTH + 2)), // adjust for size of card
-				1
+				- (pdisplay->card_count * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
+				+ ((idx) * (CARD_H_HEIGHT + 1)), // adjust for size of card
+				(pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT) ? 1 : 0
 			);
 			idx++;
 		}
@@ -117,8 +117,8 @@ int _pdisplay_render_top(
 			ncplane_move_yx(card_plane->plane,
 				1, // Y level for all cards
 				(width / 2)
-				- (pdisplay->card_count * (CARD_WIDTH + 2)) / 2 // total width of all cards
-				+ (idx * (CARD_WIDTH + 2)) // adjust for size of card
+				- (pdisplay->card_count * (CARD_WIDTH)) / 2 // total width of all cards
+				+ ((idx - 1) * (CARD_WIDTH)) // adjust for size of card
 			);
 			idx++;
 		}
@@ -139,6 +139,8 @@ int		pdisplay_render(
 	*/
 	if (!nc || !pdisplay || !pdisplay->plane)
 		return (1);
+	if (pdisplay->pdisplay_dirty == 0)
+		return (0); // nothing to do
 	switch (pdisplay->orientation)
 	{
 		case PDISPLAY_ORIENTATION_LEFT:
@@ -190,7 +192,7 @@ int		pdisplay_render(
 			return (1);
 	}
 	pdisplay->pdisplay_dirty = 0;
-	notcurses_render(nc);
+	// notcurses_render(nc);
 	return (0);
 }
 
@@ -216,7 +218,7 @@ int		pdisplay_clear_screen(
 		if (card_plane && card_plane->plane)
 			ncplane_erase(card_plane->plane);
 	}
-	notcurses_render(nc);
+	// notcurses_render(nc);
 	pdisplay->pdisplay_dirty = 1;
 	return (0);
 }

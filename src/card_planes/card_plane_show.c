@@ -22,28 +22,14 @@ int	show_card_plane(
 	}
 	if (!card_plane->plane)
 	{
-		if (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL)
-		{
-			card_plane->plane = ncplane_create(parent,
-				&(struct ncplane_options){ // adjust for ratio of pixels
-					.rows = CARD_WIDTH, // ratio of pixels is
-					.cols = CARD_HEIGHT,
-					.y = 0,
-					.x = 0,
-					.flags = 0,
-				});
-		}
-		else
-		{
-			card_plane->plane = ncplane_create(parent,
-				&(struct ncplane_options){ 
-					.rows = CARD_HEIGHT,
-					.cols = CARD_WIDTH,
-					.y = 0,
-					.x = 0,
-					.flags = 0,
-				});
-		}
+		card_plane->plane = ncplane_create(parent,
+			&(struct ncplane_options){
+				.rows = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? CARD_H_HEIGHT : CARD_HEIGHT,
+				.cols = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? CARD_H_WIDTH : CARD_WIDTH,
+				.y = 0,
+				.x = 0,
+				.flags = 0,
+			});
 		if (!card_plane->plane)
 			return (1);
 	}
@@ -54,23 +40,18 @@ int	show_card_plane(
 		.blitter = NCBLIT_PIXEL,
 		.scaling = NCSCALE_STRETCH,
 	};
-	if (!card_plane->is_face_down)
-	{
-		struct s_card	*card = hm_get_value(&cardmap, card_plane->card_desc);
-		if (!card || !card->graphic)
-			return (1);
-		if (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL && card->graphic_h)
-			ncvisual_blit(nc, card->graphic_h, &vopts);
-		else
-			ncvisual_blit(nc, card->graphic, &vopts);
-	}
+	struct ncvisual	*visual = NULL;
+	struct s_card	*card = NULL;
+	if (card_plane->is_face_down)
+		visual = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? cardbacks[2] : cardbacks[0];
 	else
 	{
-		if (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL && cardbacks[2])
-			ncvisual_blit(nc, cardbacks[2], &vopts);
-		else
-			ncvisual_blit(nc, cardbacks[0], &vopts);
+		card = hm_get_value(&cardmap, card_plane->card_desc);
+		if (!card || !card->graphic)
+			return (1);
+		visual = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? card->graphic_h : card->graphic;
 	}
+	ncvisual_blit(nc, visual, &vopts);
 	card_plane->plane_shown = 1;
 	return (0);
 }

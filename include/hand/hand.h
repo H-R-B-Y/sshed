@@ -51,6 +51,7 @@ struct s_hand
 	struct s_card_plane *shed[6];
 	t_u8				shed_count;
 	struct ncplane		*hand_plane;
+	struct s_card_plane	*selected_card_plane;
 };
 
 int		hand_create(struct s_hand **hand, struct ncplane *parent);
@@ -84,7 +85,16 @@ void	hand_show_hand(struct notcurses *nc, struct s_hand *hand);
 void	hand_show_shed(struct notcurses *nc, struct s_hand *hand);
 void	hand_toggle_display(struct notcurses *nc, struct s_hand *hand);
 
+/*
+Selecting cards
+*/
 
+struct s_card_plane	*_hand_get_selected_card_plane(struct s_hand *hand);
+
+int					hand_select_next_card(struct s_hand *hand);
+int					hand_select_prev_card(struct s_hand *hand);
+
+struct s_card_desc	*hand_pop_selected_card(struct s_hand *hand);
 /*
 Card plane fncs
 */

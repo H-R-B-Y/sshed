@@ -3,6 +3,16 @@
 
 void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 {
+	int move_sel;
+
+	if (!hand || !card_desc)
+		return ;
+	if (hand->card_count == 0)
+		return ;
+	else if (hand->card_count == 1)
+		move_sel = -1;
+	else
+		move_sel = 0;
 	for (t_list *current = hand->cards; current != NULL; current = current->next)
 	{
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
@@ -20,6 +30,8 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 			}
 			card_plane_destroy(card_plane);
 			return_free_list(&hand->allocator, to_remove);
+			if (move_sel == -1)
+				hand->card_selected[0] = -1;
 			hand->card_count--;
 			hand->hand_dirty = 1;
 			return;

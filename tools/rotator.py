@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	"Ok we want to loop through all the png images in a directory and rotate them,"
 	"saving them to the same folder with _rot appended to the filename"
 	import os
-	input_directory = "images/Medium"
+	input_directory = "images/Small"
 	for filename in os.listdir(input_directory):
 		if filename.endswith(".png"):
 			input_path = os.path.join(input_directory, filename)

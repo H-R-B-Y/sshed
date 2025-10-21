@@ -58,7 +58,7 @@ int	init_client(
 		ERR("One or more input pointers are NULL");
 	if (init_notcurses(nc))
 		ERR("Failed to initialize notcurses");
-	if (init_cards() != 0)
+	if (init_cards(*nc) != 0)
 		ERR("Failed to initialize cards");
 	(*deck) = deck_create(true);
 	if (!deck)

@@ -14,6 +14,7 @@ int	_pdisplay_add_card(
 	card_plane = card_plane_create(card_desc);
 	if (!card_plane)
 		return (1);
+	card_plane->is_face_down = 1;
 	// Add to pdisplay's card list
 	if (pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT
 		|| pdisplay->orientation == PDISPLAY_ORIENTATION_RIGHT)
@@ -28,7 +29,8 @@ int	_pdisplay_add_card(
 	card_list_node->next = NULL;
 	ft_lstadd_back(&pdisplay->cards, card_list_node);
 	pdisplay->card_count++;
-	pdisplay->pdisplay_dirty = 1;
+	if (pdisplay->status == PDISPLAY_HAND)
+		pdisplay->pdisplay_dirty = 1;
 	return (0);
 }
 
@@ -67,7 +69,8 @@ int	_pdisplay_remove_card(
 			card_plane_destroy(card_plane);
 			free(current); // TODO: use free list
 			pdisplay->card_count--;
-			pdisplay->pdisplay_dirty = 1;
+			if (pdisplay->status == PDISPLAY_HAND)
+				pdisplay->pdisplay_dirty = 1;
 			return (0);
 		}
 		prev = current;
