@@ -39,15 +39,19 @@ enum e_card_orientation
 
 struct s_card_plane
 {
-	t_card_desc				card_desc;
+	struct ncplane			*parent;
 	struct ncplane			*plane;
+	t_card_desc				card_desc;
+	
 	int						plane_shown;
 	int						is_face_down;
+
 	enum e_card_orientation	orientation;
 	enum e_card_orientation	last_orientation;
 };
 
 struct s_card_plane *card_plane_create(
+	struct ncplane *parent,
 	t_card_desc	card_desc
 );
 
@@ -56,29 +60,22 @@ void	card_plane_destroy(
 );
 
 int	hide_card_plane(
-	struct notcurses *nc,
-	struct ncplane *parent,
 	struct s_card_plane *card_plane
 );
 
 int	show_card_plane(
-	struct notcurses *nc,
-	struct ncplane *parent,
 	struct s_card_plane *card_plane
 );
 
 int	redisplay_card(
-	struct notcurses *nc,
-	struct ncplane *parent,
 	struct s_card_plane *card_plane
 );
 
 int	flip_card_plane(
-	struct notcurses *nc,
 	struct s_card_plane *card_plane
 );
+
 int	rotate_card_plane(
-	struct notcurses *nc,
 	struct s_card_plane *card_plane,
 	enum e_card_orientation	new_orientation
 );

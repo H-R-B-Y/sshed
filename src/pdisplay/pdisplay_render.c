@@ -2,8 +2,8 @@
 #include "pdisplay.h"
 
 int _pdisplay_render_shed_left_right(
-	struct notcurses *nc,
-	struct s_pdisplay *pdisplay)
+	struct s_pdisplay *pdisplay
+)
 {
 	unsigned int	width, height;
 	ncplane_dim_yx(pdisplay->plane, &height, &width);
@@ -13,7 +13,7 @@ int _pdisplay_render_shed_left_right(
 			continue ;
 		if (idx < 3)
 		{
-			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
+			redisplay_card(pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				(height / 2)
 				- (3 * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
@@ -23,7 +23,7 @@ int _pdisplay_render_shed_left_right(
 		}
 		else
 		{
-			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
+			redisplay_card(pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				(height / 2)
 				- (3 * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
@@ -36,7 +36,6 @@ int _pdisplay_render_shed_left_right(
 }
 
 int _pdisplay_render_shed_top(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 )
 {
@@ -48,7 +47,7 @@ int _pdisplay_render_shed_top(
 			continue ;
 		if (idx < 3)
 		{
-			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
+			redisplay_card(pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				1,
 				(width / 2)
@@ -58,7 +57,7 @@ int _pdisplay_render_shed_top(
 		}
 		else
 		{
-			redisplay_card(nc, pdisplay->plane, pdisplay->shed[idx]);
+			redisplay_card(pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				2,
 				(width / 2)
@@ -71,8 +70,8 @@ int _pdisplay_render_shed_top(
 }
 
 int _pdisplay_render_left_right(
-	struct notcurses *nc,
-	struct s_pdisplay *pdisplay)
+	struct s_pdisplay *pdisplay
+)
 {
 	t_list			*current;
 	unsigned int	width, height;
@@ -84,7 +83,7 @@ int _pdisplay_render_left_right(
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
 		if (card_plane)
 		{
-			redisplay_card(nc, pdisplay->plane, card_plane);
+			redisplay_card(card_plane);
 			ncplane_move_yx(card_plane->plane,
 				(height / 2)
 				- (pdisplay->card_count * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
@@ -99,7 +98,6 @@ int _pdisplay_render_left_right(
 }
 
 int _pdisplay_render_top(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 )
 {
@@ -113,7 +111,7 @@ int _pdisplay_render_top(
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
 		if (card_plane)
 		{
-			redisplay_card(nc, pdisplay->plane, card_plane);
+			redisplay_card(card_plane);
 			ncplane_move_yx(card_plane->plane,
 				1, // Y level for all cards
 				(width / 2)
@@ -129,7 +127,6 @@ int _pdisplay_render_top(
 
 
 int		pdisplay_render(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 )
 {
@@ -137,7 +134,7 @@ int		pdisplay_render(
 	Ok so we are going to want to split this out into the 3 orientations
 	and render accordingly.
 	*/
-	if (!nc || !pdisplay || !pdisplay->plane)
+	if (!pdisplay || !pdisplay->plane)
 		return (1);
 	if (pdisplay->pdisplay_dirty == 0)
 		return (0); // nothing to do
@@ -148,10 +145,10 @@ int		pdisplay_render(
 			switch (pdisplay->status)
 			{
 				case PDISPLAY_HAND:
-					_pdisplay_render_left_right(nc, pdisplay);
+					_pdisplay_render_left_right(pdisplay);
 					break ;
 				case PDISPLAY_SHED:
-					_pdisplay_render_shed_left_right(nc, pdisplay);
+					_pdisplay_render_shed_left_right(pdisplay);
 					break ;
 				default:
 					return (1);
@@ -163,10 +160,10 @@ int		pdisplay_render(
 			switch (pdisplay->status)
 			{
 				case PDISPLAY_HAND:
-					_pdisplay_render_left_right(nc, pdisplay);
+					_pdisplay_render_left_right(pdisplay);
 					break ;
 				case PDISPLAY_SHED:
-					_pdisplay_render_shed_left_right(nc, pdisplay);
+					_pdisplay_render_shed_left_right(pdisplay);
 					break ;
 				default:
 					return (1);
@@ -178,10 +175,10 @@ int		pdisplay_render(
 			switch (pdisplay->status)
 			{
 				case PDISPLAY_HAND:
-					_pdisplay_render_top(nc, pdisplay);
+					_pdisplay_render_top(pdisplay);
 					break ;
 				case PDISPLAY_SHED:
-					_pdisplay_render_shed_top(nc, pdisplay);
+					_pdisplay_render_shed_top(pdisplay);
 					break ;
 				default:
 					return (1);
@@ -197,11 +194,10 @@ int		pdisplay_render(
 }
 
 int		pdisplay_clear_screen(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 )
 {
-	if (!nc || !pdisplay || !pdisplay->plane)
+	if (!pdisplay || !pdisplay->plane)
 		return (1);
 	ncplane_erase(pdisplay->plane);
 	t_list	*current = pdisplay->cards;

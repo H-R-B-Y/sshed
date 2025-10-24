@@ -84,18 +84,16 @@ void	pdisplay_destroy(
 );
 
 int		pdisplay_render(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
 
 int		pdisplay_clear_screen(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
 
-int pdisplay_show_hand(struct notcurses *nc, struct s_pdisplay *pdisplay);
-int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay);
-int pdisplay_toggle_display(struct notcurses *nc, struct s_pdisplay *pdisplay);
+int pdisplay_show_hand(struct s_pdisplay *pdisplay);
+int pdisplay_show_shed(struct s_pdisplay *pdisplay);
+int pdisplay_toggle_display(struct s_pdisplay *pdisplay);
 
 /*
 Adding and removing cards from the pdisplay 
@@ -108,7 +106,6 @@ int	_pdisplay_add_card(
 );
 
 int	pdisplay_add_card(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 );
@@ -119,7 +116,6 @@ int	_pdisplay_remove_card(
 );
 
 int	pdisplay_remove_card(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 );
@@ -130,7 +126,6 @@ int	_pdisplay_add_card_shed(
 );
 
 int	pdisplay_add_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 );
@@ -141,7 +136,6 @@ int	_pdisplay_remove_card_shed(
 );
 
 int	pdisplay_remove_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 );
@@ -155,7 +149,6 @@ int	_pdisplay_add_unknown_card(
 );
 
 int	pdisplay_add_unknown_card(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
 
@@ -164,7 +157,6 @@ int	_pdisplay_remove_unknown_card(
 );
 
 int	pdisplay_remove_unknown_card(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
 
@@ -173,7 +165,6 @@ int	_pdisplay_add_unknown_card_shed(
 );
 
 int	pdisplay_add_unknown_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
 
@@ -182,7 +173,6 @@ int	_pdisplay_remove_unknown_card_shed(
 );
 
 int	pdisplay_remove_unknown_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 );
 

@@ -13,7 +13,7 @@ int	_hand_add_card(struct s_hand *hand, t_card_desc card_desc)
 		move_sel = 1;
 	else
 		move_sel = 0;
-	card_plane = card_plane_create(card_desc);
+	card_plane = card_plane_create(hand->hand_plane, card_desc);
 	if (!card_plane)
 		return (1);
 	card_list_node = checkout_free_list(&hand->allocator, sizeof(t_list));
@@ -32,12 +32,11 @@ int	_hand_add_card(struct s_hand *hand, t_card_desc card_desc)
 	return (0);
 }
 
-int	hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc)
+int	hand_add_card(struct s_hand *hand, t_card_desc card_desc)
 {
 	int	ret;
-	(void)nc;
 	ret = _hand_add_card(hand, card_desc);
-	hand_render(nc, hand);
+	hand_render(hand);
 	return (ret);
 }
 

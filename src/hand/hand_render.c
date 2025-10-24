@@ -3,7 +3,7 @@
 # include "hand.h"
 
 
-void	render_shed_cards(struct notcurses *nc, struct s_hand *hand)
+void	render_shed_cards(struct s_hand *hand)
 {
 	unsigned int	width, height, selected;
 	ncplane_dim_yx(hand->hand_plane, &height, &width);
@@ -16,7 +16,7 @@ void	render_shed_cards(struct notcurses *nc, struct s_hand *hand)
 		{
 			selected = ((hand->card_selected[1] == (int)idx)
 				&& (hand->shed[hand->card_selected[1] + 3] == NULL));
-			redisplay_card(nc, hand->hand_plane, hand->shed[idx]);
+			redisplay_card(hand->shed[idx]);
 			ncplane_move_yx(hand->shed[idx]->plane,
 				2 - (!!selected), // Same Y level for all cards
 				(width / 2 // half the width of the screen
@@ -28,7 +28,7 @@ void	render_shed_cards(struct notcurses *nc, struct s_hand *hand)
 		else
 		{
 			selected = (hand->card_selected[1] == (int)(idx - 3));
-			redisplay_card(nc, hand->hand_plane, hand->shed[idx]);
+			redisplay_card(hand->shed[idx]);
 			ncplane_move_yx(hand->shed[idx]->plane,
 				1 - (!!selected), // Same Y level for all cards
 				(width / 2 // half the width of the screen
@@ -40,7 +40,7 @@ void	render_shed_cards(struct notcurses *nc, struct s_hand *hand)
 	hand->hand_dirty = 0;
 }
 
-void	render_hand_cards(struct notcurses *nc, struct s_hand *hand)
+void	render_hand_cards(struct s_hand *hand)
 {
 	t_list				*current;
 	struct s_card_plane	*card_plane;
@@ -55,7 +55,7 @@ void	render_hand_cards(struct notcurses *nc, struct s_hand *hand)
 		card_plane = (struct s_card_plane *)current->content;
 		if (card_plane)
 		{
-			redisplay_card(nc, hand->hand_plane, card_plane);
+			redisplay_card(card_plane);
 			ncplane_move_yx(card_plane->plane,
 				(hand->card_selected[0] == (int)idx) ? 0 : 1,
 				(width / 2) - ((hand->card_count * CARD_WIDTH) / 2)
@@ -67,9 +67,9 @@ void	render_hand_cards(struct notcurses *nc, struct s_hand *hand)
 	hand->hand_dirty = 0;
 }
 
-void	hand_render(struct notcurses *nc, struct s_hand *hand)
+void	hand_render(struct s_hand *hand)
 {
-	if (!hand || !nc)
+	if (!hand)
 		return ;
 	if (hand->status != hand->last_status)
 		hand->last_status = hand->status;
@@ -78,10 +78,10 @@ void	hand_render(struct notcurses *nc, struct s_hand *hand)
 	switch (hand->status)
 	{
 		case HAND_DISPLAY_HAND:
-			render_hand_cards(nc, hand);
+			render_hand_cards(hand);
 			break ;
 		case HAND_DISPLAY_SHED:
-			render_shed_cards(nc, hand);
+			render_shed_cards(hand);
 			break ;
 		default:
 			break ;

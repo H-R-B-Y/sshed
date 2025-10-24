@@ -46,10 +46,9 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 	return ;
 }
 
-void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc)
+void	hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 {
-	(void)nc;
 	_hand_remove_card(hand, card_desc);
-	hand_render(nc, hand);
+	hand_render(hand);
 }
 

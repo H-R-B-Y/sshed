@@ -13,16 +13,16 @@ int	test_adding_cards(struct notcurses *nc, struct s_hand *hand, struct s_deck *
 		t_card_desc	card;
 		if (deck_draw_card(deck, &card))
 			break ;
-		if (hand_add_card(nc, hand, card) != 0)
+		if (hand_add_card(hand, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand\n");
 			return (1);
 		}
 	}
 	hand->card_selected[0] = 2; // select the third card
-	hand_render(nc, hand);
+	hand_render(hand);
 	notcurses_get_blocking(nc, NULL);
-	hand_return_to_deck(nc, hand, deck);
+	hand_return_to_deck(hand, deck);
 	// validate that the hand is empty and deck has 52 + jokers?
 	if (hand->card_count != 0)
 	{
@@ -51,19 +51,19 @@ int	testing_removing_cards(struct notcurses *nc, struct s_hand *hand, struct s_d
 	}
 	for (int i = 0; i < 4; i++)
 	{
-		if (hand_add_card(nc, hand, card_desc[i]) != 0)
+		if (hand_add_card(hand, card_desc[i]) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand\n");
 			return (1);
 		}
 	}
-	hand_render(nc, hand);
+	hand_render(hand);
 	notcurses_get_blocking(nc, NULL);
-	hand_remove_card(nc, hand, card_desc[1]);
+	hand_remove_card(hand, card_desc[1]);
 	deck_return_card(deck, card_desc[1]);
-	hand_remove_card(nc, hand, card_desc[3]);
+	hand_remove_card(hand, card_desc[3]);
 	deck_return_card(deck, card_desc[3]);
-	hand_render(nc, hand);
+	hand_render(hand);
 	notcurses_get_blocking(nc, NULL);
 	if (hand->card_count != 2)
 	{
@@ -76,7 +76,7 @@ int	testing_removing_cards(struct notcurses *nc, struct s_hand *hand, struct s_d
 		dprintf(STDERR_FILENO, "Deck does not have 52 cards after removing 2 cards from hand\n");
 		return (1);
 	}
-	hand_return_to_deck(nc, hand, deck);
+	hand_return_to_deck(hand, deck);
 	return (0);
 }
 
@@ -94,13 +94,13 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 			dprintf(STDERR_FILENO, "Filed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card(nc, pdisplay, card) != 0)
+		if (pdisplay_add_card(pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n");
 			return (1);
 		}
 	}
-	pdisplay_render(nc, pdisplay);
+	pdisplay_render(pdisplay);
 	notcurses_get_blocking(nc, NULL);
 	struct s_pdisplay	*pdisplay2;
 	pdisplay_create(&pdisplay2, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_LEFT);
@@ -112,13 +112,13 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card(nc, pdisplay2, card) != 0)
+		if (pdisplay_add_card(pdisplay2, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n");
 			return (1);
 		}
 	}
-	pdisplay_render(nc, pdisplay2);
+	pdisplay_render(pdisplay2);
 	notcurses_get_blocking(nc, NULL);
 	struct s_pdisplay	*pdisplay3;
 	pdisplay_create(&pdisplay3, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_RIGHT);
@@ -130,13 +130,13 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card(nc, pdisplay3, card) != 0)
+		if (pdisplay_add_card(pdisplay3, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n");
 			return (1);
 		}
 	}
-	pdisplay_render(nc, pdisplay3);
+	pdisplay_render(pdisplay3);
 	notcurses_get_blocking(nc, NULL);
 
 	/*
@@ -150,7 +150,7 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card_shed(nc, pdisplay, card) != 0)
+		if (pdisplay_add_card_shed(pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay shed\n");
 			return (1);
@@ -160,19 +160,19 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card_shed(nc, pdisplay2, card) != 0)
+		if (pdisplay_add_card_shed(pdisplay2, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay shed\n");
 			return (1);
 		}
 	}
-	pdisplay_render(nc, pdisplay);
-	pdisplay_render(nc, pdisplay2);
+	pdisplay_render(pdisplay);
+	pdisplay_render(pdisplay2);
 	notcurses_get_blocking(nc, NULL);
-	pdisplay_toggle_display(nc, pdisplay);
-	pdisplay_toggle_display(nc, pdisplay2);
+	pdisplay_toggle_display(pdisplay);
+	pdisplay_toggle_display(pdisplay2);
 	notcurses_get_blocking(nc, NULL);
-	pdisplay_clear_screen(nc, pdisplay);
+	pdisplay_clear_screen(pdisplay);
 	pdisplay_destroy(pdisplay);
 	pdisplay_destroy(pdisplay2);
 	pdisplay_destroy(pdisplay3);
@@ -193,7 +193,7 @@ int test_pile_display(struct notcurses *nc, struct s_hand *hand, struct s_deck *
 	);
 	pile_display->is_face_down = 0;
 	pile_display->is_visible = 1;
-	pile_display_render(nc, pile_display);
+	pile_display_render(pile_display);
 	// notcurses_get_blocking(nc, NULL);
 	for (int i = 0; i < 10; i++)
 	{
@@ -204,13 +204,13 @@ int test_pile_display(struct notcurses *nc, struct s_hand *hand, struct s_deck *
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pile_display_add_card_top(nc, pile_display, card) != 0)
+		if (pile_display_add_card_top(pile_display, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pile display\n");
 			return (1);
 		}
 	}
-	pile_display_render(nc, pile_display);
+	pile_display_render(pile_display);
 	notcurses_render(nc);
 	notcurses_get_blocking(nc, NULL);
 	notcurses_render(nc);
@@ -241,8 +241,8 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 	Deal 6 cards to the shed of the player and the opponent
 	*/
 	pdisplay_create(&pdisplay, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_TOP);
-	pdisplay_show_shed(nc, pdisplay);
-	hand_show_shed(nc, hand);
+	pdisplay_show_shed(pdisplay);
+	hand_show_shed(hand);
 	for (int i = 0; i < 6; i++)
 	{
 		t_card_desc	card;
@@ -251,7 +251,7 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card_shed(nc, pdisplay, card) != 0)
+		if (pdisplay_add_card_shed(pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay shed\n");
 			return (1);
@@ -261,15 +261,15 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (hand_add_card_to_shed(nc, hand, card) != 0)
+		if (hand_add_card_to_shed(hand, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand shed\n");
 			return (1);
 		}
 	}
-	pile_display_render(nc, pile_display);
-	pdisplay_render(nc, pdisplay);
-	hand_render(nc, hand);
+	pile_display_render(pile_display);
+	pdisplay_render(pdisplay);
+	hand_render(hand);
 	notcurses_render(nc);
 	sleep(1);
 	// Then we give each player 5 cards in their hand
@@ -281,7 +281,7 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (pdisplay_add_card(nc, pdisplay, card) != 0)
+		if (pdisplay_add_card(pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay hand\n");
 			return (1);
@@ -292,17 +292,17 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			dprintf(STDERR_FILENO, "Failed to draw a card\n");
 			return (1);
 		}
-		if (hand_add_card(nc, hand, card) != 0)
+		if (hand_add_card(hand, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand\n");
 			return (1);
 		}
 	}
-	pdisplay_show_hand(nc, pdisplay);
-	hand_show_hand(nc, hand);
-	pile_display_render(nc, pile_display);
-	pdisplay_render(nc, pdisplay);
-	hand_render(nc, hand);
+	pdisplay_show_hand(pdisplay);
+	hand_show_hand(hand);
+	pile_display_render(pile_display);
+	pdisplay_render(pdisplay);
+	hand_render(hand);
 	notcurses_render(nc);
 	sleep(1);
 	/*
@@ -319,8 +319,8 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			hand_select_prev_card(hand);
 		else if (key == NCKEY_SPACE)
 		{
-			hand_toggle_display(nc, hand);
-			pdisplay_toggle_display(nc, pdisplay);
+			hand_toggle_display(hand);
+			pdisplay_toggle_display(pdisplay);
 		}
 		else if (key == NCKEY_ENTER || key == '\n' || key == '\r')
 		{
@@ -330,29 +330,29 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			{
 				dprintf(STDERR_FILENO, "Failed to pop card from hand\n");
 			}
-			pile_display_add_card_top(nc, pile_display, selected_card);
+			pile_display_add_card_top(pile_display, selected_card);
 			int	ok, swap;
 
 			if (pdisplay->card_count)
 				{
-				swap = pdisplay_show_hand(nc, pdisplay);
+				swap = pdisplay_show_hand(pdisplay);
 				ok = pdisplay_pop_card_index(pdisplay, 0, &selected_card);
 				}
 			else if (pdisplay->shed_count)
 				{
-				swap = pdisplay_show_shed(nc, pdisplay);
+				swap = pdisplay_show_shed(pdisplay);
 				ok = pdisplay_pop_card_index(pdisplay, pdisplay->shed_count % 6, &selected_card);
 				}
 			if (!swap)
-					pdisplay_toggle_display(nc, pdisplay);
+					pdisplay_toggle_display(pdisplay);
 			if (ok == 0)
-				pile_display_add_card_top(nc, pile_display, selected_card);
+				pile_display_add_card_top(pile_display, selected_card);
 		}
 		else
 			dprintf(STDERR_FILENO, "Pressed key: %d\n", key);
-		pile_display_render(nc, pile_display);
-		pdisplay_render(nc, pdisplay);
-		hand_render(nc, hand);
+		pile_display_render(pile_display);
+		pdisplay_render(pdisplay);
+		hand_render(hand);
 		notcurses_render(nc) ;
 	}
 	return (0);
@@ -440,19 +440,19 @@ int	main(void) // should take some args later
 	// 	return (1);
 	// }
 	// cleanup_client(nc, deck, hand);
-	// if (putting_it_all_together(nc, hand, deck) != 0)
-	// {
-	// 	dprintf(STDERR_FILENO, "Putting it all together test failed\n");
-	// 	// cleanup_client(nc, deck, hand);
-	// 	notcurses_stop(nc);
-	// 	return (1);
-	// }
-	if (test_deck_display_anon(nc))
+	if (putting_it_all_together(nc, hand, deck) != 0)
 	{
-		dprintf(STDERR_FILENO, "Problem occured testing the deck anon\n");
+		dprintf(STDERR_FILENO, "Putting it all together test failed\n");
+		// cleanup_client(nc, deck, hand);
 		notcurses_stop(nc);
 		return (1);
 	}
+	// if (test_deck_display_anon(nc))
+	// {
+	// 	dprintf(STDERR_FILENO, "Problem occured testing the deck anon\n");
+	// 	notcurses_stop(nc);
+	// 	return (1);
+	// }
 	notcurses_stop(nc);
 	return (0);
 }

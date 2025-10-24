@@ -10,11 +10,10 @@ int	_pdisplay_add_unknown_card_shed(
 }
 
 int	pdisplay_add_unknown_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 )
 {
-	return (pdisplay_add_card_shed(nc, pdisplay, DEFAULT_ANON_CARD));
+	return (pdisplay_add_card_shed(pdisplay, DEFAULT_ANON_CARD));
 }
 
 int	_pdisplay_remove_unknown_card_shed(
@@ -27,9 +26,8 @@ int	_pdisplay_remove_unknown_card_shed(
 }
 
 int	pdisplay_remove_unknown_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
 )
 {
-	return (pdisplay_remove_card_shed(nc, pdisplay, DEFAULT_ANON_CARD));
+	return (pdisplay_remove_card_shed(pdisplay, DEFAULT_ANON_CARD));
 }

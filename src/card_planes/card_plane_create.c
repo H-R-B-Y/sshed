@@ -27,11 +27,14 @@ void			destroy_card_plane_allocator(void)
 }
 
 struct s_card_plane	*card_plane_create(
+	struct ncplane *parent,
 	t_card_desc card_desc
 )
 {
 	struct s_card_plane	*card_plane;
 
+	if (!parent)
+		return (0);
 	if (card_plane_allocator)
 		card_plane = checkout_free_list(card_plane_allocator, sizeof(struct s_card_plane));
 	else
@@ -43,6 +46,7 @@ struct s_card_plane	*card_plane_create(
 	card_plane->card_desc = card_desc;
 	card_plane->plane = 0;
 	card_plane->plane_shown = 0;
+	card_plane->parent = parent;
 	return (card_plane);
 }
 

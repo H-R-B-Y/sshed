@@ -1,9 +1,9 @@
 
 #include "pdisplay.h"
 
-int pdisplay_show_hand(struct notcurses *nc, struct s_pdisplay *pdisplay)
+int pdisplay_show_hand(struct s_pdisplay *pdisplay)
 {
-	if (!pdisplay || !nc)
+	if (!pdisplay)
 		return (1);
 	if (pdisplay->status != PDISPLAY_HAND)
 	{
@@ -12,7 +12,7 @@ int pdisplay_show_hand(struct notcurses *nc, struct s_pdisplay *pdisplay)
 		{
 			struct s_card_plane *card_plane = pdisplay->shed[idx];
 			if (card_plane)
-				hide_card_plane(nc, pdisplay->plane, card_plane);
+				hide_card_plane(card_plane);
 		}
 		pdisplay->pdisplay_dirty = 1;
 		return (0);
@@ -20,9 +20,9 @@ int pdisplay_show_hand(struct notcurses *nc, struct s_pdisplay *pdisplay)
 	return (1);
 }
 
-int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay)
+int pdisplay_show_shed(struct s_pdisplay *pdisplay)
 {
-	if (!pdisplay || !nc)
+	if (!pdisplay)
 		return (1);
 	if (pdisplay->status != PDISPLAY_SHED)
 	{
@@ -30,7 +30,7 @@ int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay)
 		for (t_list *current = pdisplay->cards; current != NULL; current = current->next)
 		{
 			struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-			hide_card_plane(nc, pdisplay->plane, card_plane);
+			hide_card_plane(card_plane);
 		}
 		pdisplay->pdisplay_dirty = 1;
 		return (0);
@@ -38,16 +38,16 @@ int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay)
 	return (1);
 }
 
-int pdisplay_toggle_display(struct notcurses *nc, struct s_pdisplay *pdisplay)
+int pdisplay_toggle_display(struct s_pdisplay *pdisplay)
 {
-	if (!pdisplay || !nc)
+	if (!pdisplay)
 		return (1);
-	pdisplay_clear_screen(nc, pdisplay);
+	pdisplay_clear_screen(pdisplay);
 	if (pdisplay->status == PDISPLAY_HAND)
-		pdisplay_show_shed(nc, pdisplay);
+		pdisplay_show_shed(pdisplay);
 	else
-		pdisplay_show_hand(nc, pdisplay);
-	pdisplay_render(nc, pdisplay);
+		pdisplay_show_hand(pdisplay);
+	pdisplay_render(pdisplay);
 	return (0);
 }
 

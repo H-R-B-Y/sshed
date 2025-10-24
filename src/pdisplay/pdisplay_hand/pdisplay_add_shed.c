@@ -9,7 +9,7 @@ int	_pdisplay_add_card_shed(
 		return (1);
 	if (pdisplay->shed_count >= 6)
 		return (1); // Shed is full
-	pdisplay->shed[pdisplay->shed_count] = card_plane_create(card_desc);
+	pdisplay->shed[pdisplay->shed_count] = card_plane_create(pdisplay->plane, card_desc);
 	if (!pdisplay->shed[pdisplay->shed_count])
 		return (1);
 	if (pdisplay->shed_count < 3)
@@ -24,7 +24,6 @@ int	_pdisplay_add_card_shed(
 }
 
 int	pdisplay_add_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 )
@@ -32,7 +31,7 @@ int	pdisplay_add_card_shed(
 	int	ret;
 
 	ret = _pdisplay_add_card_shed(pdisplay, card_desc);
-	pdisplay_render(nc, pdisplay);
+	pdisplay_render(pdisplay);
 	return (ret);
 }
 
@@ -61,7 +60,6 @@ int	_pdisplay_remove_card_shed(
 }
 
 int	pdisplay_remove_card_shed(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 )
@@ -69,7 +67,7 @@ int	pdisplay_remove_card_shed(
 	int	ret;
 	
 	ret = _pdisplay_remove_card_shed(pdisplay, card_desc);
-	pdisplay_render(nc, pdisplay);
+	pdisplay_render(pdisplay);
 	return (ret);
 }
 

@@ -38,8 +38,8 @@ void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc)
 	return ;
 }
 
-void	hand_remove_card_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc)
+void	hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc)
 {
 	_hand_remove_card_shed(hand, card_desc);
-	hand_render(nc, hand);
+	hand_render(hand);
 }

@@ -2,15 +2,16 @@
 #include "card_plane.h"
 
 int	show_card_plane(
-	struct notcurses *nc,
-	struct ncplane *parent,
 	struct s_card_plane *card_plane
 )
 {
-	if (!card_plane || !parent)
+	struct notcurses	*nc;
+
+	if (!card_plane || !card_plane->parent)
 		return (1);
 	if (card_plane->plane_shown)
 		return (0); // already shown
+	nc = ncplane_notcurses(card_plane->parent);
 	if (card_plane->orientation != card_plane->last_orientation)
 	{
 		if (card_plane->plane)
@@ -22,7 +23,7 @@ int	show_card_plane(
 	}
 	if (!card_plane->plane)
 	{
-		card_plane->plane = ncplane_create(parent,
+		card_plane->plane = ncplane_create(card_plane->parent,
 			&(struct ncplane_options){
 				.rows = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? CARD_H_HEIGHT : CARD_HEIGHT,
 				.cols = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? CARD_H_WIDTH : CARD_WIDTH,
@@ -57,14 +58,10 @@ int	show_card_plane(
 }
 
 int	hide_card_plane(
-	struct notcurses *nc,
-	struct ncplane *parent,
 	struct s_card_plane *card_plane
 )
 {
-	(void)nc;
-	(void)parent;
-	if (!parent || !card_plane || !card_plane->plane)
+	if (!card_plane || !card_plane->plane)
 		return (1);
 	if (!card_plane->plane_shown)
 		return (0); // already hidden
@@ -76,18 +73,16 @@ int	hide_card_plane(
 }
 
 int	redisplay_card(
-	struct notcurses *nc,
-	struct ncplane *parent,
 	struct s_card_plane *card_plane
 )
 {
-	int	ret;
+	int						ret;
 	
-	if (!card_plane || !parent)
+	if (!card_plane)
 		return (1);
 	if (card_plane->plane_shown)
-		ret = hide_card_plane(nc, parent, card_plane) || show_card_plane(nc, parent, card_plane);
+		ret = hide_card_plane(card_plane) || show_card_plane(card_plane);
 	else
-		ret = show_card_plane(nc, parent, card_plane);
+		ret = show_card_plane(card_plane);
 	return (ret);
 }

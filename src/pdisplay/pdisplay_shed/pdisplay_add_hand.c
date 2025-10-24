@@ -11,7 +11,7 @@ int	_pdisplay_add_card(
 		return (1);
 	if (pdisplay->card_count >= 54) // TODO: figure out the best limit for the number of cards on the display
 		return (1); // Display is full
-	card_plane = card_plane_create(card_desc);
+	card_plane = card_plane_create(pdisplay->plane, card_desc);
 	if (!card_plane)
 		return (1);
 	card_plane->is_face_down = 1;
@@ -35,7 +35,6 @@ int	_pdisplay_add_card(
 }
 
 int	pdisplay_add_card(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 )
@@ -43,7 +42,7 @@ int	pdisplay_add_card(
 	int	ret;
 
 	ret = _pdisplay_add_card(pdisplay, card_desc);
-	pdisplay_render(nc, pdisplay);
+	pdisplay_render(pdisplay);
 	return (ret);
 }
 
@@ -80,7 +79,6 @@ int	_pdisplay_remove_card(
 }
 
 int	pdisplay_remove_card(
-	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
 	t_card_desc card_desc
 )
@@ -88,6 +86,6 @@ int	pdisplay_remove_card(
 	int	ret;
 
 	ret = _pdisplay_remove_card(pdisplay, card_desc);
-	pdisplay_render(nc, pdisplay);
+	pdisplay_render(pdisplay);
 	return (ret);
 }

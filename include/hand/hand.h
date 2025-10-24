@@ -63,10 +63,10 @@ Functions for adding to the hand.
 Those marked with an underscore do not re-render the hand after modification.
 */
 int		_hand_add_card(struct s_hand *hand, t_card_desc card_desc);
-int		hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
+int		hand_add_card(struct s_hand *hand, t_card_desc card_desc);
 
 void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc);
-void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
+void	hand_remove_card(struct s_hand *hand, t_card_desc card_desc);
 
 /*
 Functions for adding to the shed.
@@ -74,17 +74,17 @@ Those marked with an underscore do not re-render the hand after modification.
 */
 int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc card_desc);
 // First 3 cards are face down, last 3 are face up
-int		hand_add_card_to_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
+int		hand_add_card_to_shed(struct s_hand *hand, t_card_desc card_desc);
 
 void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc);
-void	hand_remove_card_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
+void	hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc);
 
-void	hand_render(struct notcurses *nc, struct s_hand *hand);
-void	hand_clear_screen(struct notcurses *nc, struct s_hand *hand);
+void	hand_render(struct s_hand *hand);
+void	hand_clear_screen(struct s_hand *hand);
 
-void	hand_show_hand(struct notcurses *nc, struct s_hand *hand);
-void	hand_show_shed(struct notcurses *nc, struct s_hand *hand);
-void	hand_toggle_display(struct notcurses *nc, struct s_hand *hand);
+void	hand_show_hand(struct s_hand *hand);
+void	hand_show_shed(struct s_hand *hand);
+void	hand_toggle_display(struct s_hand *hand);
 
 /*
 Selecting cards
@@ -107,7 +107,6 @@ struct s_deck;
 struct notcurses;
 
 int	hand_return_to_deck(
-	struct notcurses *nc,
 	struct s_hand *hand,
 	struct s_deck *deck
 );

@@ -5,11 +5,10 @@
 # define min(a,b) (((a)<(b))?(a):(b))
 
 int		pile_display_render(
-	struct notcurses *nc,
 	struct s_pile_display *pile_display
 )
 {
-	if (!pile_display || !nc)
+	if (!pile_display)
 		return (1);
 	if (!pile_display->is_visible)
 		return (0);
@@ -18,6 +17,7 @@ int		pile_display_render(
 	/*
 	So we want to render the cards up to max_stack or card count whichever is smaller.
 	*/
+	// nc = ncplane_notcurses_const(pile_display->plane);
 	unsigned int idx = 0;
 	struct s_card_plane *last = NULL;
 	for (struct s_cdll_node *current = pile_display->cards->head;
@@ -28,7 +28,7 @@ int		pile_display_render(
 		if (card_plane)
 		{
 			if (!card_plane->plane_shown)
-				redisplay_card(nc, pile_display->plane, card_plane);
+				redisplay_card(card_plane);
 			if (last)
 				ncplane_move_below(card_plane->plane, last->plane);
 			ncplane_move_yx(card_plane->plane,
