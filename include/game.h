@@ -25,6 +25,8 @@
 // Status: ongoing development
 #include "pile_display.h"
 
+#include "deck_display_anon.h"
+
 
 // SUBJECT TO CHANGE
 int	init_client(

@@ -50,6 +50,10 @@ SRCS			:= \
 				src/pile_display/pile_display_add.c \
 				src/hand/hand_get_selected.c \
 				src/pdisplay/pdisplay_pop_card.c \
+				src/deck_anon/deck_anon_add.c \
+				src/deck_anon/deck_anon_move.c \
+				src/deck_anon/deck_anon_render.c \
+				src/deck_anon/deck_anon.c \
 				\
 
 
