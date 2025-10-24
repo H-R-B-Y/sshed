@@ -1,6 +1,9 @@
 # todo
 
 
+
+## API
+
 - Deck display (re-build the logic, dont worry about anon cards);
 
 
@@ -29,6 +32,14 @@ because we never see the cards in the hand anyway.
 - cleanup the api
 
 - Figure out a better way to spread the cards
+
+- Compile to archive (perhaps we can include the cards as well)
+
+## game
+
+- Min terminal size (should be an overlay that pauses the game)
+
+- Figure it out
 
 # done
 

@@ -25,6 +25,7 @@
 // Status: ongoing development
 #include "pile_display.h"
 
+#include "deck_display.h"
 #include "deck_display_anon.h"
 
 

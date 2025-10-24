@@ -388,6 +388,56 @@ int	test_deck_display_anon(struct notcurses *nc)
 	return (0);
 }
 
+int	test_deck_display(
+	struct notcurses *nc,
+	struct s_deck *deck,
+	struct s_hand *hand
+)
+{
+	struct s_deck_display *deck_display;
+
+	deck_display_create(&deck_display, notcurses_stdplane(nc), deck, 0, 0);
+	deck_display_render(deck_display);
+	hand_render(hand);
+	notcurses_render(nc);
+	for (int i = 0; i < 10; i++)
+	{
+		struct s_card_desc	card;
+		if (deck_display_draw_top_card(deck_display, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card from the deck display\n");
+			return (1);
+		}
+		if (hand_add_card(hand, card))
+		{
+			dprintf(STDERR_FILENO, "Failed to add a card to the hand\n");
+			return (1);
+		}
+		deck_display_render(deck_display);
+		hand_render(hand);
+		notcurses_render(nc);
+		notcurses_get_blocking(nc, NULL);
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		struct s_card_desc	card;
+		hand->card_selected[0] = 0;
+		if (hand_pop_selected_card(hand, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to pop card from the hand\n");
+			return (1);
+		}
+		deck_return_card(deck, card);
+		deck_display->is_dirty = 1;
+		deck_display_render(deck_display);
+		hand_render(hand);
+		notcurses_render(nc);
+		notcurses_get_blocking(nc, NULL);
+	}
+	deck_display_destroy(deck_display);
+	return (0);
+}
+
 int	main(void) // should take some args later
 {
 	// Need to also initialise the client connection
@@ -440,13 +490,19 @@ int	main(void) // should take some args later
 	// 	return (1);
 	// }
 	// cleanup_client(nc, deck, hand);
-	if (putting_it_all_together(nc, hand, deck) != 0)
+	if (test_deck_display(nc, deck, hand))
 	{
-		dprintf(STDERR_FILENO, "Putting it all together test failed\n");
-		// cleanup_client(nc, deck, hand);
+		dprintf(STDERR_FILENO, "Failed test deck display\n");
 		notcurses_stop(nc);
 		return (1);
 	}
+	// if (putting_it_all_together(nc, hand, deck) != 0)
+	// {
+	// 	dprintf(STDERR_FILENO, "Putting it all together test failed\n");
+	// 	// cleanup_client(nc, deck, hand);
+	// 	notcurses_stop(nc);
+	// 	return (1);
+	// }
 	// if (test_deck_display_anon(nc))
 	// {
 	// 	dprintf(STDERR_FILENO, "Problem occured testing the deck anon\n");

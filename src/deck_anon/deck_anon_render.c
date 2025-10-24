@@ -19,7 +19,8 @@ int		deck_anon_render(
 		.flags = NCVISUAL_OPTION_CHILDPLANE,
 		.scaling = NCSCALE_NONE,
 	};
-	if (!(deck->visual = ncvisual_blit(nc, cardbacks[0], &vopts)))
+	if (!deck->visual
+		&& !(deck->visual = ncvisual_blit(nc, cardbacks[0], &vopts)))
 		return (1);
 	if (ncplane_printf_yx(deck->plane, 0, CARD_WIDTH + 1,
 		"%u", deck->card_count
@@ -37,7 +38,10 @@ int		deck_anon_clear_screen(
 	if (!deck)
 		return (1);
 	if (deck->visual)
-		ncplane_erase(deck->visual);
+	{
+		ncplane_destroy(deck->visual);
+		deck->visual = 0;
+	}
 	if (deck->plane)
 		ncplane_erase(deck->plane);
 	return (0);

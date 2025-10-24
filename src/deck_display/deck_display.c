@@ -18,15 +18,14 @@ int			deck_display_create(
 	new_deck_display->plane = ncplane_create(parent, &(struct ncplane_options){
 		.y = x,
 		.x = y,
-		.rows = CARD_HEIGHT + 2,
-		.cols = CARD_WIDTH + 2,
+		.rows = CARD_HEIGHT,
+		.cols = CARD_WIDTH + 5,
 		.flags = 0,
 	});
 	if (!new_deck_display->plane)
 		return (free(new_deck_display), 1);
 	new_deck_display->deck = deck;
-	new_deck_display->is_visible = 0;
-	new_deck_display->is_dirty = 0;
+	new_deck_display->is_dirty = 1;
 	new_deck_display->x = x;
 	new_deck_display->y = y;
 	(*deck_display) = new_deck_display;

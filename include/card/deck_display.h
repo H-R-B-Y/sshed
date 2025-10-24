@@ -2,17 +2,23 @@
 #ifndef DECK_DISPLAY_H
 # define DECK_DISPLAY_H
 
-# include <notcurses/notcurses.h>
-# include "card_plane.h"
 # include "deck.h"
+# include "card_plane.h"
+# include <notcurses/notcurses.h>
+
+struct s_pdisplay;
+struct s_hand;
 
 struct s_deck_display
 {
+	struct ncplane	*plane;
+	struct ncplane	*visual;
 	unsigned int	x;
 	unsigned int	y;
-	struct ncplane	*plane;
+	
 	struct s_deck	*deck;
-	int				is_visible;
+	
+	int				hidden;
 	t_u8			is_dirty;
 };
 
@@ -29,45 +35,67 @@ void		deck_display_destroy(
 );
 
 int			deck_display_render(
-	struct notcurses *nc,
 	struct s_deck_display *deck_display
 );
 
 int			deck_display_hide(
-	struct notcurses *nc,
 	struct s_deck_display *deck_display
 );
 
 int			deck_display_show(
-	struct notcurses *nc,
+	struct s_deck_display *deck_display
+);
+
+int			deck_display_clear_screen(
 	struct s_deck_display *deck_display
 );
 
 int			deck_display_toggle_visibility(
-	struct notcurses *nc,
 	struct s_deck_display *deck_display
 );
 
-int		deck_display_move(
+int			deck_display_move(
 	struct s_deck_display *deck_display,
 	unsigned int new_x,
 	unsigned int new_y
 );
 
-t_card_desc	*deck_display_peek_top_card(
-	struct s_deck_display *deck_display
+int	deck_display_draw_top_card(
+	struct s_deck_display *deck_display,
+	struct s_card_desc	*card
 );
 
-t_card_desc	*deck_display_draw_top_card(
-	struct s_deck_display *deck_display
+int	deck_display_peek_top_card(
+	struct s_deck_display *deck_display,
+	struct s_card_desc *card
 );
 
 int			return_card_to_deck_display(
 	struct s_deck_display *deck_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
-inline int	deck_display_is_empty(
+/**
+ * @returns the number of cards drawn to hand
+ */
+int	deck_display_draw_to_hand(
+	struct s_deck_display *deck_display,
+	int is_pdisplay,
+	void *hand,
+	unsigned int count
+);
+
+/**
+ * @returns the number os cards drawn to shed
+ */
+int deck_display_draw_to_shed(
+	struct s_deck_display *deck_display,
+	int is_pdisplay,
+	void *shed,
+	unsigned int count
+);
+
+static inline int	deck_display_is_empty(
 	struct s_deck_display *deck_display
 )
 {
@@ -76,7 +104,7 @@ inline int	deck_display_is_empty(
 	return (deck_display->deck->remaining == 0);
 }
 
-inline unsigned int	deck_display_remaining_cards(
+static inline unsigned int	deck_display_remaining_cards(
 	struct s_deck_display *deck_display
 )
 {

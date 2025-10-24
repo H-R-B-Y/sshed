@@ -54,6 +54,10 @@ SRCS			:= \
 				src/deck_anon/deck_anon_move.c \
 				src/deck_anon/deck_anon_render.c \
 				src/deck_anon/deck_anon.c \
+				src/deck_display/deck_display_draw.c \
+				src/deck_display/deck_display_render.c \
+				src/deck_display/deck_display_show.c \
+				src/deck_display/deck_display.c \
 				\
 
 
