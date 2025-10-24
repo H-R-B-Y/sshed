@@ -1,8 +1,8 @@
 
 #include "deck_display_anon.h"
 
-int		deck_display_anon_inc(
-		struct s_deck_display_anon *deck
+int		deck_anon_inc(
+		struct s_deck_anon *deck
 )
 {
 	if (!deck)
@@ -12,8 +12,8 @@ int		deck_display_anon_inc(
 	return (0);
 }
 
-int		deck_display_anon_dec(
-		struct s_deck_display_anon *deck
+int		deck_anon_dec(
+		struct s_deck_anon *deck
 )
 {
 	if (!deck)
@@ -25,8 +25,8 @@ int		deck_display_anon_dec(
 	return (0);
 }
 
-int		deck_display_anon_add(
-		struct s_deck_display_anon *deck,
+int		deck_anon_add(
+		struct s_deck_anon *deck,
 		unsigned int add
 )
 {
@@ -37,8 +37,8 @@ int		deck_display_anon_add(
 	return (0);
 }
 
-int		deck_display_anon_sub(
-		struct s_deck_display_anon *deck,
+int		deck_anon_sub(
+		struct s_deck_anon *deck,
 		unsigned int sub
 )
 {

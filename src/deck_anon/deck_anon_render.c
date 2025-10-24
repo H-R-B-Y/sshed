@@ -1,16 +1,16 @@
 
 #include "deck_display_anon.h"
 
-int		deck_display_anon_render(
+int		deck_anon_render(
 		struct notcurses *nc,
-		struct s_deck_display_anon *deck
+		struct s_deck_anon *deck
 )
 {
 	if (!deck)
 		return (1);
 	if (!deck->is_dirty)
 		return (0);
-	deck_display_anon_clear_screen(deck);
+	deck_anon_clear_screen(deck);
 	if (deck->hidden)
 		return (deck->is_dirty = 0, 0);
 	struct ncvisual_options	vopts = {
@@ -24,14 +24,14 @@ int		deck_display_anon_render(
 	if (ncplane_printf_yx(deck->plane, 0, CARD_WIDTH + 1,
 		"%u", deck->card_count
 		) == 0)
-		return (deck_display_anon_clear_screen(deck), 1);
+		return (deck_anon_clear_screen(deck), 1);
 	deck->is_dirty = 0;
 	return (0);
 }
 
 
-int		deck_display_anon_clear_screen(
-		struct s_deck_display_anon *deck
+int		deck_anon_clear_screen(
+		struct s_deck_anon *deck
 )
 {
 	if (!deck)

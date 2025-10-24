@@ -2,19 +2,19 @@
 
 #include "deck_display_anon.h"
 
-int		deck_display_anon_anon_init(
-		struct s_deck_display_anon **deck,
+int		deck_anon_init(
+		struct s_deck_anon **deck,
 		struct ncplane *parent,
 		unsigned int x,
 		unsigned int y,
 		unsigned int card_count
 )
 {
-	struct s_deck_display_anon *new_deck = {0};
+	struct s_deck_anon *new_deck = {0};
 
 	if (!deck || !parent)
 		return (1);
-	new_deck = ft_calloc(1, sizeof(struct s_deck_display_anon));
+	new_deck = ft_calloc(1, sizeof(struct s_deck_anon));
 	if (!new_deck)
 		return (1);
 	new_deck->parent = parent;
@@ -23,7 +23,7 @@ int		deck_display_anon_anon_init(
 	new_deck->y = y;
 	new_deck->card_count = card_count;
 	struct ncplane_options popts = {
-		.name = "deck_display_anon",
+		.name = "deck_anon",
 		.x = x,
 		.y = y,
 		.cols = CARD_WIDTH + 5,
@@ -36,8 +36,8 @@ int		deck_display_anon_anon_init(
 	return (0);
 }
 
-void	deck_display_anon_destroy(
-		struct s_deck_display_anon *deck
+void	deck_anon_destroy(
+		struct s_deck_anon *deck
 )
 {
 	if (!deck)

@@ -1,8 +1,8 @@
 
 #include "deck_display_anon.h"
 
-int		deck_display_anon_move(
-		struct s_deck_display_anon *deck,
+int		deck_anon_move(
+		struct s_deck_anon *deck,
 		unsigned int x,
 		unsigned int y
 )

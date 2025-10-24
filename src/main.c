@@ -360,31 +360,31 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 
 int	test_deck_display_anon(struct notcurses *nc)
 {
-	struct s_deck_display_anon	*d;
+	struct s_deck_anon	*d;
 
-	if (deck_display_anon_anon_init(&d, notcurses_stdplane(nc), 0, 0, 0))
+	if (deck_anon_init(&d, notcurses_stdplane(nc), 0, 0, 0))
 	{
 		dprintf(STDERR_FILENO, "Failed to init anon deck\n");
 		return (1);
 	}
-	deck_display_anon_render(nc, d);
+	deck_anon_render(nc, d);
 	notcurses_render(nc);
 	notcurses_get_blocking(nc, NULL);
 	for (int i = 0; i < 6; i++)
-		deck_display_anon_inc(d);
-	deck_display_anon_render(nc, d);
+		deck_anon_inc(d);
+	deck_anon_render(nc, d);
 	notcurses_render(nc);
 	notcurses_get_blocking(nc, NULL);
 	for (int i = 0; i < 3; i++)
-		deck_display_anon_dec(d);
-	deck_display_anon_render(nc, d);
+		deck_anon_dec(d);
+	deck_anon_render(nc, d);
 	notcurses_render(nc);
 	notcurses_get_blocking(nc, NULL);
-	deck_display_anon_sub(d, 100);
-	deck_display_anon_render(nc, d);
+	deck_anon_sub(d, 100);
+	deck_anon_render(nc, d);
 	notcurses_render(nc);
 	notcurses_get_blocking(nc, NULL);
-	deck_display_anon_destroy(d);
+	deck_anon_destroy(d);
 	return (0);
 }
 
