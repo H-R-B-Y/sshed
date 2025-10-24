@@ -8,14 +8,16 @@ int pdisplay_show_hand(struct notcurses *nc, struct s_pdisplay *pdisplay)
 	if (pdisplay->status != PDISPLAY_HAND)
 	{
 		pdisplay->status = PDISPLAY_HAND;
-		for (unsigned int idx = 0; idx < pdisplay->shed_count; idx++)
+		for (unsigned int idx = 0; idx < 6; idx++)
 		{
 			struct s_card_plane *card_plane = pdisplay->shed[idx];
-			hide_card_plane(nc, pdisplay->plane, card_plane);
+			if (card_plane)
+				hide_card_plane(nc, pdisplay->plane, card_plane);
 		}
 		pdisplay->pdisplay_dirty = 1;
+		return (0);
 	}
-	return (0);
+	return (1);
 }
 
 int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay)
@@ -31,8 +33,9 @@ int pdisplay_show_shed(struct notcurses *nc, struct s_pdisplay *pdisplay)
 			hide_card_plane(nc, pdisplay->plane, card_plane);
 		}
 		pdisplay->pdisplay_dirty = 1;
+		return (0);
 	}
-	return (0);
+	return (1);
 }
 
 int pdisplay_toggle_display(struct notcurses *nc, struct s_pdisplay *pdisplay)

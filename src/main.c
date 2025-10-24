@@ -10,10 +10,10 @@ int	test_adding_cards(struct notcurses *nc, struct s_hand *hand, struct s_deck *
 {
 	for (int i = 0; i < 5; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
+		t_card_desc	card;
+		if (deck_draw_card(deck, &card))
 			break ;
-		if (hand_add_card(nc, hand, card_desc) != 0)
+		if (hand_add_card(nc, hand, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand\n");
 			return (1);
@@ -39,12 +39,11 @@ int	test_adding_cards(struct notcurses *nc, struct s_hand *hand, struct s_deck *
 
 int	testing_removing_cards(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck)
 {
-	struct s_card_desc *card_desc[4];
+	struct s_card_desc card_desc[4];
 	
 	for (int i = 0; i < 4; i++)
 	{
-		card_desc[i] = deck_draw_card(deck);
-		if (!card_desc[i])
+		if (deck_draw_card(deck, (&card_desc[0])))
 		{
 			dprintf(STDERR_FILENO, "Failed to draw card from deck\n");
 			return (1);
@@ -60,14 +59,12 @@ int	testing_removing_cards(struct notcurses *nc, struct s_hand *hand, struct s_d
 	}
 	hand_render(nc, hand);
 	notcurses_get_blocking(nc, NULL);
-	// Now remove two cards
 	hand_remove_card(nc, hand, card_desc[1]);
 	deck_return_card(deck, card_desc[1]);
 	hand_remove_card(nc, hand, card_desc[3]);
 	deck_return_card(deck, card_desc[3]);
 	hand_render(nc, hand);
 	notcurses_get_blocking(nc, NULL);
-	// Validate hand has 2 cards left
 	if (hand->card_count != 2)
 	{
 		dprintf(STDERR_FILENO, "Hand does not have 2 cards after removing 2 cards\n");
@@ -91,10 +88,13 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 	pdisplay_create(&pdisplay, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_TOP);
 	for (int i = 0; i < 5; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card(nc, pdisplay, card_desc) != 0)
+		struct s_card_desc card;
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Filed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card(nc, pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n");
 			return (1);
@@ -106,10 +106,13 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 	pdisplay_create(&pdisplay2, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_LEFT);
 	for (int i = 0; i < 3; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card(nc, pdisplay2, card_desc) != 0)
+		t_card_desc card;
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card(nc, pdisplay2, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n");
 			return (1);
@@ -121,10 +124,13 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 	pdisplay_create(&pdisplay3, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_RIGHT);
 	for (int i = 0; i < 3; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card(nc, pdisplay3, card_desc) != 0)
+		t_card_desc	card;
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card(nc, pdisplay3, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n");
 			return (1);
@@ -138,18 +144,23 @@ int	test_pdisplay(struct notcurses *nc, struct s_hand *hand, struct s_deck *deck
 	*/
 	for (int i = 0; i < 4; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card_shed(nc, pdisplay, card_desc) != 0)
+		t_card_desc	card;
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card_shed(nc, pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay shed\n");
 			return (1);
 		}
-		card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card_shed(nc, pdisplay2, card_desc) != 0)
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card_shed(nc, pdisplay2, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay shed\n");
 			return (1);
@@ -186,10 +197,14 @@ int test_pile_display(struct notcurses *nc, struct s_hand *hand, struct s_deck *
 	// notcurses_get_blocking(nc, NULL);
 	for (int i = 0; i < 10; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pile_display_add_card_top(nc, pile_display, card_desc) != 0)
+		t_card_desc	card;
+
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pile_display_add_card_top(nc, pile_display, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pile display\n");
 			return (1);
@@ -230,18 +245,23 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 	hand_show_shed(nc, hand);
 	for (int i = 0; i < 6; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card_shed(nc, pdisplay, card_desc) != 0)
+		t_card_desc	card;
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card_shed(nc, pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay shed\n");
 			return (1);
 		}
-		card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (hand_add_card_to_shed(nc, hand, card_desc) != 0)
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (hand_add_card_to_shed(nc, hand, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand shed\n");
 			return (1);
@@ -255,18 +275,24 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 	// Then we give each player 5 cards in their hand
 	for (int i = 0; i < 5; i++)
 	{
-		t_card_desc	*card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (pdisplay_add_card(nc, pdisplay, card_desc) != 0)
+		t_card_desc	card;
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (pdisplay_add_card(nc, pdisplay, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to pdisplay hand\n");
 			return (1);
 		}
-		card_desc = deck_draw_card(deck);
-		if (!card_desc)
-			break ;
-		if (hand_add_card(nc, hand, card_desc) != 0)
+
+		if (deck_draw_card(deck, &card))
+		{
+			dprintf(STDERR_FILENO, "Failed to draw a card\n");
+			return (1);
+		}
+		if (hand_add_card(nc, hand, card) != 0)
 		{
 			dprintf(STDERR_FILENO, "Failed to add card to hand\n");
 			return (1);
@@ -298,11 +324,29 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 		}
 		else if (key == NCKEY_ENTER || key == '\n' || key == '\r')
 		{
-			struct s_card_desc *selected_card = hand_pop_selected_card(hand);
-			if (selected_card)
+			t_card_desc	selected_card;
+			
+			if (hand_pop_selected_card(hand, &selected_card))
 			{
-				pile_display_add_card_top(nc, pile_display, selected_card);
+				dprintf(STDERR_FILENO, "Failed to pop card from hand\n");
 			}
+			pile_display_add_card_top(nc, pile_display, selected_card);
+			int	ok, swap;
+
+			if (pdisplay->card_count)
+				{
+				swap = pdisplay_show_hand(nc, pdisplay);
+				ok = pdisplay_pop_card_index(pdisplay, 0, &selected_card);
+				}
+			else if (pdisplay->shed_count)
+				{
+				swap = pdisplay_show_shed(nc, pdisplay);
+				ok = pdisplay_pop_card_index(pdisplay, pdisplay->shed_count % 6, &selected_card);
+				}
+			if (!swap)
+					pdisplay_toggle_display(nc, pdisplay);
+			if (ok == 0)
+				pile_display_add_card_top(nc, pile_display, selected_card);
 		}
 		else
 			dprintf(STDERR_FILENO, "Pressed key: %d\n", key);

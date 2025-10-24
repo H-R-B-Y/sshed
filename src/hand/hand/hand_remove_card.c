@@ -1,11 +1,11 @@
 
 #include "hand.h"
 
-void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
+void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 {
 	int move_sel;
 
-	if (!hand || !card_desc)
+	if (!hand)
 		return ;
 	if (hand->card_count == 0)
 		return ;
@@ -16,7 +16,7 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 	for (t_list *current = hand->cards; current != NULL; current = current->next)
 	{
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-		if (card_plane && card_plane->card_desc == card_desc)
+		if (card_plane && card_is_equal(card_plane->card_desc, card_desc))
 		{
 			t_list *to_remove = current;
 			if (to_remove == hand->cards)
@@ -33,6 +33,11 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 			if (move_sel == -1)
 				hand->card_selected[0] = -1;
 			hand->card_count--;
+			if (hand->card_count == 0)
+			{
+				hand->selected_card_plane = NULL;
+				hand->card_selected[0] = -1;
+			}
 			hand->hand_dirty = 1;
 			return;
 		}
@@ -41,7 +46,7 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc)
 	return ;
 }
 
-void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc)
+void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc)
 {
 	(void)nc;
 	_hand_remove_card(hand, card_desc);

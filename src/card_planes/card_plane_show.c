@@ -46,7 +46,7 @@ int	show_card_plane(
 		visual = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? cardbacks[2] : cardbacks[0];
 	else
 	{
-		card = hm_get_value(&cardmap, card_plane->card_desc);
+		card = hm_get_value(&cardmap, &card_plane->card_desc);
 		if (!card || !card->graphic)
 			return (1);
 		visual = (card_plane->orientation == CARD_ORIENTATION_HORIZONTAL) ? card->graphic_h : card->graphic;

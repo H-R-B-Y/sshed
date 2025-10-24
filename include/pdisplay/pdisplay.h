@@ -104,46 +104,46 @@ these are the generics for a local game where we know the actual cards
 
 int	_pdisplay_add_card(
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	pdisplay_add_card(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	_pdisplay_remove_card(
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	pdisplay_remove_card(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	_pdisplay_add_card_shed(
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	pdisplay_add_card_shed(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	_pdisplay_remove_card_shed(
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int	pdisplay_remove_card_shed(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 /*
@@ -184,6 +184,17 @@ int	_pdisplay_remove_unknown_card_shed(
 int	pdisplay_remove_unknown_card_shed(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay
+);
+
+int	pdisplay_pop_card_desc(
+	struct s_pdisplay	*pdisplay,
+	struct s_card_desc	card_desc
+);
+
+int	pdisplay_pop_card_index(
+	struct s_pdisplay	*pdisplay,
+	int					index,
+	struct s_card_desc	*popped_card
 );
 
 #endif

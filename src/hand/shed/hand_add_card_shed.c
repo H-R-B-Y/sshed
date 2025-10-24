@@ -2,12 +2,12 @@
 #include "hand.h"
 
 
-int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc *card_desc)
+int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc card_desc)
 {
 	struct s_card_plane	*card_plane;
 	int					move_sel;
 
-	if (!hand || !card_desc)
+	if (!hand)
 		return (1);
 	if (hand->shed_count >= 6)
 		return (1); // Shed is full
@@ -28,7 +28,7 @@ int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc *card_desc)
 	return (0);
 }
 
-int		hand_add_card_to_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc)
+int		hand_add_card_to_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc)
 {
 	int	ret;
 	ret = _hand_add_card_to_shed(hand, card_desc);

@@ -8,10 +8,11 @@ void	hand_show_hand(struct notcurses *nc, struct s_hand *hand)
 	if (hand->status != HAND_DISPLAY_HAND)
 	{
 		hand->status = HAND_DISPLAY_HAND;
-		for (unsigned int idx = 0; idx < hand->shed_count; idx++)
+		for (unsigned int idx = 0; idx < 6; idx++)
 		{
 			struct s_card_plane *card_plane = hand->shed[idx];
-			hide_card_plane(nc, hand->hand_plane, card_plane);
+			if (card_plane)
+				hide_card_plane(nc, hand->hand_plane, card_plane);
 		}
 		hand->hand_dirty = 1;
 	}

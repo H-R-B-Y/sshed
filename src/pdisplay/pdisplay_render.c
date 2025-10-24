@@ -82,7 +82,7 @@ int _pdisplay_render_left_right(
 	while (current)
 	{
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-		if (card_plane && card_plane->card_desc)
+		if (card_plane)
 		{
 			redisplay_card(nc, pdisplay->plane, card_plane);
 			ncplane_move_yx(card_plane->plane,
@@ -111,7 +111,7 @@ int _pdisplay_render_top(
 	while (current)
 	{
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-		if (card_plane && card_plane->card_desc)
+		if (card_plane)
 		{
 			redisplay_card(nc, pdisplay->plane, card_plane);
 			ncplane_move_yx(card_plane->plane,

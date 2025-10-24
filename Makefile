@@ -49,6 +49,7 @@ SRCS			:= \
 				src/pile_display/pile_display_clear.c \
 				src/pile_display/pile_display_add.c \
 				src/hand/hand_get_selected.c \
+				src/pdisplay/pdisplay_pop_card.c \
 				\
 
 

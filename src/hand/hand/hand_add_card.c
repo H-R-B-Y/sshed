@@ -1,13 +1,13 @@
 
 #include "hand.h"
 
-int	_hand_add_card(struct s_hand *hand, t_card_desc *card_desc)
+int	_hand_add_card(struct s_hand *hand, t_card_desc card_desc)
 {
 	struct s_card_plane	*card_plane;
 	t_list				*card_list_node;
 	int					move_sel;
 
-	if (!hand || !card_desc)
+	if (!hand)
 		return (1);
 	if (hand->card_count == 0)
 		move_sel = 1;
@@ -32,7 +32,7 @@ int	_hand_add_card(struct s_hand *hand, t_card_desc *card_desc)
 	return (0);
 }
 
-int	hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc)
+int	hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc)
 {
 	int	ret;
 	(void)nc;

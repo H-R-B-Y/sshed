@@ -53,7 +53,7 @@ void	render_hand_cards(struct notcurses *nc, struct s_hand *hand)
 	while (current)
 	{
 		card_plane = (struct s_card_plane *)current->content;
-		if (card_plane && card_plane->card_desc)
+		if (card_plane)
 		{
 			redisplay_card(nc, hand->hand_plane, card_plane);
 			ncplane_move_yx(card_plane->plane,

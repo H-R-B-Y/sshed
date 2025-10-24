@@ -37,6 +37,7 @@ struct s_hand
 	enum e_hand_status	status;
 	enum e_hand_status	last_status;
 	int					hand_dirty;
+
 	t_free_list			allocator; // for card planes
 	t_list				*cards; // contains struct s_card_plane
 	int					card_count;
@@ -61,22 +62,22 @@ void	hand_destroy(struct s_hand *hand);
 Functions for adding to the hand.
 Those marked with an underscore do not re-render the hand after modification.
 */
-int		_hand_add_card(struct s_hand *hand, t_card_desc *card_desc);
-int		hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc);
+int		_hand_add_card(struct s_hand *hand, t_card_desc card_desc);
+int		hand_add_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
 
-void	_hand_remove_card(struct s_hand *hand, t_card_desc *card_desc);
-void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc);
+void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc);
+void	hand_remove_card(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
 
 /*
 Functions for adding to the shed.
 Those marked with an underscore do not re-render the hand after modification.
 */
-int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc *card_desc);
+int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc card_desc);
 // First 3 cards are face down, last 3 are face up
-int		hand_add_card_to_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc);
+int		hand_add_card_to_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
 
-void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc *card_desc);
-void	hand_remove_card_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc *card_desc);
+void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc);
+void	hand_remove_card_shed(struct notcurses *nc, struct s_hand *hand, t_card_desc card_desc);
 
 void	hand_render(struct notcurses *nc, struct s_hand *hand);
 void	hand_clear_screen(struct notcurses *nc, struct s_hand *hand);
@@ -94,10 +95,10 @@ struct s_card_plane	*_hand_get_selected_card_plane(struct s_hand *hand);
 int					hand_select_next_card(struct s_hand *hand);
 int					hand_select_prev_card(struct s_hand *hand);
 
-struct s_card_desc	*hand_pop_selected_card(struct s_hand *hand);
-/*
-Card plane fncs
-*/
+int					hand_update_selected(struct s_hand *hand);
+
+
+int					hand_pop_selected_card(struct s_hand *hand, struct s_card_desc *popped_card);
 
 
 void	debug_print_shed(struct s_hand *hand);

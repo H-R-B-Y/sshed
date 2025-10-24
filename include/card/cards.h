@@ -6,6 +6,10 @@
 
 # define CARD_LOAD_PATH "images/Small/"
 
+# define DEFAULT_ANON_CARD \
+	(struct s_card_desc){ .suit = SUIT_COUNT, .rank = RANK_COUNT }
+
+
 typedef enum e_suit
 {
 	SUIT_CLUBS,
@@ -73,6 +77,50 @@ typedef struct s_card_desc
 	t_suit	suit;
 } t_card_desc;
 
+static inline int	card_is_equal(t_card_desc a, t_card_desc b)
+{
+	return (
+		a.rank == b.rank && a.suit == b.suit
+	);
+}
+
+static inline int	card_is_valid(t_card_desc desc)
+{
+	return (
+		(desc.rank >= RANK_ACE && desc.rank < RANK_COUNT)
+		&& (desc.suit >= SUIT_CLUBS && desc.suit < SUIT_COUNT)
+		&& // The suit is joker and only rank joker or the rank is not joker and the suit is not joker
+		(
+			(desc.suit == SUIT_JOKER && (desc.rank == RANK_JOKER_BLACK || desc.rank == RANK_JOKER_RED))
+			||
+			(desc.suit != SUIT_JOKER && (desc.rank != RANK_JOKER_BLACK && desc.rank != RANK_JOKER_RED))
+		)
+	);
+}
+
+static inline int	card_is_joker(t_card_desc desc)
+{
+	if (!card_is_valid(desc))
+		return (0);
+	return (
+		(desc.suit == SUIT_JOKER && (desc.rank == RANK_JOKER_BLACK || desc.rank == RANK_JOKER_RED))
+	);
+}
+
+static inline int	card_is_face(t_card_desc desc)
+{
+	return (
+		desc.rank == RANK_JACK
+		|| desc.rank == RANK_QUEEN
+		|| desc.rank == RANK_KING
+	);
+}
+
+// static inline int	card_is_valid(t_card_desc desc);
+// static inline int	card_is_valid(t_card_desc desc);
+// static inline int	card_is_valid(t_card_desc desc);
+// 
+
 typedef struct s_card
 {
 	t_rank	rank;
@@ -102,17 +150,17 @@ static inline int			compare_card(t_card_desc *a, t_card_desc *b)
 }
 
 // Utility functions to check if a card is a joker
-static inline int			is_joker(t_card *card)
+static inline int			t_card_is_joker(t_card *card)
 {
 	return (card->rank == RANK_JOKER_BLACK || card->rank == RANK_JOKER_RED);
 }
 
-static inline int			is_black_joker(t_card *card)
+static inline int			t_card_is_black_joker(t_card *card)
 {
 	return (card->rank == RANK_JOKER_BLACK);
 }
 
-static inline int			is_red_joker(t_card *card)
+static inline int			t_card_is_red_joker(t_card *card)
 {
 	return (card->rank == RANK_JOKER_RED);
 }

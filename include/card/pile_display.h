@@ -68,19 +68,19 @@ int		pile_display_render(
 int		pile_display_add_card_top(
 	struct notcurses *nc,
 	struct s_pile_display *pile_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int		pile_display_add_card_bottom(
 	struct notcurses *nc,
 	struct s_pile_display *pile_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int		pile_display_remove_card(
 	struct notcurses *nc,
 	struct s_pile_display *pile_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 );
 
 int pile_display_clear_screen(

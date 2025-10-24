@@ -5,10 +5,10 @@
 int		pile_display_add_card_top(
 	struct notcurses *nc,
 	struct s_pile_display *pile_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
-	if (!pile_display || !card_desc)
+	if (!pile_display)
 		return (1);
 	(void)nc;
 	struct s_card_plane *card_plane = card_plane_create(card_desc);
@@ -30,10 +30,10 @@ int		pile_display_add_card_top(
 int		pile_display_add_card_bottom(
 	struct notcurses *nc,
 	struct s_pile_display *pile_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
-	if (!pile_display || !card_desc)
+	if (!pile_display)
 		return (1);
 	(void)nc;
 	struct s_card_plane *card_plane = card_plane_create(card_desc);
@@ -52,9 +52,11 @@ int		pile_display_add_card_bottom(
 	return (0);
 }
 
-int _find(void *a, void *b)
+int _find(struct s_card_plane *a, struct s_card_desc *b)
 {
-	if (a == b)
+	if (card_is_equal(
+		a->card_desc, *b
+		))
 		return (0);
 	return (1);
 }
@@ -62,13 +64,13 @@ int _find(void *a, void *b)
 int		pile_display_remove_card(
 	struct notcurses *nc,
 	struct s_pile_display *pile_display,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
-	if (!pile_display || !card_desc)
+	if (!pile_display)
 		return (1);
 	(void)nc;
-	struct s_cdll_node *node = cdll_find(pile_display->cards, card_desc, &_find);
+	struct s_cdll_node *node = cdll_find(pile_display->cards, &card_desc, (int (*)(void *, void *))&_find);
 	if (!node)
 		return (1);
 	cdll_remove_node(pile_display->cards, node, (t_freefn)card_plane_destroy);

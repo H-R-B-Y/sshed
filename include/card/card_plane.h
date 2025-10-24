@@ -39,7 +39,7 @@ enum e_card_orientation
 
 struct s_card_plane
 {
-	t_card_desc				*card_desc;
+	t_card_desc				card_desc;
 	struct ncplane			*plane;
 	int						plane_shown;
 	int						is_face_down;
@@ -48,10 +48,12 @@ struct s_card_plane
 };
 
 struct s_card_plane *card_plane_create(
-	t_card_desc *card_desc
+	t_card_desc	card_desc
 );
 
-void				card_plane_destroy(struct s_card_plane *card_plane);
+void	card_plane_destroy(
+	struct s_card_plane *card_plane
+);
 
 int	hide_card_plane(
 	struct notcurses *nc,

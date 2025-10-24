@@ -18,7 +18,6 @@ int		pile_display_render(
 	/*
 	So we want to render the cards up to max_stack or card count whichever is smaller.
 	*/
-	notcurses_refresh(nc, NULL, NULL);
 	unsigned int idx = 0;
 	struct s_card_plane *last = NULL;
 	for (struct s_cdll_node *current = pile_display->cards->head;
@@ -26,7 +25,7 @@ int		pile_display_render(
 		last = current->data, current = current->next, idx++)
 	{
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->data;
-		if (card_plane && card_plane->card_desc)
+		if (card_plane)
 		{
 			if (!card_plane->plane_shown)
 				redisplay_card(nc, pile_display->plane, card_plane);

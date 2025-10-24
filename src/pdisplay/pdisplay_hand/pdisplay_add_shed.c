@@ -2,10 +2,10 @@
 
 int	_pdisplay_add_card_shed(
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
-	if (!pdisplay || !card_desc)
+	if (!pdisplay)
 		return (1);
 	if (pdisplay->shed_count >= 6)
 		return (1); // Shed is full
@@ -26,7 +26,7 @@ int	_pdisplay_add_card_shed(
 int	pdisplay_add_card_shed(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
 	int	ret;
@@ -38,15 +38,16 @@ int	pdisplay_add_card_shed(
 
 int	_pdisplay_remove_card_shed(
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
-	if (!pdisplay || !card_desc)
+	if (!pdisplay)
 		return (1);
 	for (unsigned int idx = 0; idx < 6; idx++)
 	{
 		struct s_card_plane *card_plane = pdisplay->shed[idx];
-		if (card_plane && card_plane->card_desc == card_desc)
+		if (card_plane
+			&& ft_memcmp(&card_plane->card_desc, &card_desc, sizeof(card_desc)) == 0)
 		{
 			card_plane_destroy(card_plane);
 			pdisplay->shed[idx] = NULL;
@@ -62,7 +63,7 @@ int	_pdisplay_remove_card_shed(
 int	pdisplay_remove_card_shed(
 	struct notcurses *nc,
 	struct s_pdisplay *pdisplay,
-	t_card_desc *card_desc
+	t_card_desc card_desc
 )
 {
 	int	ret;
