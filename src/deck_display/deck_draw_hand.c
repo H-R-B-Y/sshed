@@ -82,13 +82,17 @@ int deck_display_draw_to_shed(
 			{
 				if (pdisplay_add_card_shed(shed, card))
 				{
-					// TODO: FIXME 
-					return ()
+					dprintf(STDERR_FILENO, "Failed to draw card to shed\n");
+					return (cards_drawn);
 				}
 			}
 			case (false):
 			{
-
+				if (hand_add_card_to_shed(shed, card))
+				{
+					dprintf(STDERR_FILENO, "Failed to draw card to shed\n");
+					return (cards_drawn);
+				}
 			}
 			default:
 			{
@@ -96,5 +100,7 @@ int deck_display_draw_to_shed(
 				return (0);
 			}
 		}
+		cards_drawn++;
 	}
+	return (cards_drawn);
 }

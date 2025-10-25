@@ -18,10 +18,11 @@ static int	_load_jokers(void)
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic = ncvisual_from_file(img_path);
-	sprintf(img_path, "%s%s %s_rot.png", CARD_LOAD_PATH,
+	sprintf(img_path, "%s%s %s.png", CARD_LOAD_PATH,
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
-	card->graphic_h = ncvisual_from_file(img_path);;
+	card->graphic_h = ncvisual_from_file(img_path);
+	ncvisual_rotate(card->graphic_h, 1.5707963267848966);
 	if (hm_add_value(&cardmap, (t_card_desc *)card, card) != 0)
 		return (1);
 	card = ft_calloc(1, sizeof(t_card));
@@ -33,10 +34,11 @@ static int	_load_jokers(void)
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic = ncvisual_from_file(img_path);
-	sprintf(img_path, "%s%s %s_rot.png", CARD_LOAD_PATH,
+	sprintf(img_path, "%s%s %s.png", CARD_LOAD_PATH,
 		suit_image_str[card->suit], rank_image_string[card->rank]
 	);
 	card->graphic_h = ncvisual_from_file(img_path);;
+	ncvisual_rotate(card->graphic_h, 1.5707963267848966);
 	free(img_path);
 	if (hm_add_value(&cardmap, (t_card_desc *)card, card) != 0)
 		return (1);
@@ -64,7 +66,7 @@ static int	_load_cards(void)
 			sprintf(img_path, "%s%s %s.png",  CARD_LOAD_PATH,
 				suit_image_str[card->suit], rank_image_string[card->rank]);
 			card->graphic = ncvisual_from_file(img_path);
-			sprintf(img_path, "%s%s %s_rot.png",  CARD_LOAD_PATH,
+			sprintf(img_path, "%s%s %s.png",  CARD_LOAD_PATH,
 				suit_image_str[card->suit], rank_image_string[card->rank]);
 			card->graphic_h = ncvisual_from_file(img_path);
 			if (!card->graphic)
@@ -74,6 +76,7 @@ static int	_load_cards(void)
 				free(card);
 				return (1);
 			}
+			ncvisual_rotate(card->graphic_h, 1.5707963267848966);
 			hm_add_value(&cardmap, (t_card_desc *)card, card);
 			rank_idx++;
 		}
@@ -92,16 +95,18 @@ static int _load_cardbacks(void)
 	cardbacks[0] = ncvisual_from_file(img_path);
 	if (!cardbacks[0])
 		return (1);
-	sprintf(img_path, "%sBack Blue 2_rot.png", CARD_LOAD_PATH);
+	sprintf(img_path, "%sBack Blue 2.png", CARD_LOAD_PATH);
 	cardbacks[0 + 2] = ncvisual_from_file(img_path);
+	ncvisual_rotate(cardbacks[0 + 2], 1.5707963267848966);
 	if (!cardbacks[0 + 2])
 		return (1);
 	sprintf(img_path, "%sBack Red 2.png", CARD_LOAD_PATH);
 	cardbacks[1] = ncvisual_from_file(img_path);
 	if (!cardbacks[1])
 		return (1);
-	sprintf(img_path, "%sBack Red 2_rot.png", CARD_LOAD_PATH);
+	sprintf(img_path, "%sBack Red 2.png", CARD_LOAD_PATH);
 	cardbacks[1 + 2] = ncvisual_from_file(img_path);
+	ncvisual_rotate(cardbacks[1 + 2], 1.5707963267848966);
 	if (!cardbacks[1 + 2])
 		return (1);
 	return (0);

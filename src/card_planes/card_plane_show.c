@@ -39,7 +39,7 @@ int	show_card_plane(
 		.x = 0,
 		.y = 0,
 		.blitter = NCBLIT_PIXEL,
-		.scaling = NCSCALE_STRETCH,
+		.scaling = NCSCALE_NONE,
 	};
 	struct ncvisual	*visual = NULL;
 	struct s_card	*card = NULL;
