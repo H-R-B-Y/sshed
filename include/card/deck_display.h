@@ -85,6 +85,20 @@ int	deck_display_draw_to_hand(
 	unsigned int count
 );
 
+int	deck_display_draw_to_hand(
+	struct s_deck_display *deck_display,
+	int is_pdisplay,
+	void *hand,
+	unsigned int count
+);
+int deck_display_draw_to_shed(
+	struct s_deck_display *deck_display,
+	int is_pdisplay,
+	void *shed,
+	unsigned int count
+);
+
+
 /**
  * @returns the number os cards drawn to shed
  */

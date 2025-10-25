@@ -22,6 +22,5 @@ int				deck_draw_card(struct s_deck *deck, struct s_card_desc *card);
 int				deck_peek_card(struct s_deck *deck, unsigned int index, struct s_card_desc *card);
 void			deck_return_card(struct s_deck *deck, struct s_card_desc card);
 
-
 #endif
 

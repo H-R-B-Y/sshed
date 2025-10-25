@@ -85,6 +85,7 @@ int deck_display_draw_to_shed(
 					dprintf(STDERR_FILENO, "Failed to draw card to shed\n");
 					return (cards_drawn);
 				}
+				break ;
 			}
 			case (false):
 			{
@@ -93,6 +94,7 @@ int deck_display_draw_to_shed(
 					dprintf(STDERR_FILENO, "Failed to draw card to shed\n");
 					return (cards_drawn);
 				}
+				break ;
 			}
 			default:
 			{
