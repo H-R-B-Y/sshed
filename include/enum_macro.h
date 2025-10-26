@@ -7,7 +7,8 @@
 		list(prefix, ENUM_FACTORY_ENUM) \
 		prefix##_COUNT \
 	} t_##typename; \
-	const char *typename##_str[prefix##_COUNT] = { \
+	\
+	static const char *typename##_str[prefix##_COUNT] __attribute__((unused)) = { \
 		list(prefix, ENUM_FACTORY_STR) \
 	};
 

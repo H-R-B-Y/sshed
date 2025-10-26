@@ -11,13 +11,9 @@ int		pile_display_render(
 	if (!pile_display)
 		return (1);
 	if (!pile_display->is_visible)
-		return (0);
+		return (ncplane_erase(pile_display->plane), 0);
 	if (!pile_display->is_dirty)
 		return (0);
-	/*
-	So we want to render the cards up to max_stack or card count whichever is smaller.
-	*/
-	// nc = ncplane_notcurses_const(pile_display->plane);
 	unsigned int idx = 0;
 	struct s_card_plane *last = NULL;
 	for (struct s_cdll_node *current = pile_display->cards->head;
@@ -55,6 +51,16 @@ int		pile_display_render(
 			"+%zu",
 			pile_display->cards->count - pile_display->max_stack
 		);
+	}
+	else
+	{
+		ncplane_erase_region(pile_display->plane,0,
+			(pile_display->orientation == PILE_DISPLAY_HORIZONTAL)
+			? (pile_display->max_stack - 1) * pile_display->padding
+			+ ((pile_display->card_orientation == CARD_ORIENTATION_HORIZONTAL) ? CARD_H_WIDTH : CARD_WIDTH)
+			+ 1
+			: ((pile_display->card_orientation == CARD_ORIENTATION_HORIZONTAL) ? CARD_H_WIDTH : CARD_WIDTH)
+			+ 1, 1, 10);
 	}
 	pile_display->is_dirty = 0;
 	return (0);

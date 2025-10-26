@@ -16,7 +16,9 @@ int	_hand_add_card(struct s_hand *hand, t_card_desc card_desc)
 	card_plane = card_plane_create(hand->hand_plane, card_desc);
 	if (!card_plane)
 		return (1);
-	card_list_node = checkout_free_list(&hand->allocator, sizeof(t_list));
+	// card_list_node = checkout_free_list(&hand->allocator, sizeof(t_list));
+	card_plane->is_face_down = 0;
+	card_list_node = ft_calloc(1, sizeof(t_list));
 	if (!card_list_node)
 	{
 		card_plane_destroy(card_plane);

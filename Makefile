@@ -49,6 +49,7 @@ SRCS			:= \
 				src/pile_display/pile_display_clear.c \
 				src/pile_display/pile_display_add.c \
 				src/hand/hand_get_selected.c \
+				src/hand/hand_calc_max.c \
 				src/pdisplay/pdisplay_pop_card.c \
 				src/deck_anon/deck_anon_add.c \
 				src/deck_anon/deck_anon_move.c \
@@ -61,6 +62,7 @@ SRCS			:= \
 				src/deck_display/deck_draw_hand.c \
 				src/pile_display/pile_display_cards.c \
 				src/pile_display/pile_display_return.c \
+				src/pdisplay/pdisplay_calc_max.c \
 				\
 
 

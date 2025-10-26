@@ -29,7 +29,8 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 				prev->next = to_remove->next;
 			}
 			card_plane_destroy(card_plane);
-			return_free_list(&hand->allocator, to_remove);
+			// return_free_list(&hand->allocator, to_remove);
+			free(to_remove);
 			if (move_sel == -1)
 				hand->card_selected[0] = -1;
 			hand->card_count--;

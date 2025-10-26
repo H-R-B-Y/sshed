@@ -4,6 +4,7 @@
 t_hashmap		cardmap;
 unsigned int	card_dimensions[4] = {0, 0, 0, 0}; // width, height, h_width, h_height
 
+
 static int	_load_jokers(void)
 {
 	char			*img_path = malloc(1024);
@@ -140,3 +141,33 @@ int	init_cards(void *nc)
 	return (0);
 }
 
+void	destroy_cards(void)
+{
+	unsigned int	idx = 0;
+	t_hashpair		*pair;
+
+	while (idx < cardmap.max_hashes)
+	{
+		pair = cardmap.pairs[idx];
+		while (pair)
+		{
+			if (pair && pair->value)
+			{
+				ncvisual_destroy(((t_card *)pair->value)->graphic);
+				ncvisual_destroy(((t_card *)pair->value)->graphic_h);
+				free((t_card *)pair->value);
+				// free(pair);
+			}
+			pair->value = NULL;
+			pair->key = NULL;
+			pair = pair->next;
+		}
+		idx++;
+	}
+	hm_destroy(&cardmap);
+	for (int i = 0; i < 4; i++)
+	{
+		if (cardbacks[i])
+			ncvisual_destroy(cardbacks[i]);
+	}
+}

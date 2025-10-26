@@ -3,12 +3,10 @@
 # define FT_INCLUDE_ALL
 # include "libft.h"
 
-
 # define CARD_LOAD_PATH "images/Small/"
 
 # define DEFAULT_ANON_CARD \
 	(struct s_card_desc){ .suit = SUIT_COUNT, .rank = RANK_COUNT }
-
 
 typedef enum e_suit
 {
@@ -172,6 +170,8 @@ extern void					*cardbacks[4];
 extern unsigned int			card_dimensions[4]; // width, height, h_width, h_height
 
 int							init_cards(void *nc);
+
+void						destroy_cards(void);
 
 #endif
 

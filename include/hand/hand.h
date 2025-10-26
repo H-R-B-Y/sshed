@@ -38,10 +38,13 @@ struct s_hand
 	enum e_hand_status	last_status;
 	int					hand_dirty;
 
-	t_free_list			allocator; // for card planes
+	// t_free_list			allocator; // for card planes
 	t_list				*cards; // contains struct s_card_plane
-	int					card_count;
-	int					card_selected[2]; // selected hand and shed
+	unsigned int		card_count;
+	int		card_selected[2]; // selected hand and shed
+
+	// We need to set this on something like sigwinch, but should have a defualt
+	unsigned int		max_cards_to_display; 
 
 	/*
 
@@ -109,6 +112,11 @@ struct notcurses;
 int	hand_return_to_deck(
 	struct s_hand *hand,
 	struct s_deck *deck
+);
+
+int	hand_calculate_max_displayable(
+	struct ncplane *stdplane,
+	struct s_hand *hand
 );
 
 #endif

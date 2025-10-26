@@ -27,12 +27,8 @@ int	hand_create(struct s_hand **hand, struct ncplane *parent)
 	new_hand->card_count = 0;
 	ft_memset(new_hand->card_selected, -1, sizeof(new_hand->card_selected));
 	new_hand->status = HAND_DISPLAY_HAND;
-	if (init_free_list(&new_hand->allocator, HAND_ARENA_ALLOCATOR_SIZE) == RETURN_FATAL)
-	{
-		ncplane_destroy(new_hand->hand_plane);
-		free(new_hand);
-		return (1);
-	}
+	new_hand->last_status = HAND_DISPLAY_HAND;
+	new_hand->max_cards_to_display = 6;
 	*hand = new_hand;
 	return (0);
 }
@@ -51,12 +47,13 @@ void hand_destroy(struct s_hand *hand)
 		next = current->next;
 		card_plane = (struct s_card_plane *)current->content;
 		card_plane_destroy(card_plane);
-		return_free_list(&hand->allocator, current);
+		// return_free_list(&hand->allocator, current);
+		free(current);
 		current = next;
 	}
 	if (hand->hand_plane)
 		ncplane_destroy(hand->hand_plane);
-	destroy_free_list(&hand->allocator);
+	// destroy_free_list(&hand->allocator);
 	free(hand);
 }
 

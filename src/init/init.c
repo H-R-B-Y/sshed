@@ -11,6 +11,25 @@ memory for all clients as they all run on the same system)
 
 #define ERR(reason) {dprintf(STDERR_FILENO, "Failed to initialize client\nReason: %s\nerrno: %s\n", reason, strerror(errno));return (1);}
 
+void	calculate_min_window_size(unsigned int *min_width, unsigned int *min_height)
+{
+	// So we need to ensure there is enough space for:
+	/*
+	- Deck display (shows 1 card plus up to 3 characters)
+	- Hand display (needs to show at the very least 3 cards + some padding + at most 3 characters)
+	- Pile display (needs to show at the very least 5 cards horizontally + some padding + at most 3 characters)
+	- Vertically we need enough for a pdisplay to show at least 3 cards + some padding + at most 3 characters
+	- Vertically we also need enough for the hand + pdisplay at the top
+	*/
+	// so the min height is:
+	*min_height
+	= (CARD_HEIGHT + 2) * 3; // hand + deck / pile + pdisplay top
+	// so the min width is:
+	*min_width
+	= (CARD_WIDTH + 2) * 5
+	+ (CARD_WIDTH + 2) * 2; // pile left and right
+}
+
 int	init_notcurses(
 	struct notcurses **nc
 )

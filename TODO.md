@@ -1,7 +1,5 @@
 # todo
 
-
-
 ## API
 
 - Deck display (re-build the logic, dont worry about anon cards);
@@ -42,6 +40,10 @@ because we never see the cards in the hand anyway.
 - Figure it out
 
 # done
+
+
+- When pdisplay or hand has too many cards and tries to draw them off the screen it causes wrapping, this is horrible because of the scrolling that happens.
+
 
 - Split out the makefile targets for deleting:
   - images

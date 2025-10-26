@@ -22,14 +22,6 @@
 		.flags = 0, \
 	}
 
-# define CARD_PLANE_ALLOCATOR_SIZE \
-	sizeof(struct s_card_plane) * 54 \
-	+ sizeof(t_list *) * 54 \
-	+ sizeof(t_free_list_node) * 54
-
-
-extern t_free_list	*card_plane_allocator;
-
 enum e_card_orientation
 {
 	CARD_ORIENTATION_VERTICAL,

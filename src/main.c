@@ -242,7 +242,9 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 	/*
 	Deal 6 cards to the shed of the player and the opponent
 	*/
-	pdisplay_create(&pdisplay, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_TOP);
+	hand_calculate_max_displayable(notcurses_stdplane(nc), hand);
+	pdisplay_create(&pdisplay, notcurses_stdplane(nc), PDISPLAY_ORIENTATION_RIGHT);
+	pdisplay_calculate_max_displayable(notcurses_stdplane(nc), pdisplay);
 	pdisplay_show_shed(pdisplay);
 	hand_show_shed(hand);
 	deck_display_render(deck_display);
@@ -279,6 +281,8 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 			hand_select_next_card(hand);
 		else if (key == NCKEY_LEFT)
 			hand_select_prev_card(hand);
+		else if (key == NCKEY_REFRESH || key == NCKEY_BACKSPACE)
+			notcurses_refresh(nc, NULL, NULL);
 		else if (key == NCKEY_SPACE)
 		{
 			hand_toggle_display(hand);
@@ -295,7 +299,7 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 				dprintf(STDERR_FILENO, "Failed to pop card from hand\n");
 			}
 			pile_display_add_card_top(pile_display, selected_card);
-			if (deck_display->deck->remaining)
+			if (deck_display->deck->remaining && hand->card_count < 5)
 				deck_display_draw_to_hand(deck_display, false, hand, 1);
 			if (has_old && old_top.rank > selected_card.rank)
 				pile_display_return_to_hand(pile_display, false, hand);
@@ -315,7 +319,7 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 					pdisplay_toggle_display(pdisplay);
 			if (ok == 0)
 				pile_display_add_card_top(pile_display, selected_card);
-			if (deck_display->deck->remaining)
+			if (deck_display->deck->remaining && pdisplay->card_count < 5)
 				deck_display_draw_to_hand(deck_display, true, pdisplay, 1);
 			if (has_old && old_top.rank > selected_card.rank)
 				pile_display_return_to_hand(pile_display, true, pdisplay);
@@ -328,6 +332,15 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 		deck_display_render(deck_display);
 		notcurses_render(nc) ;
 	}
+	/*
+	struct s_pdisplay	*pdisplay;
+	struct s_pile_display	*pile_display;
+	unsigned int		width, height;
+	struct s_deck_display	*deck_display;
+	*/
+	pdisplay_destroy(pdisplay);
+	pile_display_destroy(pile_display);
+	deck_display_destroy(deck_display);
 	return (0);
 }
 
@@ -482,6 +495,9 @@ int	main(void) // should take some args later
 	// 	notcurses_stop(nc);
 	// 	return (1);
 	// }
+	hand_destroy(hand);
+	deck_destroy(deck);
+	destroy_cards();
 	notcurses_stop(nc);
 	return (0);
 }

@@ -30,6 +30,9 @@ int		pdisplay_create(
 	new_pdisplay->card_count = 0;
 	new_pdisplay->shed_count = 0;
 	new_pdisplay->pdisplay_dirty = 0;
+	new_pdisplay->max_cards_to_display = (orientation == PDISPLAY_ORIENTATION_TOP)
+										? 6
+										: 5;
 	(*pdisplay) = new_pdisplay;
 	return (0);
 }
@@ -42,7 +45,6 @@ void	pdisplay_destroy(
 		return ;
 	if (pdisplay->plane)
 		ncplane_destroy(pdisplay->plane);
-	// Free cards list
 	t_list	*current = pdisplay->cards;
 	t_list	*next;
 	while (current)

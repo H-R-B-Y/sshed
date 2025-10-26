@@ -8,6 +8,7 @@
 
 struct s_deck
 {
+	void				*arena;
 	struct s_card_desc	*cards[55];
 	int					has_jokers;
 	int					remaining;

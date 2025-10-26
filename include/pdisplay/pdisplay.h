@@ -64,6 +64,7 @@ struct s_pdisplay
 	enum e_pdisplay_status		status;
 	enum e_pdisplay_orientation	orientation;
 	struct ncplane				*plane;
+	unsigned int				max_cards_to_display;
 	t_u8						card_count;
 	t_u8						shed_count;
 	// list of card descriptors, for online we can just fill this with ace of spades
@@ -185,6 +186,11 @@ int	pdisplay_pop_card_index(
 	struct s_pdisplay	*pdisplay,
 	int					index,
 	struct s_card_desc	*popped_card
+);
+
+int	pdisplay_calculate_max_displayable(
+	struct ncplane *stdplane,
+	struct s_pdisplay *pdisplay
 );
 
 #endif

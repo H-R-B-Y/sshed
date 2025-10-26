@@ -16,8 +16,8 @@ int _pdisplay_render_shed_left_right(
 			redisplay_card(pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				(height / 2)
-				- (3 * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
-				+ ((idx) * (CARD_H_HEIGHT + 1)), // adjust for size of card
+				- (3 * (CARD_H_HEIGHT)) / 2 // total height of all cards
+				+ ((idx) * (CARD_H_HEIGHT)), // adjust for size of card
 				1
 			);
 		}
@@ -26,8 +26,8 @@ int _pdisplay_render_shed_left_right(
 			redisplay_card(pdisplay->shed[idx]);
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				(height / 2)
-				- (3 * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
-				+ ((idx - 3) * (CARD_H_HEIGHT + 1)), // adjust for size of card
+				- (3 * (CARD_H_HEIGHT)) / 2 // total height of all cards
+				+ ((idx - 3) * (CARD_H_HEIGHT)), // adjust for size of card
 				3
 			);
 		}
@@ -40,6 +40,7 @@ int _pdisplay_render_shed_top(
 )
 {
 	unsigned int	width, height;
+
 	ncplane_dim_yx(pdisplay->plane, &height, &width);
 	for (int idx = 0; idx < 6; idx++)
 	{
@@ -51,8 +52,8 @@ int _pdisplay_render_shed_top(
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				1,
 				(width / 2)
-				- (3 * (CARD_WIDTH + 2)) / 2 
-				+ ((idx - 1) * (CARD_WIDTH + 2)) // adjust for size of card
+				- (3 * (CARD_WIDTH)) / 2 
+				+ ((idx - 1) * (CARD_WIDTH)) // adjust for size of card
 			);
 		}
 		else
@@ -61,8 +62,8 @@ int _pdisplay_render_shed_top(
 			ncplane_move_yx(pdisplay->shed[idx]->plane,
 				2,
 				(width / 2)
-				- (3 * (CARD_WIDTH + 2)) / 2
-				+ ((idx - 4) * (CARD_WIDTH + 2)) // adjust for size of card
+				- (3 * (CARD_WIDTH)) / 2
+				+ ((idx - 4) * (CARD_WIDTH)) // adjust for size of card
 			);
 		}
 	}
@@ -75,24 +76,60 @@ int _pdisplay_render_left_right(
 {
 	t_list			*current;
 	unsigned int	width, height;
-	ncplane_dim_yx(pdisplay->plane, &height, &width);
 	unsigned int	idx = 0;
+	unsigned int	cards_to_render;
+	unsigned int	render_position = 0;
+	unsigned int	start;
+	struct s_card_plane	*card_plane;
+
+	ncplane_dim_yx(pdisplay->plane, &height, &width);
+
+	cards_to_render = (pdisplay->card_count > pdisplay->max_cards_to_display)
+		? pdisplay->max_cards_to_display
+		: pdisplay->card_count;
+	if (pdisplay->card_count <= pdisplay->max_cards_to_display)
+		start = 0;
+	else if (pdisplay->card_count - (pdisplay->max_cards_to_display / 2) <= (int)pdisplay->card_count)
+		start = pdisplay->card_count - pdisplay->max_cards_to_display;
+	else
+		start = (pdisplay->card_count / 2) - (pdisplay->max_cards_to_display / 2);
 	current = pdisplay->cards;
 	while (current)
 	{
-		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-		if (card_plane)
+		card_plane = (struct s_card_plane *)current->content;
+		if (card_plane && (idx < start || idx >= start + cards_to_render))
+			hide_card_plane(card_plane);
+		else if (card_plane)
 		{
 			redisplay_card(card_plane);
 			ncplane_move_yx(card_plane->plane,
 				(height / 2)
-				- (pdisplay->card_count * (CARD_H_HEIGHT + 1)) / 2 // total height of all cards
-				+ ((idx) * (CARD_H_HEIGHT + 1)), // adjust for size of card
+				- (cards_to_render * (CARD_H_HEIGHT)) / 2 // total height of all cards
+				+ ((render_position) * (CARD_H_HEIGHT)), // adjust for size of card
 				(pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT) ? 1 : 0
 			);
-			idx++;
+			render_position++;
 		}
+		idx++;
 		current = current->next;
+	}
+	// TODO: test this part, it may have bugs
+	if (pdisplay->card_count > pdisplay->max_cards_to_display)
+	{
+		ncplane_printf_yx(
+			pdisplay->plane,
+			((height / 2)
+			- (cards_to_render * (CARD_H_HEIGHT)) / 2)
+			+ (cards_to_render * (CARD_H_HEIGHT)) + 1,
+			(pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT) ? 1 : 0,
+			"+%u",
+			pdisplay->card_count - pdisplay->max_cards_to_display
+		);
+	}
+	else
+	{
+		ncplane_erase_region(pdisplay->plane,0,
+			(pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT) ? 1 : 0, 1, 10);
 	}
 	return (0);
 }
@@ -103,24 +140,57 @@ int _pdisplay_render_top(
 {
 	t_list			*current;
 	unsigned int	width, height;
-	ncplane_dim_yx(pdisplay->plane, &height, &width);
 	unsigned int	idx = 0;
+	unsigned int	cards_to_render;
+	unsigned int	render_position = 0;
+	unsigned int	start;
+	struct s_card_plane	*card_plane;
+
+	ncplane_dim_yx(pdisplay->plane, &height, &width);
+	cards_to_render = (pdisplay->card_count > pdisplay->max_cards_to_display)
+		? pdisplay->max_cards_to_display
+		: pdisplay->card_count;
+	if (pdisplay->card_count <= pdisplay->max_cards_to_display)
+		start = 0;
+	else if (pdisplay->card_count - (pdisplay->max_cards_to_display / 2) <= (int)pdisplay->card_count)
+		start = pdisplay->card_count - pdisplay->max_cards_to_display;
+	else
+		start = (pdisplay->card_count / 2) - (pdisplay->max_cards_to_display / 2);
 	current = pdisplay->cards;
 	while (current)
 	{
-		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
-		if (card_plane)
+		card_plane = (struct s_card_plane *)current->content;
+		if (card_plane && (idx < start || idx >= start + cards_to_render))
+			hide_card_plane(card_plane);
+		else if (card_plane)
 		{
 			redisplay_card(card_plane);
 			ncplane_move_yx(card_plane->plane,
 				1, // Y level for all cards
 				(width / 2)
-				- (pdisplay->card_count * (CARD_WIDTH)) / 2 // total width of all cards
-				+ ((idx - 1) * (CARD_WIDTH)) // adjust for size of card
+				- (cards_to_render * (CARD_WIDTH)) / 2 // total width of all cards
+				+ (render_position * (CARD_WIDTH)) // adjust for size of card
 			);
-			idx++;
+			render_position++;
 		}
+		idx++;
 		current = current->next;
+	}
+	// TODO: test this part later, may have bugs
+	if (pdisplay->card_count > pdisplay->max_cards_to_display)
+	{
+		ncplane_printf_yx(
+			pdisplay->plane,
+			0,
+			(width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1,
+			"+%u",
+			pdisplay->card_count - pdisplay->max_cards_to_display
+		);
+	}
+	else
+	{
+		ncplane_erase_region(pdisplay->plane,0,
+			(width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1, 1, 10);
 	}
 	return (0);
 }

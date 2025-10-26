@@ -81,7 +81,7 @@ int	redisplay_card(
 	if (!card_plane)
 		return (1);
 	if (card_plane->plane_shown)
-		ret = hide_card_plane(card_plane) || show_card_plane(card_plane);
+		; // ret = hide_card_plane(card_plane) || show_card_plane(card_plane);
 	else
 		ret = show_card_plane(card_plane);
 	return (ret);
