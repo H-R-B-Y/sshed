@@ -78,3 +78,29 @@ Also sometimes the shed face downs cant be played.
 # other
 
 - TODO: add a way to change the allocator for libft structs
+
+
+# Thoughts on the next steps
+
+- Networked play
+Since I have written the domain socket server and client model code, I want to make use of this
+but I will need to add some stuff to the server to be able to manage rooms, and clients (like with user ids and what-not), as this is the ultimate end game for this project i think it would be best to focus on the single player version first.
+
+- Single player version
+For the single player version we want to built out something simple to start with, 
+Main game states:
+- Title
+- Game setup (number of bots, maybe rule-set)
+- Game playing (will probably have to have some substates or work through a seperate state machine)
+- Menu (pause, exit, etc..)
+- Game win/lose
+
+Then we need to come up with a competent AI code for the player to play against, 
+this is probably going to be the hardest part, we want to make it extensible, ideally with lua,
+but that means we will need to come up with someway of representing the game state, and what "playing a card" looks like in terms of the lua api.
+
+The best way to approach this would be to build out the state machine for the game first,
+so thats like moving between the states, changing the display to match the state, figuring out the best way to do io with notcurses + epoll (future proofing for networked play).
+Then we can do the game logic, probably good to have a generic function that handles a turn,
+runs a callback to lua/ai or awaits input from the player, then decides the result of the turn, 
+then callee deals with updating the displays.

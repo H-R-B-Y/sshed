@@ -93,6 +93,17 @@ int pile_display_move(
 	unsigned int new_y
 );
 
+int	pile_top_card(struct s_pile_display *pile_display, struct s_card_desc *card);
+int	pile_bottom_card(struct s_pile_display *pile_display, struct s_card_desc *card);
+
+
+int	pile_display_return_to_hand(
+	struct s_pile_display *pile_display,
+	int is_pdisplay,
+	void *hand
+);
+
+
 // TODO: implement the following
 // int pile_display_set_face_down(
 // 	struct s_pile_display *pile_display,

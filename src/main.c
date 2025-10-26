@@ -286,15 +286,21 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 		}
 		else if (key == NCKEY_ENTER || key == '\n' || key == '\r')
 		{
+			int	has_old = 0;
+			t_card_desc	old_top;
 			t_card_desc	selected_card;
-			
+			has_old = !pile_top_card(pile_display, &old_top);
 			if (hand_pop_selected_card(hand, &selected_card))
 			{
 				dprintf(STDERR_FILENO, "Failed to pop card from hand\n");
 			}
 			pile_display_add_card_top(pile_display, selected_card);
+			if (deck_display->deck->remaining)
+				deck_display_draw_to_hand(deck_display, false, hand, 1);
+			if (has_old && old_top.rank > selected_card.rank)
+				pile_display_return_to_hand(pile_display, false, hand);
 			int	ok, swap;
-
+			has_old = !pile_top_card(pile_display, &old_top);
 			if (pdisplay->card_count)
 				{
 				swap = pdisplay_show_hand(pdisplay);
@@ -309,6 +315,10 @@ int	putting_it_all_together(struct notcurses *nc, struct s_hand *hand, struct s_
 					pdisplay_toggle_display(pdisplay);
 			if (ok == 0)
 				pile_display_add_card_top(pile_display, selected_card);
+			if (deck_display->deck->remaining)
+				deck_display_draw_to_hand(deck_display, true, pdisplay, 1);
+			if (has_old && old_top.rank > selected_card.rank)
+				pile_display_return_to_hand(pile_display, true, pdisplay);
 		}
 		else
 			dprintf(STDERR_FILENO, "Pressed key: %d\n", key);

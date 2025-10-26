@@ -59,6 +59,8 @@ SRCS			:= \
 				src/deck_display/deck_display_show.c \
 				src/deck_display/deck_display.c \
 				src/deck_display/deck_draw_hand.c \
+				src/pile_display/pile_display_cards.c \
+				src/pile_display/pile_display_return.c \
 				\
 
 
