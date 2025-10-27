@@ -52,53 +52,117 @@ The way we calculate this is:
 - else start at selected - (hand->max_cards_to_display / 2)
 Then we render from start to start + hand->max_cards_to_display
 */
+// void	render_hand_cards(struct s_hand *hand)
+// {
+// 	t_list				*current;
+// 	struct s_card_plane	*card_plane;
+// 	unsigned int		width, height;
+// 	unsigned int		idx = 0;
+// 	unsigned int		render_position = 0;
+// 	unsigned int		start = 0;
+// 	unsigned int		cards_to_render;
+
+// 	ncplane_dim_yx(hand->hand_plane, &height, &width);
+// 	current = hand->cards;
+	
+// 	// Calculate how many cards we'll actually render
+// 	cards_to_render = (hand->card_count < hand->max_cards_to_display) ? hand->card_count : hand->max_cards_to_display;
+	
+// 	// Calculate start position for windowing
+// 	if (hand->card_count <= hand->max_cards_to_display)
+// 		start = 0;
+// 	else if (hand->card_selected[0] < (int)(hand->max_cards_to_display / 2))
+// 		start = 0;
+// 	else if (hand->card_selected[0] >= (int)(hand->card_count - (hand->max_cards_to_display / 2)))
+// 		start = hand->card_count - hand->max_cards_to_display;
+// 	else
+// 		start = hand->card_selected[0] - (hand->max_cards_to_display / 2);
+// 	idx = 0;
+// 	while (current)
+// 	{
+// 		card_plane = (struct s_card_plane *)current->content;
+// 		if (card_plane && (idx < start || idx >= start + hand->max_cards_to_display))
+// 			hide_card_plane(card_plane);
+// 		else if (card_plane)
+// 		{
+// 			redisplay_card(card_plane);
+// 			ncplane_move_yx(card_plane->plane,
+// 				(hand->card_selected[0] == (int)idx) ? 0 : 1,
+// 				(width / 2) - ((cards_to_render * (CARD_WIDTH)) / 2)
+// 				+ (render_position * (CARD_WIDTH)));
+// 			render_position++;
+// 		}
+// 		idx++;
+// 		current = current->next;
+// 	}
+// 	ncplane_erase_region(hand->hand_plane,
+// 			0, (width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1,
+// 			10, 10
+// 		);
+// 	if (hand->card_count > hand->max_cards_to_display)
+// 	{
+// 		ncplane_printf_yx(
+// 			hand->hand_plane,
+// 			0,
+// 			(width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1,
+// 			"+%u",
+// 			hand->card_count - hand->max_cards_to_display
+// 		);
+// 	}
+// 	hand->hand_dirty = 0;
+// }
+
 void	render_hand_cards(struct s_hand *hand)
 {
-	t_list				*current;
+	struct s_cdll_node	*start;
+	struct s_cdll_node	*node;
 	struct s_card_plane	*card_plane;
 	unsigned int		width, height;
 	unsigned int		idx = 0;
-	unsigned int		render_position = 0;
-	unsigned int		start = 0;
 	unsigned int		cards_to_render;
+	unsigned int		cards_before;
 
 	ncplane_dim_yx(hand->hand_plane, &height, &width);
-	current = hand->cards;
-	
-	// Calculate how many cards we'll actually render
-	cards_to_render = (hand->card_count < hand->max_cards_to_display) ? hand->card_count : hand->max_cards_to_display;
-	
-	// Calculate start position for windowing
-	if (hand->card_count <= hand->max_cards_to_display)
-		start = 0;
-	else if (hand->card_selected[0] < (int)(hand->max_cards_to_display / 2))
-		start = 0;
-	else if (hand->card_selected[0] >= (int)(hand->card_count - (hand->max_cards_to_display / 2)))
-		start = hand->card_count - hand->max_cards_to_display;
+	cards_to_render = (hand->card_count < hand->max_cards_to_display)
+		? hand->card_count
+		: hand->max_cards_to_display;
+	if (hand->card_count < hand->max_cards_to_display)
+		cards_before = ((hand->card_count - 1) / 2);
 	else
-		start = hand->card_selected[0] - (hand->max_cards_to_display / 2);
-	idx = 0;
-	while (current)
+		cards_before = ((cards_to_render - 1) / 2);
+	node = hand->_cards.head;
+	while (cards_before)
 	{
-		card_plane = (struct s_card_plane *)current->content;
-		if (card_plane && (idx < start || idx >= start + hand->max_cards_to_display))
-			hide_card_plane(card_plane);
-		else if (card_plane)
+		node = node->prev;
+		cards_before--;
+	}
+	start = node;
+	while (idx < cards_to_render)
+	{
+		card_plane = node->data;
+		if (card_plane)
 		{
 			redisplay_card(card_plane);
-			ncplane_move_yx(card_plane->plane,
-				(hand->card_selected[0] == (int)idx) ? 0 : 1,
+			ncplane_move_yx(
+				card_plane->plane,
+			(node == hand->_cards.head) ? 0 : 1,
 				(width / 2) - ((cards_to_render * (CARD_WIDTH)) / 2)
-				+ (render_position * (CARD_WIDTH)));
-			render_position++;
+				+ (idx * (CARD_WIDTH)));
 		}
 		idx++;
-		current = current->next;
+		node = node->next;
+	}
+	while (node != start)
+	{
+		card_plane = node->data;
+		if (card_plane)
+			hide_card_plane(card_plane);
+		node = node->next;
 	}
 	ncplane_erase_region(hand->hand_plane,
-			0, (width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1,
-			10, 10
-		);
+		0, (width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1,
+		10, 10
+	);
 	if (hand->card_count > hand->max_cards_to_display)
 	{
 		ncplane_printf_yx(

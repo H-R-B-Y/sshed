@@ -6,19 +6,7 @@ struct s_card_plane	*_hand_get_selected_card_plane(struct s_hand *hand)
 	if (!hand)
 		return (NULL);
 	if (hand->status == HAND_DISPLAY_HAND)
-	{
-		if (hand->card_selected[0] >= (int)hand->card_count)
-			return (NULL);
-		t_list *current = hand->cards;
-		int idx = 0;
-		while (current)
-		{
-			if (idx == hand->card_selected[0])
-				return ((struct s_card_plane *)current->content);
-			current = current->next;
-			idx++;
-		}
-	}
+		return (hand->_cards.head->data);
 	else if (hand->status == HAND_DISPLAY_SHED)
 	{
 		if (hand->card_selected[1] >= 3)
@@ -38,9 +26,15 @@ int	hand_select_next_card(struct s_hand *hand)
 		return (1);
 	if (hand->status == HAND_DISPLAY_HAND)
 	{
-		if (hand->card_count == 0)
-			return (hand->card_selected[0] = -1, 0);
-		hand->card_selected[0] = (hand->card_selected[0] + 1) % hand->card_count;
+		if (hand->_cards.count == 0)
+			;
+		else if (hand->_cards.count == 1)
+			;
+		else
+		{
+			hand->_cards.tail = hand->_cards.head;
+			hand->_cards.head = hand->_cards.tail->next;
+		}
 		hand->selected_card_plane = _hand_get_selected_card_plane(hand);
 	}
 	else if (hand->status == HAND_DISPLAY_SHED)
@@ -62,11 +56,15 @@ int	hand_select_prev_card(struct s_hand *hand)
 		return (1);
 	if (hand->status == HAND_DISPLAY_HAND)
 	{
-		if (hand->card_count == 0)
-			return (hand->card_selected[0] = -1, 0);
-		hand->card_selected[0]--;
-		if (hand->card_selected[0] < 0)
-			hand->card_selected[0] = hand->card_count - 1;
+		if (hand->_cards.count == 0)
+			;
+		else if (hand->_cards.count == 1)
+			;
+		else
+		{
+			hand->_cards.head = hand->_cards.tail;
+			hand->_cards.tail = hand->_cards.tail->prev;
+		}
 		hand->selected_card_plane = _hand_get_selected_card_plane(hand);
 	}
 	else if (hand->status == HAND_DISPLAY_SHED)
@@ -93,13 +91,7 @@ int	hand_update_selected(struct s_hand *hand)
 	if (!hand)
 		return (1);
 	if (hand->status == HAND_DISPLAY_HAND)
-	{
-		if (hand->card_count == 0)
-			return (hand->card_selected[1] = -1, 0);
-		while (hand->card_selected[0] >= (int)hand->card_count)
-			hand->card_selected[0]--;
 		return (0);
-	}
 	else if (hand->status == HAND_DISPLAY_SHED)
 	{
 		if (hand->shed_count == 0)
@@ -117,8 +109,9 @@ int	hand_update_selected(struct s_hand *hand)
 
 int	hand_pop_selected_card(struct s_hand *hand, struct s_card_desc *popped_card)
 {
-	struct s_card_plane *selected_card_plane = NULL;
-	struct s_card_desc card_desc;
+	struct s_card_plane	*selected_card_plane = NULL;
+	struct s_card_desc	card_desc;
+
 	if (!hand)
 		return (1);
 	selected_card_plane =  _hand_get_selected_card_plane(hand);

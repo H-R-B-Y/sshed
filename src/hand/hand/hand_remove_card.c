@@ -1,51 +1,63 @@
 
 #include "hand.h"
 
+int		_unlink_node(t_cdll *list, struct s_cdll_node *node)
+{
+	if (list->count == 0)
+		return (0);
+	if (list->count == 1)
+	{
+		node->next = 0;
+		node->prev = 0;
+		list->head = 0;
+		list->tail = 0;
+	}
+	else
+	{
+		if (node == list->head)
+			list->head = node->next;
+		if (node == list->tail)
+			list->tail = node->prev;
+		node->next->prev = node->prev;
+		node->prev->next = node->next;
+		node->next = 0;
+		node->prev = 0;
+	}
+	list->count--;
+	return (0);
+}
+
 void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 {
-	int move_sel;
+	unsigned int		idx;
+	struct s_cdll_node	*node;
+	struct s_card_plane	*card_plane;
 
 	if (!hand)
 		return ;
 	if (hand->card_count == 0)
 		return ;
-	else if (hand->card_count == 1)
-		move_sel = -1;
-	else
-		move_sel = 0;
-	for (t_list *current = hand->cards; current != NULL; current = current->next)
+	idx = 0;
+	node = hand->_cards.head;
+	while (idx < hand->_cards.count)
 	{
-		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
+		card_plane = node->data;
 		if (card_plane && card_is_equal(card_plane->card_desc, card_desc))
 		{
-			t_list *to_remove = current;
-			if (to_remove == hand->cards)
-				hand->cards = to_remove->next;
-			else
-			{
-				t_list *prev = hand->cards;
-				while (prev->next != to_remove)
-					prev = prev->next;
-				prev->next = to_remove->next;
-			}
+			_unlink_node(&hand->_cards, node);
 			card_plane_destroy(card_plane);
-			// return_free_list(&hand->allocator, to_remove);
-			free(to_remove);
-			if (move_sel == -1)
-				hand->card_selected[0] = -1;
+			node->data = 0;
+			free(node);
 			hand->card_count--;
-			if (hand->card_count == 0)
-			{
-				hand->selected_card_plane = NULL;
-				hand->card_selected[0] = -1;
-			}
 			hand->hand_dirty = 1;
-			return;
+			return ;
 		}
+		idx++;
+		node = node->next;
 	}
-	// Card not found in hand
 	return ;
 }
+
 
 void	hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 {

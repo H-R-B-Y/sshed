@@ -29,6 +29,7 @@ int	hand_create(struct s_hand **hand, struct ncplane *parent)
 	new_hand->status = HAND_DISPLAY_HAND;
 	new_hand->last_status = HAND_DISPLAY_HAND;
 	new_hand->max_cards_to_display = 6;
+	new_hand->_cards = cdll_init();
 	*hand = new_hand;
 	return (0);
 }
@@ -47,13 +48,11 @@ void hand_destroy(struct s_hand *hand)
 		next = current->next;
 		card_plane = (struct s_card_plane *)current->content;
 		card_plane_destroy(card_plane);
-		// return_free_list(&hand->allocator, current);
 		free(current);
 		current = next;
 	}
 	if (hand->hand_plane)
 		ncplane_destroy(hand->hand_plane);
-	// destroy_free_list(&hand->allocator);
 	free(hand);
 }
 

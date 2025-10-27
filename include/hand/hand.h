@@ -40,6 +40,7 @@ struct s_hand
 
 	// t_free_list			allocator; // for card planes
 	t_list				*cards; // contains struct s_card_plane
+	t_cdll				_cards;
 	unsigned int		card_count;
 	int		card_selected[2]; // selected hand and shed
 
@@ -118,5 +119,8 @@ int	hand_calculate_max_displayable(
 	struct ncplane *stdplane,
 	struct s_hand *hand
 );
+
+__attribute__ ((visibility ("hidden")))
+int		_unlink_node(t_cdll *list, struct s_cdll_node *node);
 
 #endif

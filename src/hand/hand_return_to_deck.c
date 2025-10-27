@@ -7,13 +7,15 @@ int	hand_return_to_deck(
 	struct s_deck *deck
 )
 {
+	struct s_card_plane	*card_plane;
+
 	if (!hand || !deck)
 		return (1);
 	while (hand->card_count > 0)
 	{
-		struct s_card_plane *card_plane = (struct s_card_plane *)hand->cards->content;
-		hand_remove_card(hand, card_plane->card_desc);
+		card_plane = (struct s_card_plane *)hand->_cards.head;
 		deck_return_card(deck, card_plane->card_desc);
+		hand_remove_card(hand, card_plane->card_desc);
 	}
 	hand_render(hand);
 	return (0);
