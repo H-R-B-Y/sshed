@@ -28,6 +28,7 @@
 #include "deck_display.h"
 #include "deck_display_anon.h"
 
+#include "game/game_data.h"
 
 // SUBJECT TO CHANGE
 int	init_client(

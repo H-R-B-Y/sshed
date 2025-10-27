@@ -2,6 +2,9 @@
 # define CARDS_H
 # define FT_INCLUDE_ALL
 # include "libft.h"
+# include <notcurses/notcurses.h>
+# include <stdio.h>
+# include <stdlib.h>
 
 # define CARD_LOAD_PATH "images/Small/"
 

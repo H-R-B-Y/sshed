@@ -53,14 +53,12 @@ int init_hand(
 	struct s_hand **hand
 )
 {
-	unsigned int				width, height;
 	struct ncplane	*stdplane = notcurses_stdplane(nc);
 
 	if (!hand)
 		ERR("Input hand double pointer is NULL");
 	if (!stdplane)
 		ERR("Standard plane is NULL (maybe notcurses not initialized?)");
-	ncplane_dim_yx(stdplane, &height, &width);
 	(*hand) = NULL;
 	if (hand_create(hand, stdplane))
 		ERR("Failed to create hand");

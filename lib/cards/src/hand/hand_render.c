@@ -131,6 +131,5 @@ void	hand_render(struct s_hand *hand)
 		default:
 			break ;
 	}
-	// notcurses_render(nc);
 }
 

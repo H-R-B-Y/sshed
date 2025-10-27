@@ -1,5 +1,4 @@
 #include "cards.h"
-#include "game.h"
 
 t_hashmap		cardmap;
 unsigned int	card_dimensions[4] = {0, 0, 0, 0}; // width, height, h_width, h_height
