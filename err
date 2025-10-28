@@ -1,0 +1,29 @@
+==6051== Memcheck, a memory error detector
+==6051== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==6051== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==6051== Command: ./sshed_client.out
+==6051== 
+225 renders, 428.60ms (1.74ms min, 1.90ms avg, 7.14ms max)
+225 rasters, 129.66ms (515.93µs min, 576.28µs avg, 2.96ms max)
+225 writes, 61.01ms (227.19µs min, 271.15µs avg, 2.73ms max)
+372B (0B min, 1B avg, 86B max) 9 inputs Ghpa: 0
+0 failed renders, 0 failed rasters, 2 refreshes, 0 input errors
+RGB emits:elides: def 1:13248 fg 0:0 bg 0:0
+Cell emits:elides: 13249:2964991 (99.56%) 99.99% 0.00% 0.00%
+Bmap emits:elides: 0:0 (0.00%) 0B (0.00%) SuM: 0 (0.00%)
+==6051== 
+==6051== HEAP SUMMARY:
+==6051==     in use at exit: 58,557 bytes in 280 blocks
+==6051==   total heap usage: 3,653 allocs, 3,373 frees, 2,225,681 bytes allocated
+==6051== 
+==6051== LEAK SUMMARY:
+==6051==    definitely lost: 0 bytes in 0 blocks
+==6051==    indirectly lost: 0 bytes in 0 blocks
+==6051==      possibly lost: 0 bytes in 0 blocks
+==6051==    still reachable: 48,448 bytes in 255 blocks
+==6051==         suppressed: 8,093 bytes in 4 blocks
+==6051== Reachable blocks (those to which a pointer was found) are not shown.
+==6051== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==6051== 
+==6051== For lists of detected and suppressed errors, rerun with: -s
+==6051== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

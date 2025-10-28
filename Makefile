@@ -1,6 +1,7 @@
 NAME			:= sshed_client.out
 CC 				:= gcc
-CFLAGS			:= -Wextra -Wall -g3 -O0 -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
+CFLAGS			:= -Wextra -Wall -g3 -O0 \
+				-D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
 
 SHELL			:= /bin/bash
 
@@ -24,7 +25,15 @@ LIBCLIENT_DIR	:= $(LIB_DIR)/sf_resources
 SRC_DIR			:= ./src
 
 SRCS			:= \
+				src/menu/menu.c \
+				src/main_menu/main_menu.c \
 				src/init/init.c \
+				src/init/init_hooks.c \
+				src/game_manager/game_manager.c \
+				src/game_manager/game_man_run.c \
+				src/game_manager/game_man_state.c \
+				src/game_setup/game_setup.c \
+				src/settings_menu/settings_menu.c \
 				\
 
 
@@ -40,53 +49,53 @@ MAIN			:= $(SRC_DIR)/main.c
 all: $(NAME)
 
 $(NAME): $(MAIN) $(OBJS) \
-		lib/libft/libft.a \
-		images/Small/Diamonds\ 1.png \
-		lib/cards/libcards.a \
-		lib/sf_resources/libsf_client.a
-		$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFLAGS) -o $(NAME)
+				lib/libft/libft.a \
+				images/Small/Diamonds\ 1.png \
+				lib/cards/libcards.a \
+				lib/sf_resources/libsf_client.a
+				$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFLAGS) -o $(NAME)
 
 
 move:
-		cp -r images /home/gameuser
-		chmod -R 777 /home/gameuser
-		chown -R gameuser:gameuser /home/gameuser
-		cp sshed_client.out /home/gameuser
-		chown gameuser:gameuser /home/gameuser
-		chmod 777 /home/gameuser/sshed_client.out
+				cp -r images /home/gameuser
+				chmod -R 777 /home/gameuser
+				chown -R gameuser:gameuser /home/gameuser
+				cp sshed_client.out /home/gameuser
+				chown gameuser:gameuser /home/gameuser
+				chmod 777 /home/gameuser/sshed_client.out
 
 images/Small/Diamonds\ 1.png:
-		@if [ ! -f "images/Small/Diamonds 1.png" ]; then \
-			$(MAKE) cards; \
-		fi
+				@if [ ! -f "images/Small/Diamonds 1.png" ]; then \
+					$(MAKE) cards; \
+				fi
 
 lib/libft/libft.a:
-		@$(MAKE) -j10 --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBFT_DIR) fclean && $(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)"
+				@$(MAKE) -j10 --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBFT_DIR) fclean && $(MAKE) --directory $(LIBFT_DIR) CFLAGS="$(CFLAGS)"
 
 lib/cards/libcards.a:
-		@$(MAKE) -j10 --directory $(LIBCARDS_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBCARDS_DIR) fclean && $(MAKE) --directory $(LIBCARDS_DIR) CFLAGS="$(CFLAGS)"
+				@$(MAKE) -j10 --directory $(LIBCARDS_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBCARDS_DIR) fclean && $(MAKE) --directory $(LIBCARDS_DIR) CFLAGS="$(CFLAGS)"
 
 lib/sf_resources/libsf_client.a:
-		@$(MAKE) -j10 --directory $(LIBCLIENT_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBCLIENT_DIR) fclean && $(MAKE) --directory $(LIBCLIENT_DIR) CFLAGS="$(CFLAGS)"
+				@$(MAKE) -j10 --directory $(LIBCLIENT_DIR) CFLAGS="$(CFLAGS)" || @$(MAKE) --directory $(LIBCLIENT_DIR) fclean && $(MAKE) --directory $(LIBCLIENT_DIR) CFLAGS="$(CFLAGS)"
 
 %.o: %.c
-		@$(CC) $(CFLAGS) -o $@ -c $< $(INCLUDES)
+				$(CC) $(CFLAGS) -o $@ -c $< $(INCLUDES)
 
 %.o: %.bin
-		@ld -r -b binary -o $@ $<
+				@ld -r -b binary -o $@ $<
 
 clean:
-		@rm -rf $(OBJS)
-		@$(MAKE) --directory $(LIBCARDS_DIR) clean
-		@$(MAKE) --directory $(LIBCLIENT_DIR) clean
-		@find . -name '*.gcda' -delete
-		@find . -name '*.gcno' -delete
+				@rm -rf $(OBJS)
+				@$(MAKE) --directory $(LIBCARDS_DIR) clean
+				@$(MAKE) --directory $(LIBCLIENT_DIR) clean
+				@find . -name '*.gcda' -delete
+				@find . -name '*.gcno' -delete
 
 rm:
-		@$(MAKE) --directory $(LIBFT_DIR) fclean
-		@$(MAKE) --directory $(LIBCARDS_DIR) fclean
-		@$(MAKE) --directory $(LIBCLIENT_DIR) fclean
-		@rm -rf $(NAME)
+				@$(MAKE) --directory $(LIBFT_DIR) fclean
+				@$(MAKE) --directory $(LIBCARDS_DIR) fclean
+				@$(MAKE) --directory $(LIBCLIENT_DIR) fclean
+				@rm -rf $(NAME)
 
 fclean: clean rm pre post
 

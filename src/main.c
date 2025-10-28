@@ -51,18 +51,28 @@ int	on_stdin(struct s_client *client, void *appdata)
 	return (1);
 }
 
+int	callback(struct s_menu *m, struct notcurses *nc)
+{
+	(void)m;
+	(void)nc;
+	dprintf(STDOUT_FILENO, "Callback invoked!\n");
+	return (0);
+}
 
 int main(void)
 {
-	struct s_client	client = {0};
-
-	if (!client_init(&client, SOCKET_PATH))
+	struct s_game_manager	*manager;
+	if (game_manager_init(&manager) != 0)
+	{
+		dprintf(STDERR_FILENO, "Failed to initialize game manager\n");
 		return (1);
-	client.on_connect = on_connect;
-	client.on_disconnect = on_disconnect;
-	client.on_msg = on_msg_recv;
-	client.on_stdin = on_stdin;
-	client.appdata = NULL;
-	client_run(&client);
-	client_shutdown(&client);
+	}
+	if (game_manager_run(manager) != 0)
+	{
+		dprintf(STDERR_FILENO, "Error running game manager\n");
+		game_manager_destroy(manager);
+		return (1);
+	}
+	game_manager_destroy(manager);
+	return (0);
 }

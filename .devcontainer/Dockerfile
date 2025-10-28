@@ -7,9 +7,13 @@ RUN apt update && apt install -y \
 	notcurses-bin libnotcurses-dev \
 	locales \
 	curl unzip \
+	valgrind \
+	bash-completion \
 	&& apt clean
 
 RUN apt install -y openssh-server
+
+RUN echo "source /etc/bash_completion" >> /root/.bashrc
 
 RUN mkdir /var/run/sshd \
 	&& mkdir -p /root/.ssh \

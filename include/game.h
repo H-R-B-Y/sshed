@@ -30,6 +30,8 @@
 
 #include "game/game_data.h"
 
+#include "game/menu.h"
+
 // SUBJECT TO CHANGE
 int	init_client(
 	struct notcurses **nc,

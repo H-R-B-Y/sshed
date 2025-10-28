@@ -1,6 +1,3 @@
 [submodule "lib/libft"]
 	path = lib/libft
 	url = git@github.com:H-R-B-Y/libft_extended.git
-[submodule "lib/domain"]
-	path = lib/domain
-	url = git@github.com:H-R-B-Y/domain_socket_example.git

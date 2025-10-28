@@ -8,9 +8,9 @@
 # include <notcurses/notcurses.h>
 
 # define HAND_AREA_X(width, height) (0)
-# define HAND_AREA_Y(width, height) (height - (CARD_HEIGHT + 2))
+# define HAND_AREA_Y(width, height) (height - (CARD_HEIGHT + 3))
 # define HAND_AREA_WIDTH(width, height) (width)
-# define HAND_AREA_HEIGHT(width, height) (CARD_HEIGHT + 2)
+# define HAND_AREA_HEIGHT(width, height) (CARD_HEIGHT + 3)
 
 # define HAND_ARENA_ALLOCATOR_SIZE 54 * (sizeof(struct s_card_plane) + sizeof(t_list) + sizeof(t_free_list_node)) \
 		+ 6 * (sizeof(struct s_card_plane) + sizeof(t_list) + sizeof(t_free_list_node))

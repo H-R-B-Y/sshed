@@ -1,0 +1,21 @@
+{
+   notcurses_init
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:notcurses_core_init
+}
+{
+   _dl_init
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_dl_init
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:call_init.part.0
+}

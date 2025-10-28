@@ -7,12 +7,14 @@
 # include "../enum_macro.h"
 
 # define GAME_STATE_LIST(prefix, func) \
+	func(prefix, NONE) \
 	func(prefix, INIT) \
 	func(prefix, MAIN) \
-	func(prefix, GAME_SETTINGS) \
-	func(prefix, GAME_PLAY) \
-	func(prefix, GAME_PAUSE) \
-	func(prefix, GAME_END)
+	func(prefix, SETTINGS) \
+	func(prefix, GAME_LOCAL_SETUP) \
+	func(prefix, GAME_LOCAL_PLAY) \
+	func(prefix, GAME_LOCAL_PAUSE) \
+	func(prefix, GAME_LOCAL_END)
 
 ENUM_FACTORY(GAME_STATE, game_state, GAME_STATE_LIST);
 
