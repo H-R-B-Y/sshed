@@ -21,6 +21,7 @@
 # include "pile_display.h"
 # include "sock_client_framework.h"
 # include "menu_methods.h"
+# include "game_local.h"
 
 # include <sys/timerfd.h>
 
@@ -134,21 +135,6 @@ struct s_game_local_setup
 	// Some struct to contain the game custom rules
 	// The menu struct
 	struct s_menu			*menu;
-};
-
-struct s_game_local
-{
-	struct s_deck			*deck;
-	struct s_hand			*hand;
-	struct s_deck_display	*deck_display;
-	struct s_pdisplay		*pdisplay[3];
-	t_u8					pdisplay_count;
-	struct s_pile_display	*pile_display;
-	// And we need some way to store the game log
-	t_list					*game_log; // list of status messages
-	struct ncplane			*log_plane;
-	t_u8					log_visible;
-	t_u8					log_dirty;
 };
 
 struct s_game_settings_menu

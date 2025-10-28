@@ -18,6 +18,28 @@
 
 ENUM_FACTORY(GAME_STATE, game_state, GAME_STATE_LIST);
 
+// typedef enum e_game_state {
+// 	 GAME_STATE_NONE,
+// 	 GAME_STATE_INIT,
+// 	 GAME_STATE_MAIN,
+// 	 GAME_STATE_SETTINGS,
+// 	 GAME_STATE_GAME_LOCAL_SETUP,
+// 	 GAME_STATE_GAME_LOCAL_PLAY,
+// 	 GAME_STATE_GAME_LOCAL_PAUSE,
+// 	 GAME_STATE_GAME_LOCAL_END,
+// 	 GAME_STATE_COUNT
+// } t_game_state;
+// static const char *game_state_str[GAME_STATE_COUNT] __attribute__((unused)) = {
+// 		"NONE",
+// 		"INIT",
+// 		"MAIN",
+// 		"SETTINGS",
+// 		"GAME_LOCAL_SETUP",
+// 		"GAME_LOCAL_PLAY",
+// 		"GAME_LOCAL_PAUSE",
+// 		"GAME_LOCAL_END",
+// 	};
+
 /*
 typedef enum e_game_state
 {
@@ -30,7 +52,8 @@ GAME_STATE_GAME_END,
 GAME_STATE_COUNT
 } t_game_state;
 static const char *game_state_str[GAME_STATE_COUNT] __attribute__((unused))
- = { "INIT", "MAIN", "GAME_SETTINGS", "GAME_PLAY", "GAME_PAUSE", "GAME_END", };
+ = { "INIT",
+ "MAIN", "GAME_SETTINGS", "GAME_PLAY", "GAME_PAUSE", "GAME_END", };
 
 */
 
