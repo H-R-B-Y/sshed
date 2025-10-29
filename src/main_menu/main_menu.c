@@ -54,22 +54,18 @@ static int	menu_input_handler(
 	struct epoll_event *event
 )
 {
-	struct s_main_menu	*main_menu = (struct s_main_menu *)manager->state_data;
-	struct s_menu		*menu = main_menu->menu;
-	int					c_code;
+	struct s_main_menu	*main_menu;
+	struct s_menu		*menu;
 
 	if (!manager || !manager->state_data || !event)
 		return (1);
+	main_menu = (struct s_main_menu *)manager->state_data;
+	if (!main_menu)
+		return (1);
+	menu = main_menu->menu;
 	if (event->data.fd != manager->reading_fd)
 		return (0);
-	c_code = notcurses_get_blocking(manager->nc, NULL);
-	if (c_code == NCKEY_DOWN)
-		return (menu_select_next(menu));
-	else if (c_code == NCKEY_UP)
-		return (menu_select_prev(menu));
-	else if (c_code == NCKEY_ENTER || c_code == '\n' || c_code == '\r')
-		return (menu_activate_selected(menu));
-	return (0);
+	return (_menu_key_handler(menu, manager->nc));
 }
 
 int load_main_menu_state(
@@ -91,21 +87,13 @@ int load_main_menu_state(
 	if (!main_menu)
 		return (1);
 	if (menu_create(
-			&main_menu->menu,
-			notcurses_stdplane(manager->nc),
-			options,
-			sizeof(options) / sizeof(options[0])
-		) != 0)
-	{
-		manager->errmsg = "Failed to create main menu";
-		free(main_menu);
-		return (1);
-	}
+		&main_menu->menu,
+		notcurses_stdplane(manager->nc),
+		options,
+		sizeof(options) / sizeof(options[0])))
+		return ((manager->errmsg = "Failed to create main menu"), free(main_menu), 1);
 	manager->stdin_handler = menu_input_handler; // Set stdin handler if needed
-	manager->renderers[0] = (struct s_renderer){
-		.render_fn = (t_renderer_fn)menu_render,
-		.data = main_menu->menu
-	};
+	manager->renderers[0] = (struct s_renderer){.render_fn = (t_renderer_fn)menu_render, .data = main_menu->menu};
 	manager->renderer_count = 1;
 	main_menu->menu->user_data = manager; // if menu actions need access to the manager
 	*state_data = main_menu;

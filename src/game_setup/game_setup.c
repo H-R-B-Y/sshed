@@ -17,6 +17,24 @@ static int	setup_exit(
 	return (0);
 }
 
+static int	setup_start_game(
+	struct s_menu *menu,
+	struct notcurses *nc
+)
+{
+	struct s_game_manager	*manager;
+
+	if (!menu || !nc)
+		return (1);
+	manager = menu->user_data;
+	if (!manager)
+		return (1);
+	if (manager->state != GAME_STATE_GAME_LOCAL_SETUP)
+		return (1);
+	manager->next_state = GAME_STATE_GAME_LOCAL_PLAY;
+	return (0);
+}
+
 static int	setup_input_handler(
 	struct s_game_manager *manager,
 	struct epoll_event *event
@@ -92,7 +110,7 @@ int	load_game_setup_state(
 {
 	struct s_game_local_setup		*setup;
 	struct s_menu_option			options[] = {
-		{.text_type = STATIC_TEXT, .option_text = "Start", .option_action = NULL},
+		{.text_type = STATIC_TEXT, .option_text = "Start", .option_action = setup_start_game},
 		{.text_type = DYNAMIC_TEXT_FUNCTION, .get_option_text = get_player_count_text, .option_action = setup_players},
 		{.text_type = STATIC_TEXT, .option_text = "Rules", .option_action = NULL},
 		{.text_type = STATIC_TEXT, .option_text = "Back", .option_action = setup_exit},
@@ -128,9 +146,24 @@ void	unload_game_setup_state(
 	void *state_data
 )
 {
-	struct s_game_local_setup	*setup = (struct s_game_local_setup *)state_data;
+	struct s_game_local_setup		*setup;
+	struct s_game_local_settings	*settings;
+
 	if (!manager || !state_data)
 		return ;
+	setup = (struct s_game_local_setup *)state_data;
+	settings = ft_calloc(1, sizeof(struct s_game_local_settings));
+	if (settings)
+	{
+		settings->player_count = setup->player_count;
+		manager->prev_state_data = settings;
+		manager->prev_state_data_destructor = (t_freefn)free;
+	}
+	else
+	{
+		manager->prev_state_data = NULL;
+		manager->prev_state_data_destructor = NULL;
+	}
 	menu_destroy(setup->menu);
 	free(setup);
 	manager->stdin_handler = NULL;

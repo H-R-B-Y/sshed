@@ -25,6 +25,10 @@
 
 # include <sys/timerfd.h>
 
+
+# define MANAGER_RET_ERR(str) ((manager->errmsg = str), 1)
+
+
 typedef int		(*t_state_load_fn)(
 	struct s_game_manager *manager,
 	void **state_data
@@ -52,6 +56,7 @@ struct s_state_handler
 	- Free any state data allocated in load function (or move it to the prev_state_data)
 	- Unset manager->stdin_handler if it was set
 	- Nullify the current state data if needed
+	- Set or unset prev state data
 	- Return nothing ?
 	*/
 	t_state_unload_fn	unload_fn;
@@ -70,11 +75,13 @@ __attribute__((unused)) = {
 	[GAME_STATE_GAME_LOCAL_SETUP]
 		= { load_game_setup_state, unload_game_setup_state },
 	[GAME_STATE_GAME_LOCAL_PLAY]
-		= { NULL, NULL },
+		= { load_game_local, unload_game_local },
 	[GAME_STATE_GAME_LOCAL_PAUSE]
-		= { NULL, NULL },
+		= { load_local_pause, unload_local_pause },
 	[GAME_STATE_GAME_LOCAL_END]
-		= { NULL, NULL },
+		= { load_local_end, unload_local_end },
+	[GAME_STATE_GAME_NEW_STATE]
+		= { NULL, NULL }
 };
 
 typedef int	(*t_renderer_fn)(void *data);
@@ -142,15 +149,6 @@ struct s_game_settings_menu
 	struct s_menu			*menu;
 };
 
-struct s_game_local_pause
-{
-	struct s_menu			*menu;
-};
-
-struct s_game_local_end
-{
-	struct s_menu			*menu;
-};
 
 // So our initial state is just the menu
 // We initialize the menu with options to start game, settings, exit etc.

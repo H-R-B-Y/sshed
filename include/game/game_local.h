@@ -14,6 +14,8 @@
 
 # include "enum_macro.h"
 
+struct s_game_manager;
+
 # define GAME_PLAYING_STATES(prefix, func) \
 	func(prefix, NONE) \
 	func(prefix, DEAL_PHASE) \
@@ -33,6 +35,7 @@ struct s_game_local_settings
 
 struct s_game_local
 {
+	t_u8							initialised;
 	struct s_game_local_settings	settings;
 	
 	struct s_deck					*deck;
@@ -45,7 +48,12 @@ struct s_game_local
 
 	t_game_play_state				play_state;
 	int								cards_played;
+
 	t_u8							whos_turn;
+	t_u8							card_has_been_played;
+	t_card_desc						card_played;
+
+	t_u8							who_won;
 
 	// And we need some way to store the game log
 	t_list							*game_log; // list of status messages
@@ -57,5 +65,38 @@ struct s_game_local
 
 int		load_game_local(struct s_game_manager *manager, void **state_data);
 void	unload_game_local(struct s_game_manager *manager, void *state_data);
+void	free_game_state(struct s_game_local *game);
+
+int		pre_render_game_update(struct s_game_manager *manager);
+
+struct epoll_event;
+int		game_local_play_input_handler(
+	struct s_game_manager *manager,
+	struct epoll_event *event
+);
+
+struct s_game_local_pause
+{
+	// We might be able to get away with using this also for the multiplayer game but not sure how we are implemeting the multiplayer yet so we will have to see
+	struct s_menu		*menu;
+};
+
+int		load_local_pause(struct s_game_manager *manager, void **state_data);
+void	unload_local_pause(struct s_game_manager *manager, void *state_data);
+void	free_local_pause(struct s_game_local_pause *pause);
+
+
+struct s_game_local_end
+{
+	t_u8					who_won;
+	t_list					*log_data;
+	struct ncplane			*log_plane;
+	struct s_menu			*menu;
+};
+
+int		load_local_end(struct s_game_manager *manager, void **state_data);
+void	unload_local_end(struct s_game_manager *manager, void *state_data);
+void	free_local_end(struct s_game_local_end *end_state);
+
 
 #endif

@@ -10,7 +10,7 @@ int		pile_display_render(
 {
 	if (!pile_display)
 		return (1);
-	if (!pile_display->is_visible)
+	if (!pile_display->is_visible && pile_display->plane)
 		return (ncplane_erase(pile_display->plane), 0);
 	if (!pile_display->is_dirty)
 		return (0);

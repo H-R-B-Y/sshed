@@ -36,6 +36,7 @@ int	load_init_state(
 	if (!manager->nc)
 		return (1);
 	setup_reading_fd(manager);
+	init_cards(manager->nc);
 	manager->next_state = GAME_STATE_MAIN;
 	return (0);
 }

@@ -4,6 +4,7 @@
 		"card_plane.h": "c",
 		"cards.h": "c",
 		"notcurses.h": "c",
-		"game_data.h": "c"
+		"game_data.h": "c",
+		"deck_display.h": "c"
 	}
 }

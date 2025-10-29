@@ -7,7 +7,8 @@ int		game_manager_change_state(
 {
 	if (!manager)
 		return (1);
-	if (manager->state == manager->next_state)
+	if (manager->state == manager->next_state
+		|| manager->next_state == GAME_STATE_NONE)
 		return (0);
 	
 	// Unload current state
@@ -23,6 +24,7 @@ int		game_manager_change_state(
 	//	- game load checks if current data is populated or not
 	manager->prev_state = manager->state;
 	manager->state = manager->next_state;
+	manager->next_state = GAME_STATE_NONE;
 
 	if (state_handlers[manager->state].load_fn)
 		return state_handlers[manager->state].load_fn(

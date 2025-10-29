@@ -54,22 +54,22 @@ void	pile_display_destroy(
 	struct s_pile_display *pile_display
 )
 {
+	size_t				count;
+	struct s_cdll_node	*current, *next;
+	struct s_card_plane	*card_plane;
+
 	if (!pile_display)
 		return ;
 	if (pile_display->plane)
 		ncplane_destroy(pile_display->plane);
-	// Free cards cdll
+	// Free cards cdlls
 	if (pile_display->cards)
 	{
-		dprintf(STDERR_FILENO, "Freeing pile_display cards cdll with %zu"
-			"cards will permanently remove card descriptors from memory!\n",
-			pile_display->cards->count);
-		struct s_cdll_node	*current = pile_display->cards->head;
-		struct s_cdll_node	*next;
-		size_t		count = pile_display->cards->count;
+		current = pile_display->cards->head;
+		count = pile_display->cards->count;
 		for (size_t idx = 0; idx < count; idx++)
 		{
-			struct s_card_plane *card_plane = (struct s_card_plane *)current->data;
+			card_plane = (struct s_card_plane *)current->data;
 			next = current->next;
 			card_plane_destroy(card_plane);
 			free(current); // TODO: make this use a free list

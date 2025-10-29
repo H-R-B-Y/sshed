@@ -275,14 +275,14 @@ int		pdisplay_clear_screen(
 	{
 		struct s_card_plane *card_plane = (struct s_card_plane *)current->content;
 		if (card_plane && card_plane->plane)
-			ncplane_erase(card_plane->plane);
+			hide_card_plane(card_plane);
 		current = current->next;
 	}
 	for (int i = 0; i < 6; i++)
 	{
 		struct s_card_plane *card_plane = pdisplay->shed[i];
 		if (card_plane && card_plane->plane)
-			ncplane_erase(card_plane->plane);
+			hide_card_plane(card_plane);
 	}
 	// notcurses_render(nc);
 	pdisplay->pdisplay_dirty = 1;

@@ -14,7 +14,8 @@
 	func(prefix, GAME_LOCAL_SETUP) \
 	func(prefix, GAME_LOCAL_PLAY) \
 	func(prefix, GAME_LOCAL_PAUSE) \
-	func(prefix, GAME_LOCAL_END)
+	func(prefix, GAME_LOCAL_END) \
+	func(prefix, GAME_NEW_STATE)
 
 ENUM_FACTORY(GAME_STATE, game_state, GAME_STATE_LIST);
 

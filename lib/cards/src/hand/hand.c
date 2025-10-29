@@ -47,13 +47,18 @@ void hand_destroy(struct s_hand *hand)
 		next = current->next;
 		card_plane = (struct s_card_plane *)current->content;
 		card_plane_destroy(card_plane);
-		// return_free_list(&hand->allocator, current);
 		free(current);
 		current = next;
+	} // This does not free the shed ?
+	for (int i = 0; i < 6; i++)
+	{
+		if (!hand->shed[i])
+			continue ;
+		card_plane = hand->shed[i];
+		card_plane_destroy(card_plane);
 	}
 	if (hand->hand_plane)
 		ncplane_destroy(hand->hand_plane);
-	// destroy_free_list(&hand->allocator);
 	free(hand);
 }
 

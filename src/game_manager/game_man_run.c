@@ -62,6 +62,8 @@ int	game_manager_run(
 					&& game_manager_change_state(manager) != 0)
 				{
 						dprintf(STDERR_FILENO, "Error changing game state\n");
+						if (manager->errmsg)
+							dprintf(STDERR_FILENO, "Error message: %s\n", manager->errmsg);
 						return (1);
 				}
 				read(manager->timer_fd, &expirations, sizeof(uint64_t));

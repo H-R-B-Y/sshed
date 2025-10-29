@@ -34,6 +34,12 @@ SRCS			:= \
 				src/game_manager/game_man_state.c \
 				src/game_setup/game_setup.c \
 				src/settings_menu/settings_menu.c \
+				src/local_game_logic/game_end_state.c \
+				src/local_game_logic/game_local_logic.c \
+				src/local_game_logic/local_game_load.c \
+				src/local_game_logic/local_game_pause.c \
+				src/ai_logic/computer_ai.c \
+				src/local_game_logic/game_playing_input_handler.c \
 				\
 
 

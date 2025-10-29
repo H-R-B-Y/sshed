@@ -112,14 +112,14 @@ void	render_hand_cards(struct s_hand *hand)
 	hand->hand_dirty = 0;
 }
 
-void	hand_render(struct s_hand *hand)
+int	hand_render(struct s_hand *hand)
 {
 	if (!hand)
-		return ;
+		return (1);
 	if (hand->status != hand->last_status)
 		hand->last_status = hand->status;
 	if (!hand->hand_dirty)
-		return ;
+		return (0);
 	switch (hand->status)
 	{
 		case HAND_DISPLAY_HAND:
@@ -131,5 +131,6 @@ void	hand_render(struct s_hand *hand)
 		default:
 			break ;
 	}
+	return (0);
 }
 

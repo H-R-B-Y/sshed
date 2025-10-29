@@ -74,7 +74,11 @@ void	game_manager_destroy(struct s_game_manager *manager)
 		close(manager->epoll_fd);
 	if (manager->timer_fd >= 0)
 		close(manager->timer_fd);
-	notcurses_stop(manager->nc);
+	if (manager->nc)
+	{
+		notcurses_stop(manager->nc);
+		destroy_cards();
+	}
 	free(manager);
 }
 

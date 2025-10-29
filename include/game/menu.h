@@ -66,4 +66,23 @@ int	menu_add_option(
 	int (*option_action)(struct s_menu *m, struct notcurses *nc)
 );
 
+static inline int	_menu_key_handler(
+	struct s_menu *menu,
+	struct notcurses *nc
+)
+{
+	int	c_code;
+
+	if (!menu)
+		return (1);
+	c_code = notcurses_get_blocking(nc, NULL);
+	if (c_code == NCKEY_DOWN)
+		return (menu_select_next(menu));
+	else if (c_code == NCKEY_UP)
+		return (menu_select_prev(menu));
+	else if (c_code == NCKEY_ENTER || c_code == '\n' || c_code == '\r')
+		return (menu_activate_selected(menu));
+	return (0);
+}
+
 #endif

@@ -82,7 +82,7 @@ int		hand_add_card_to_shed(struct s_hand *hand, t_card_desc card_desc);
 void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc);
 void	hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc);
 
-void	hand_render(struct s_hand *hand);
+int		hand_render(struct s_hand *hand);
 void	hand_clear_screen(struct s_hand *hand);
 
 void	hand_show_hand(struct s_hand *hand);
