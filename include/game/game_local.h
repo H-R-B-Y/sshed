@@ -10,6 +10,7 @@
 # include "pdisplay.h"
 # include "pile_display.h"
 
+# include "player_action.h"
 # include "ai_state_machine.h"
 
 # include "enum_macro.h"
@@ -47,11 +48,10 @@ struct s_game_local
 	struct s_pile_display			*pile_display;
 
 	t_game_play_state				play_state;
-	int								cards_played;
+	int								cards_played; // TODO: remove this make a game stats struct
 
 	t_u8							whos_turn;
-	t_u8							card_has_been_played;
-	t_card_desc						card_played;
+	struct s_player_action			player_action;
 
 	t_u8							who_won;
 

@@ -72,4 +72,15 @@ int	rotate_card_plane(
 	enum e_card_orientation	new_orientation
 );
 
+int	card_in_list(
+	struct s_card_desc card_desc,
+	t_list *list
+);
+
+int	card_in_array(
+	struct s_card_desc card_desc,
+	struct s_card_plane **planes,
+	size_t card_count
+);
+
 #endif

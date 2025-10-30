@@ -193,4 +193,21 @@ int	pdisplay_calculate_max_displayable(
 	struct s_pdisplay *pdisplay
 );
 
+// Checks
+
+int	pdisplay_has_card(
+	struct s_pdisplay *pdisplay,
+	struct s_card_desc card_desc
+);
+
+int	pdisplay_card_is_shed(
+	struct s_pdisplay *pdispay,
+	struct s_card_desc card_desc
+);
+
+int	pdisplay_card_is_hand(
+	struct s_pdisplay *pdisplay,
+	struct s_card_desc card_desc
+);
+
 #endif

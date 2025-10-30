@@ -119,4 +119,21 @@ int	hand_calculate_max_displayable(
 	struct s_hand *hand
 );
 
+// Checks
+
+int	hand_contains_card(
+	struct s_hand *hand,
+	struct s_card_desc card_desc
+);
+
+int	hand_card_in_shed(
+	struct s_hand *hand,
+	struct s_card_desc card_desc
+);
+
+int	hand_card_in_hand(
+	struct s_hand *hand,
+	struct s_card_desc card_desc
+);
+
 #endif

@@ -57,6 +57,9 @@ SRCS			:= \
 				src/pile_display/pile_display_cards.c \
 				src/pile_display/pile_display_return.c \
 				src/pdisplay/pdisplay_calc_max.c \
+				src/card_planes/card_checks.c \
+				src/hand/hand_checks.c \
+				src/pdisplay/pdisplay_checks.c \
 				\
 
 

@@ -80,6 +80,8 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 			}
 		}
 	}
+	// TODO: When we have dealt all of the cards, we need to descide who goes first
+	// Need to use eldest hand rule for accuracy, but could be changed in the game rules
 	return (0);
 }
 
@@ -111,28 +113,19 @@ static int	play_phase(struct s_game_manager *manager, struct s_game_local *game)
 	if (!manager || !game)
 		return (1);
 
-	if (game->card_has_been_played)
+	if (game->player_action.ready)
 	{
-		// TODO: This is really the next bit that needs to happen:
-		// This is where we move the card from the hand to the play pile
-		// But we will need to check some things
-		// - Does the player actually own this card?
-		// - Is the card in the shed or the hand
-		// - Is the card in a playable state (not from shed if still cards in the hand)
-		// - Is the card playable on the top of the pile if so
-		//		- Pop the card from the pdisplay/hand
-		//		- Add the card to the pile
-		// - Otherwise
-		//		- Return the card to the hand/pdisplay
-		//		- Move all cards in the pile to the hand/pdisplay
-
-		/*
-		Next steps
-			- Functions for hand and pdisplay to check if a card is owned
-			- Functions for hand and display to check if a card is either in the hand or the shed
-			- Functions for checking if a card is playable on the top of the pile
-		*/
-
+		if (game->player_action.action == PLAYER_ACTION_NONE)
+		{
+			game->player_action.ready = 0;
+			return (0);
+		}
+		if (_handle_player_action(manager, game, &game->player_action))
+			return MANAGER_RET_ERR("Player action caused an error");
+		// Player turn went through, and side effects of their action has been dealt with
+		// Increment who's turn it is
+		game->whos_turn = (game->whos_turn + 1) % game->settings.player_count + 1; // Right?
+		game->player_action = clean_action();
 	}
 
 	who_won = -1;

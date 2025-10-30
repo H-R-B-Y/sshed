@@ -13,18 +13,32 @@
 #  define _XOPEN_SOURCE 700
 # endif
 
-# include "main_statemap.h"
+/*
+Card lib:
+*/
 # include "deck.h"
 # include "deck_display.h"
 # include "hand.h"
 # include "pdisplay.h"
 # include "pile_display.h"
+
+/*
+Client / Server lib:
+*/
 # include "sock_client_framework.h"
+
+/*
+Game related info:
+*/
+# include "main_statemap.h"
 # include "menu_methods.h"
+# include "player_action.h"
 # include "game_local.h"
 
+/*
+std::
+*/
 # include <sys/timerfd.h>
-
 
 # define MANAGER_RET_ERR(str) ((manager->errmsg = str), 1)
 
@@ -150,9 +164,5 @@ struct s_game_settings_menu
 };
 
 
-// So our initial state is just the menu
-// We initialize the menu with options to start game, settings, exit etc.
-// Each option has a callback that modifies the game state, since we are running in a loop using epoll around notcurses_get_blocking
-// We can just change the game state and let the main loop handle the rest.
 
 #endif

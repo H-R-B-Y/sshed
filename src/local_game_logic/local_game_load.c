@@ -58,6 +58,8 @@ int	pre_render_ai_update(struct s_game_manager *manager)
 	switch (ai_state)
 	{
 		case (AI_STATE_DONE):
+			// TODO: when the AI is ready, just set the action to done
+			// dont increment the turn counter
 			game->whos_turn++;
 			if (game->whos_turn > game->pdisplay_count + 1)
 				game->whos_turn = 0;
