@@ -31,7 +31,9 @@ int	game_local_play_input_handler(
 		|| c_code == NCKEY_SPACE
 	)
 	{
-		if (game->whos_turn == 0 && !game->player_action.ready)
+		if (game->whos_turn == 0 && !game->player_action.ready
+			&& (game->hand->card_count > 0 || game->hand->shed_count > 0)
+			&& game->hand->selected_card_plane)
 		{
 			// Make sure that player can only play cards from the hand
 			// when there are cards in the hand
@@ -39,10 +41,21 @@ int	game_local_play_input_handler(
 			// TODO: add better logic here
 			struct s_card_desc	card;
 			card = game->hand->selected_card_plane->card_desc;
-			game->player_action.action = PLAYER_ACTION_PLAY;
-			game->player_action.cards[0] = card;
-			game->player_action.card_count = 1;
-			game->player_action.ready = 1; // TODO: update this
+			if (
+				(game->hand->status == HAND_DISPLAY_HAND
+				&& game->hand->card_count > 0
+				&& !hand_card_in_shed(game->hand, card))
+				||
+				(game->hand->status == HAND_DISPLAY_SHED
+				&& game->hand->card_count == 0
+				&& hand_card_in_shed(game->hand, card))
+			)
+			{
+				game->player_action.action = PLAYER_ACTION_PLAY;
+				game->player_action.cards[0] = card;
+				game->player_action.card_count = 1;
+				game->player_action.ready = 1; // TODO: update this
+			}
 		}
 	}
 	else if (c_code == NCKEY_LEFT) // TODO: vim controls, wasd?

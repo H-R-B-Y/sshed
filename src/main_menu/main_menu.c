@@ -114,5 +114,7 @@ void	unload_main_menu_state(
 	free(main_menu);
 	manager->state_data = NULL;
 	manager->state_data_destructor = NULL;
+	manager->prev_state_data = NULL;
+	manager->prev_state_data_destructor = NULL;
 	manager->stdin_handler = NULL;
 }

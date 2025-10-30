@@ -2,6 +2,25 @@
 # include "game/game_data.h"
 # include "game/game_local.h"
 
+static int	menu_input_handler(
+	struct s_game_manager *manager,
+	struct epoll_event *event
+)
+{
+	struct s_game_local_end	*main_menu;
+	struct s_menu			*menu;
+
+	if (!manager || !manager->state_data || !event)
+		return (1);
+	main_menu = (struct s_game_local_end *)manager->state_data;
+	if (!main_menu)
+		return (1);
+	menu = main_menu->menu;
+	if (event->data.fd != manager->reading_fd)
+		return (0);
+	return (_menu_key_handler(menu, manager->nc));
+}
+
 // TODO: Really this could be a static text option that is created in the load function but we can do that later
 char	*who_won_text(struct s_menu *menu)
 {
@@ -80,13 +99,27 @@ int		load_local_end(struct s_game_manager *manager, void **state_data)
 	end_state->menu->user_data = manager;
 	manager->renderers[0].data = end_state->menu;
 	manager->renderers[0].render_fn = (t_renderer_fn)menu_render;
+	manager->stdin_handler = menu_input_handler;
 	manager->renderer_count = 1; // TODO: this should be two one for the menu and one for the log plane;
 	(*state_data) = end_state;
 	return (0);
 }
 
 void	unload_local_end(struct s_game_manager *manager, void *state_data)
-{	(void)manager;(void)state_data;
+{
+	struct s_game_local_end	*end_state;
+
+	if (!manager||!state_data)
+		return ;
+	end_state = state_data;
+	if (end_state->menu)
+		menu_destroy(end_state->menu);
+	free(end_state);
+	manager->state_data = NULL;
+	manager->state_data_destructor = NULL;
+	manager->prev_state_data = NULL;
+	manager->prev_state_data_destructor = NULL;
+	manager->stdin_handler = NULL;
 }
 
 void	free_local_end(struct s_game_local_end *end_state)

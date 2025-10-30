@@ -3,16 +3,10 @@
 
 void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc)
 {
-	int move_sel;
-
 	if (!hand)
 		return ;
 	if (hand->shed_count == 0)
 		return ;
-	else if (hand->shed_count == 1)
-		move_sel = -1;
-	else
-		move_sel = 0;
 	for (unsigned int idx = 0; idx < 6; idx++)
 	{
 		struct s_card_plane *card_plane = hand->shed[idx];
@@ -23,8 +17,6 @@ void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc)
 			hand->shed_count--;
 			if (hand->status == HAND_DISPLAY_SHED)
 				hand->hand_dirty = 1;
-			if (move_sel == -1)
-				hand->card_selected[1] = -1;
 			if (hand->shed_count == 0)
 			{
 				hand->card_selected[1] = -1;
@@ -33,8 +25,6 @@ void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc)
 			return;
 		}
 	}
-	if (move_sel == -1)
-		hand->card_selected[1] = -1;
 	return ;
 }
 

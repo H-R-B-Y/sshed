@@ -40,6 +40,8 @@ int	hand_select_next_card(struct s_hand *hand)
 	{
 		if (hand->card_count == 0)
 			return (hand->card_selected[0] = -1, 0);
+		if (hand->card_count < (unsigned int)hand->card_selected[0])
+			return (hand->card_selected[0] = 0, 0);
 		hand->card_selected[0] = (hand->card_selected[0] + 1) % hand->card_count;
 		hand->selected_card_plane = _hand_get_selected_card_plane(hand);
 	}

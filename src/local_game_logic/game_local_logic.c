@@ -103,7 +103,6 @@ static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 
 static int	play_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
-	static int			cards_played = 0;
 	int					who_won;
 	/*
 	When we are in the play phase we want to check for
@@ -126,13 +125,10 @@ static int	play_phase(struct s_game_manager *manager, struct s_game_local *game)
 		// Increment who's turn it is
 		game->whos_turn = (game->whos_turn + 1) % game->settings.player_count + 1; // Right?
 		game->player_action = clean_action();
-	}
+		who_won = -1;
 
-	who_won = -1;
-	if (game->cards_played != cards_played)
-	{
 		// A player has played a card since last frame
-		cards_played = game->cards_played;
+		// cards_played = game->cards_played;
 		// Check for win conditions here
 		if (game->hand->card_count == 0 && game->hand->shed_count == 0)
 			who_won = 0;
