@@ -20,6 +20,7 @@ void	_hand_remove_card_shed(struct s_hand *hand, t_card_desc card_desc)
 			if (hand->shed_count == 0)
 			{
 				hand->card_selected[1] = -1;
+				hand_update_selected(hand);
 				hand->selected_card_plane = NULL;
 			}
 			return;

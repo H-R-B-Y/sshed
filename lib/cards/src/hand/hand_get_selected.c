@@ -100,6 +100,7 @@ int	hand_update_selected(struct s_hand *hand)
 			return (hand->card_selected[1] = -1, 0);
 		while (hand->card_selected[0] >= (int)hand->card_count)
 			hand->card_selected[0]--;
+		hand->selected_card_plane = _hand_get_selected_card_plane(hand);
 		return (0);
 	}
 	else if (hand->status == HAND_DISPLAY_SHED)
@@ -112,6 +113,7 @@ int	hand_update_selected(struct s_hand *hand)
 			if (hand->card_selected[1] < 0)
 				hand->card_selected[1] = (6 / 2) - 1;
 		}
+		hand->selected_card_plane = _hand_get_selected_card_plane(hand);
 		return (0);
 	}
 	return (1);

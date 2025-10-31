@@ -116,6 +116,9 @@ int	load_game_setup_state(
 		{.text_type = STATIC_TEXT, .option_text = "Back", .option_action = setup_exit},
 	};
 
+	if (!manager || !state_data)
+		return (1);
+	load_free_prev(manager);
 	setup = ft_calloc(1, sizeof(struct s_game_local_setup));
 	if (!setup)
 		return (1);
@@ -156,18 +159,13 @@ void	unload_game_setup_state(
 	if (settings)
 	{
 		settings->player_count = setup->player_count;
-		manager->prev_state_data = settings;
-		manager->prev_state_data_destructor = (t_freefn)free;
+		unload_set_prev_data(manager, settings, free);
 	}
 	else
-	{
-		manager->prev_state_data = NULL;
-		manager->prev_state_data_destructor = NULL;
-	}
+		unload_unset_prev(manager);
 	menu_destroy(setup->menu);
 	free(setup);
-	manager->stdin_handler = NULL;
-	manager->state_data = NULL;
-	manager->state_data_destructor = NULL;
+	unload_unset_data(manager);
+	unload_unset_stdinhandler(manager);
 	return ;
 }

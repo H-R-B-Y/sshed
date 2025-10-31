@@ -82,6 +82,7 @@ int load_main_menu_state(
 
 	if (!manager || !state_data)
 		return (1);
+	load_free_prev(manager);
 	notcurses_refresh(manager->nc, NULL, NULL);
 	main_menu = ft_calloc(1, sizeof(struct s_main_menu));
 	if (!main_menu)
@@ -112,9 +113,5 @@ void	unload_main_menu_state(
 	if (main_menu->menu)
 		menu_destroy(main_menu->menu);
 	free(main_menu);
-	manager->state_data = NULL;
-	manager->state_data_destructor = NULL;
-	manager->prev_state_data = NULL;
-	manager->prev_state_data_destructor = NULL;
-	manager->stdin_handler = NULL;
+	unload_clean_all(manager);
 }

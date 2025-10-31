@@ -28,6 +28,8 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 			hand->card_count--;
 			if (hand->card_selected[0] >= (int)hand->card_count)
 				hand_select_prev_card(hand);
+			else
+				hand_update_selected(hand);
 			if (hand->card_count == 0)
 			{
 				hand->selected_card_plane = NULL;

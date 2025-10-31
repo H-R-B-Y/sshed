@@ -26,6 +26,7 @@ int	load_init_state(
 {
 	if (!manager || !state_data)
 		return (1);
+	load_free_prev(manager);
 	*state_data = NULL;
 	manager->state_data_destructor = NULL;
 	manager->stdin_handler = NULL; // No stdin handler for init state
@@ -46,7 +47,7 @@ void	unload_init_state(
 	void *state_data
 )
 {
-	(void)manager;
 	(void)state_data;
+	unload_clean_all(manager);
 	return ;
 }

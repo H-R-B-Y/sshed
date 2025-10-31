@@ -65,6 +65,7 @@ int	load_settings_menu(
 
 	if (!manager || !state_data)
 		return (1);
+	load_free_prev(manager);
 	data = ft_calloc(1, sizeof(struct s_game_settings_menu));
 	if (!data)
 		return (1);
@@ -103,8 +104,7 @@ void	unload_settings_menu(
 	if (menu->menu)
 		menu_destroy(menu->menu);
 	free(menu);
-	manager->state_data = NULL;
-	manager->state_data_destructor = NULL;
-	manager->stdin_handler = NULL;
+	unload_unset_data(manager);
+	unload_unset_stdinhandler(manager);
 	return ;
 }

@@ -38,6 +38,12 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 	*/
 	if (first_call)
 	{
+		ft_srand(time(NULL));
+		int i = ft_rand(10, 100);
+		while (i--)
+		{
+			deck_shuffle(game->deck, i);
+		}
 		hand_show_shed(game->hand);
 		for (t_u8 i = 0; i < game->settings.player_count; i++)
 			pdisplay_show_shed(game->pdisplay[i]);
@@ -123,7 +129,9 @@ static int	play_phase(struct s_game_manager *manager, struct s_game_local *game)
 			return MANAGER_RET_ERR("Player action caused an error");
 		// Player turn went through, and side effects of their action has been dealt with
 		// Increment who's turn it is
-		game->whos_turn = (game->whos_turn + 1) % game->settings.player_count + 1; // Right?
+		game->whos_turn = (game->whos_turn + 1);
+		if (game->whos_turn > game->settings.player_count)
+			game->whos_turn = 0;
 		game->player_action = clean_action();
 		who_won = -1;
 
@@ -145,7 +153,10 @@ static int	play_phase(struct s_game_manager *manager, struct s_game_local *game)
 			}
 		}
 		if (who_won != -1)
+		{
 			game->play_state = PLAY_STATE_GAME_END;
+			game->who_won = who_won;
+		}
 	}
 	return (0);
 }

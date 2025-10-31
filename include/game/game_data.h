@@ -67,11 +67,11 @@ struct s_state_handler
 	t_state_load_fn		load_fn;
 	/*
 	Unload function checklist:
-	- Free any state data allocated in load function (or move it to the prev_state_data)
-	- Unset manager->stdin_handler if it was set
-	- Nullify the current state data if needed
-	- Set or unset prev state data
-	- Return nothing ?
+	- Free or move current state to prev
+	- Clear current data
+	- Clear prev data (if applicable)
+	- Unset renderers
+	- Unset stdin handler
 	*/
 	t_state_unload_fn	unload_fn;
 };
@@ -138,6 +138,36 @@ struct s_game_manager
 int		game_manager_init(struct s_game_manager **manager);
 void	game_manager_destroy(struct s_game_manager *manager);
 
+void	unload_unset_prev(
+	struct s_game_manager *manager
+);
+void	unload_unset_stdinhandler(
+	struct s_game_manager *manager
+);
+void	unload_unset_renderers(
+	struct s_game_manager *manager
+);
+void	unload_set_prev_data(
+	struct s_game_manager *manager,
+	void *data,
+	t_freefn free_data
+);
+void	load_free_prev(
+	struct s_game_manager *manager
+);
+void	unload_unset_data(
+	struct s_game_manager *manager
+);
+/**
+ * @brief cleanup on unload
+ * Unsets current state data
+ * Unsets prev state data
+ * Unsets renderers
+ * Unsets stdin handler
+ */
+void	unload_clean_all(
+	struct s_game_manager *manager
+);
 int		game_manager_change_state(
 	struct s_game_manager *manager
 );

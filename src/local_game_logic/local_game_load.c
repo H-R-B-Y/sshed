@@ -51,19 +51,13 @@ int	pre_render_ai_update(struct s_game_manager *manager)
 	if (game->whos_turn == 0)
 		return (0);
 	ai_state = ai_step(
+		&game->player_action,
 		&(game->ai_data[game->whos_turn - 1]),
 		game->pdisplay[game->whos_turn - 1],
 		game->pile_display
 	);
 	switch (ai_state)
 	{
-		case (AI_STATE_DONE):
-			// TODO: when the AI is ready, just set the action to done
-			// dont increment the turn counter
-			game->whos_turn++;
-			if (game->whos_turn > game->pdisplay_count + 1)
-				game->whos_turn = 0;
-			return (0);
 		case (AI_STATE_FUCK_FUCK_FUCK):
 			manager->errmsg = "AI Fatal error occured";
 			return (1);
@@ -252,10 +246,9 @@ void	unload_game_local(
 	*/
 	// TODO: we need to clear the screen here as we transition out of the state
 	_clear_game_display(state_data);
-	manager->stdin_handler = NULL;
-	manager->prev_state_data = state_data;
-	manager->prev_state_data_destructor = (t_freefn)free_game_state;
-	manager->renderer_count = 0;
+	unload_unset_stdinhandler(manager);
+	unload_unset_renderers(manager);
+	unload_set_prev_data(manager, state_data, (t_freefn)free_game_state);
 	return ;
 }
 

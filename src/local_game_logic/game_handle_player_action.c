@@ -108,6 +108,8 @@ static int	_next_card_stacks(
 		return (1); // can always play ace they are always lower and higher
 	else if (action->cards[0].rank == RANK_EIGHT)
 		return (1); // eight is invisible
+	else if (action->cards[0].rank == RANK_SEVEN)
+		return (1); // eight is invisible
 	else if (action->cards[0].rank == RANK_JOKER_BLACK
 		|| action->cards[0].rank == RANK_JOKER_RED)
 		return (1); // always play a joker
@@ -145,6 +147,8 @@ static int	_next_card_stacks(
 		else if (plane->card_desc.rank < action->cards[0].rank)
 			return (1);
 	}
+	else if (action->cards[0].rank == what_is_on_top->rank)
+		return (1);
 	else if (action->cards[0].rank > what_is_on_top->rank)
 		return (1);
 	return (0);
@@ -211,7 +215,7 @@ int	_handle_player_action(
 			if (pdisplay->card_count)
 				pdisplay_remove_card(pdisplay, action->cards[0]);
 			else
-				pdisplay_remove_card(pdisplay, action->cards[0]);
+				pdisplay_remove_card_shed(pdisplay, action->cards[0]);
 		}
 		pile_display_add_card_top(game->pile_display, action->cards[0]);
 		if (special_actions[action->cards[0].rank])
@@ -233,14 +237,14 @@ int	_handle_player_action(
 			if (pdisplay->card_count)
 				pdisplay_remove_card(pdisplay, action->cards[0]);
 			else
-				pdisplay_remove_card(pdisplay, action->cards[0]);
+				pdisplay_remove_card_shed(pdisplay, action->cards[0]);
 			pdisplay_show_hand(pdisplay);
 		}
 		pile_display_add_card_top(game->pile_display, action->cards[0]);
 		if (game->whos_turn == 0)
 			pile_display_return_to_hand(game->pile_display, false, game->hand);
 		else
-			pile_display_return_to_hand(game->pile_display, true, game->hand);
+			pile_display_return_to_hand(game->pile_display, true, pdisplay);
 	}
 	return (0);
 }

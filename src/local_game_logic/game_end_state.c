@@ -85,9 +85,7 @@ int		load_local_end(struct s_game_manager *manager, void **state_data)
 		end_state->who_won = game_state->who_won;
 		end_state->log_data = game_state->game_log;
 		game_state->game_log = NULL;
-		manager->prev_state_data_destructor(game_state);
-		manager->prev_state_data = NULL;
-		manager->prev_state_data_destructor = NULL;
+		load_free_prev(manager);
 	}
 	// Then create the end menu
 	if (menu_create(&end_state->menu,
@@ -115,11 +113,7 @@ void	unload_local_end(struct s_game_manager *manager, void *state_data)
 	if (end_state->menu)
 		menu_destroy(end_state->menu);
 	free(end_state);
-	manager->state_data = NULL;
-	manager->state_data_destructor = NULL;
-	manager->prev_state_data = NULL;
-	manager->prev_state_data_destructor = NULL;
-	manager->stdin_handler = NULL;
+	unload_clean_all(manager);
 }
 
 void	free_local_end(struct s_game_local_end *end_state)
