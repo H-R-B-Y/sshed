@@ -1,5 +1,44 @@
 # todo
 
+- When connecing over ssh, we can allow some env vars to be passed in via the sshd config
+ - then when the client changes their settings through the interface we can provide them with
+	 the string they need to add to their ssh command when they connect next time to keep those settings.
+	 this allows users to have persistent settings or to configure their settings without having to
+	 re-configure them every time they connect.
+
+- Need to rebuild the card library, right now cards are tied to the displays,
+this limits the ability for the game logic to manage the cards independently, ideally
+we can abstract the hand/shed to just be a collection of cards, and the display logic
+just takes a pointer to a collection and renders it, this way we have one central struct that can be used
+for both players, bots, and server logic, and the rendering just sits on top of that.
+
+- Need to figure out swap phase, right now we just skip it because I dont know the best way to approach it.
+I think one way to approach it would be, for the game_local_logic, we keep track of which element on the display is selected, and the stdin handler depends on this being set, if the element is the hand then left and right move the card selection, if the element is something else we do something else.
+Then in swap phase we can just use a pile to display the shed cards, and allow the user to switch between them, they can select one card from their hand and one from the shed, and that will swap them.
+Swaps typically happen all at the same time, but the logic I have written just takes case of one user action at a time, so we can just round robin through the players 3 times to allow them to swap cards, there should be a display element to skip the swap phase in cases where a player does not want to swap.
+
+- Need to implement a way to queue up multiple cards in the play phase, for cards of the same rank,
+In shed you can play multiple cards of the same rank at once, so I am thinking we keep a pile display above the hand and when a user selects a card from their hand it gets moved to the pile, if a card of a different rank is added to the pile it gets reset, and previous cards are added back to the hand.
+Then we need a seperate UI element to confirm the play.
+
+- AI logic.
+The AI needs to be able to participate in the swap phase, and needs to be able to play multiple cards just like the user, this should be taken into account in the AI logic.
+
+- Jokers need to burn the play pile.
+
+- Need to come up with a good way to enable card configuration from the rules menu.
+Some clean way to configure the play precendence of cards, and which cards have special effects.
+Modular and extensible so that we can add new cards and effects later and allow them to be configured from the menu for house rules etc.
+
+- There is a bug where sometimes playing the selected card without changing the selection causes the card to not be played, need to figure out what is failing here, the turn logic seems to tick over to the next player but the card does not get removed from hand or added to the play pile.
+
+- Terminal size:
+On start and on each frame we need to check if the terminal size has changed (this is done for us in the input handler, notcurses sends a resize event) but we need to make sure that the terminal is large enough to display the game, if not we need to pause the game (this could be a seperate state in the main state machine, that MUST SAVE THE PREVIOUS STATE) and display a message to the user to resize their terminal.
+
+- Game log
+Need to figure out a good way to store the game log, it should not store raw text it should be entirely data driven, but each log state maps directly to a text representation. The log should express the entire game state and possibly be the main source of truth that can be used for the server messages to the client? like the server just sends log entries to the client and the client re-builds the game state from that? that sounds like a good idea we just need to ensure the logs are robust and easy to produce.
+
+
 ## API
 
 - Deck display (re-build the logic, dont worry about anon cards);
