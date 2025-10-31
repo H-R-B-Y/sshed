@@ -9,7 +9,7 @@
 # include "pile_display.h"
 
 
-# define AI_FRAME_TIMEOUT 5
+# define AI_FRAME_TIMEOUT 2
 
 # define AI_STATES_LIST(prefix, func) \
 	func(prefix, NONE) \

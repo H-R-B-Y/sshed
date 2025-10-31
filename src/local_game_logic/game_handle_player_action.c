@@ -5,6 +5,26 @@
 
 typedef int (*t_special_action)(struct s_game_manager *manager, struct s_game_local *game, struct s_player_action *action);
 
+int	special_action_burn_pile(
+	struct s_game_manager *manager,
+	struct s_game_local *game,
+	struct s_player_action *action
+)
+{
+	struct s_cdll_node	*node;
+	struct s_card_plane	*plane;
+
+	(void)manager;
+	(void)action;
+	while (game->pile_display->cards->count)
+	{
+		node = game->pile_display->cards->head;
+		plane = node->data;
+		pile_display_remove_card(game->pile_display, plane->card_desc);
+	}
+	return (0);
+}
+
 static const t_special_action	special_actions[RANK_COUNT] = {
 	[RANK_ACE]				= NULL,
 	[RANK_TWO]				= NULL,
@@ -19,8 +39,8 @@ static const t_special_action	special_actions[RANK_COUNT] = {
 	[RANK_JACK]				= NULL,
 	[RANK_QUEEN]			= NULL,
 	[RANK_KING]				= NULL,
-	[RANK_JOKER_BLACK]		= NULL,
-	[RANK_JOKER_RED]		= NULL
+	[RANK_JOKER_BLACK]		= special_action_burn_pile,
+	[RANK_JOKER_RED]		= special_action_burn_pile
 };
 
 
@@ -123,7 +143,7 @@ static int	_next_card_stacks(
 	else if (what_is_on_top->rank == RANK_EIGHT)
 	{
 		if (game->pile_display->cards->count == 1)
-			return (action->cards[0].rank > what_is_on_top->rank);
+			return (action->cards[0].rank >= what_is_on_top->rank);
 
 		size_t				idx;
 		struct s_card_plane	*plane;
@@ -133,23 +153,23 @@ static int	_next_card_stacks(
 		node = game->pile_display->cards->head->next;
 		plane = node->data;
 		while (idx < game->pile_display->cards->count
-			&& plane->card_desc.rank != RANK_EIGHT)
+			&& plane->card_desc.rank == RANK_EIGHT)
 		{
 			node = node->next;
 			idx++;
 			plane = node->data;
 		}
 		if (plane->card_desc.rank == RANK_EIGHT)
-			return (action->cards[0].rank > what_is_on_top->rank);
+			return (action->cards[0].rank >= what_is_on_top->rank);
 		if (plane->card_desc.rank == RANK_SEVEN
-			&& action->cards[0].rank < RANK_SEVEN)
+			&& action->cards[0].rank <= RANK_SEVEN)
 			return (1);
-		else if (plane->card_desc.rank < action->cards[0].rank)
+		else if (plane->card_desc.rank <= action->cards[0].rank)
 			return (1);
 	}
 	else if (action->cards[0].rank == what_is_on_top->rank)
 		return (1);
-	else if (action->cards[0].rank > what_is_on_top->rank)
+	else if (action->cards[0].rank >= what_is_on_top->rank)
 		return (1);
 	return (0);
 }
@@ -220,6 +240,28 @@ int	_handle_player_action(
 		pile_display_add_card_top(game->pile_display, action->cards[0]);
 		if (special_actions[action->cards[0].rank])
 			special_actions[action->cards[0].rank](manager, game, action);
+		if (game->deck_display->deck->remaining)
+		{
+			struct s_card_desc	card;
+			if (game->whos_turn == 0)
+			{
+				while (game->hand->card_count < 5)
+				{
+					if (deck_display_draw_top_card(game->deck_display, &card))
+						break ;
+					hand_add_card(game->hand, card);
+				}
+			}
+			else
+			{
+				while (pdisplay->card_count < 5)
+				{
+					if (deck_display_draw_top_card(game->deck_display, &card))
+						break ;
+					pdisplay_add_card(pdisplay, card);
+				}
+			}
+		}
 	}
 	else
 	//  else user picks up the pile

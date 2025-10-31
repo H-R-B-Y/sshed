@@ -105,10 +105,12 @@ t_card_desc	*my_closest_card_down(
 		{
 			plane = node->content;
 			this_card = &plane->card_desc;
-			if (!closest || diff > (int)this_card->rank - (int)top_card->rank)
+			// Find cards lower than top_card (going down in rank)
+			if (this_card->rank < top_card->rank 
+				&& (!closest || diff > (int)top_card->rank - (int)this_card->rank))
 			{
 				closest = this_card;
-				diff = this_card->rank - top_card->rank;
+				diff = top_card->rank - this_card->rank;
 			}
 			node = node->next;
 		}
@@ -117,15 +119,16 @@ t_card_desc	*my_closest_card_down(
 	{
 		int	idx;
 		int	offset = 0;
-		if (hand->shed[3] || hand->shed[3] || hand->shed[5])
+		if (hand->shed[3] || hand->shed[4] || hand->shed[5])
 			offset += 3;
 		idx = 0;
 		while (idx < 3)
 		{
 			if (hand->shed[offset + idx]
-				&& (!closest || diff > (int)hand->shed[offset + idx]->card_desc.rank - (int)top_card->rank))
+				&& hand->shed[offset + idx]->card_desc.rank < top_card->rank
+				&& (!closest || diff > (int)top_card->rank - (int)hand->shed[offset + idx]->card_desc.rank))
 			{
-				diff = hand->shed[offset + idx]->card_desc.rank - top_card->rank;
+				diff = top_card->rank - hand->shed[offset + idx]->card_desc.rank;
 				closest = &hand->shed[offset + idx]->card_desc;
 			}
 			idx++;
@@ -155,10 +158,12 @@ t_card_desc	*my_closest_card_up(
 		{
 			plane = node->content;
 			this_card = &plane->card_desc;
-			if (!closest || diff > (int)top_card->rank - (int)this_card->rank)
+			// Find cards higher than top_card (going up in rank)
+			if (this_card->rank > top_card->rank 
+				&& (!closest || diff > (int)this_card->rank - (int)top_card->rank))
 			{
 				closest = this_card;
-				diff = (int)top_card->rank - (int)this_card->rank;
+				diff = this_card->rank - top_card->rank;
 			}
 			node = node->next;
 		}
@@ -167,15 +172,16 @@ t_card_desc	*my_closest_card_up(
 	{
 		int	idx;
 		int	offset = 0;
-		if (hand->shed[3] || hand->shed[3] || hand->shed[5])
+		if (hand->shed[3] || hand->shed[4] || hand->shed[5])
 			offset += 3;
 		idx = 0;
 		while (idx < 3)
 		{
 			if (hand->shed[offset + idx]
-				&& (!closest || diff > (int)top_card->rank - (int)hand->shed[offset + idx]->card_desc.rank))
+				&& hand->shed[offset + idx]->card_desc.rank > top_card->rank
+				&& (!closest || diff > (int)hand->shed[offset + idx]->card_desc.rank - (int)top_card->rank))
 			{
-				diff = top_card->rank - hand->shed[offset + idx]->card_desc.rank;
+				diff = hand->shed[offset + idx]->card_desc.rank - top_card->rank;
 				closest = &hand->shed[offset + idx]->card_desc;
 			}
 			idx++;
@@ -251,6 +257,10 @@ int	ai_step_think(
 	switch (data->progress)
 	{
 		case (0):
+			if (hand->card_count == 0)
+				pdisplay_show_shed(hand);
+			else
+				pdisplay_show_hand(hand);
 			if (!data->card_to_beat)
 			{
 				if (pile->cards->count)
