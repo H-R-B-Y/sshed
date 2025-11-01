@@ -15,10 +15,7 @@ int	_renderer_update(struct s_game_manager *manager)
 	{
 		renderer = &(manager->renderers[i]);
 		if (renderer->render_fn(renderer->data))
-		{
-			manager->errmsg = "A renderer has returned an error";
-			return (1);
-		}
+			return (MANAGER_RET_ERR("A renderer has returned an error"));
 		i++;
 	}
 	return (0);
@@ -36,14 +33,11 @@ int	game_manager_run(
 	if (!manager)
 		return (1);
 	manager->running = 1;
-	timerfd_settime(
-		manager->timer_fd,
-		0,
-		&(struct itimerspec){
-			.it_interval = { .tv_sec = 0, .tv_nsec = 16666666 }, // ~60Hz
-			.it_value = { .tv_sec = 0, .tv_nsec = 16666666 }
-		},
-		NULL
+	timerfd_settime(manager->timer_fd,
+		0, &(struct itimerspec){
+			.it_interval = { .tv_sec = 0, .tv_nsec = REFRESH_RATE_NS },
+			.it_value = { .tv_sec = 0, .tv_nsec = REFRESH_RATE_NS}
+		}, NULL
 	);
 	while (manager->running)
 	{

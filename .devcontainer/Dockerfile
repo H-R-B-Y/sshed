@@ -15,6 +15,8 @@ RUN apt install -y openssh-server
 
 RUN echo "source /etc/bash_completion" >> /root/.bashrc
 
+RUN apt install -y doxygen graphviz
+
 RUN mkdir /var/run/sshd \
 	&& mkdir -p /root/.ssh \
 	&& chmod 700 /root/.ssh \

@@ -40,7 +40,8 @@ None right now, let me finish it :D
 - **AI Swap Phase**: Enable AI participation in swap phase
 - **AI Multiple Cards**: AI should be able to play multiple cards like human players
 
-### Architecture & Refactoring
+### Code Quality & Architecture
+- **Fix Duplicated Signatures in Headers**: Remove duplicate function declarations across header files
 - **Card Library Rebuild**: Decouple cards from displays
   - Abstract hand/shed to collections of cards
   - Display logic takes pointer to collection and renders
@@ -50,6 +51,9 @@ None right now, let me finish it :D
   - Data-driven game log system (not raw text)
   - Log entries as source of truth for server-client communication
   - Robust and easy-to-produce log format
+
+- **Bug Fixes**:
+  - **Card Play Bug**: Sometimes selected card doesn't play - turn logic advances but card not removed from hand
 
 ### User Interface
 - **In-Game Help Menu**: Display key bindings and controls during gameplay
@@ -66,10 +70,8 @@ None right now, let me finish it :D
   - Check terminal size on start and each frame
   - Pause game with overlay if terminal too small
   - State machine must save previous state during pause
-  
-- **Input Handling**: Element selection system for different game phases
 
-### Networking & Configuration
+### Networking & Multiplayer
 - **Multiplayer Backend Integration**: Hook up with existing multiplayer backend
   - Connect game logic to server infrastructure
   - Implement client-server communication protocol
@@ -86,44 +88,22 @@ None right now, let me finish it :D
   - Provide SSH command strings for persistent settings
   - Allow configuration without reconnection
 
-### Bug Fixes
-- **Card Play Bug**: Sometimes selected card doesn't play
-  - Turn logic advances but card not removed from hand
-  - Card not added to play pile
-  - Need to debug selection/play interaction
-
-
-## Development Tasks
-
-### Card System
-- **Data Structure Optimization**:
-  - Move hashmap to array of card visuals for O(1) lookup
-  - Improve shuffle algorithms
-  
-- **Card Management API**:
-  - Deterministic card addressing by index (especially for shed)
-  - Wrappers for adding/removing cards
-  - Prototype pdisplay without embedded cards (number-based)
-
-### Asset Pipeline
-- **File Organization**: Clean up file structure
-- **Card Positioning**: Better card spreading algorithm (best fit but not spread too far)
-- **Build System**: Compile to archive (include card assets)
-
-### Infrastructure
+### Build System & Infrastructure
 - **Docker Build System**: 
   - Compile binary during Docker build
   - Set up sshd server on specific port
   - Container deployment automation
 
-- **Shared Memory Optimization**: Reduce memory overhead for multiple clients
-  - Share card deck data across all connected clients
-  - Implement shared memory for common game assets
+- **Asset Pipeline**:
+  - Better card spreading algorithm (best fit but not spread too far)
+  - Compile to archive (include card assets)
+
+- **Performance Optimization**:
+  - Move hashmap to array of card visuals for O(1) lookup
+  - Shared memory for multiple clients
   - Minimize per-client memory footprint
 
-- **Minimum Terminal Size**: Overlay system for terminal size requirements
-
-### Polish & Future Features
+### Future Features
 - **Animations** *(tentative)*: Terminal animations using sixel graphics
   - Card movement animations
   - Visual feedback for game actions

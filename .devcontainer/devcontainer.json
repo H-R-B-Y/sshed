@@ -3,6 +3,9 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
+	"runArgs": [
+		"-p", "2222:2222"
+	],
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
@@ -29,7 +32,8 @@
 				"DoKca.42-ft-count-line",
 				"ms-vscode.cpptools",
 				"ms-vscode.cpptools-extension-pack",
-				"ms-vscode.cmake-tools"
+				"ms-vscode.cmake-tools",
+				"cschlosser.doxdocgen"
 			]
 		}
 	}

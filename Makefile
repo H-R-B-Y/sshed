@@ -195,9 +195,18 @@ else
 	@find . -name '*.gcno' -delete
 endif
 
+docs:
+	@echo "Generating API documentation..."
+	@mkdir -p docs
+	@doxygen Doxyfile
+	@echo "Documentation generated in docs/html/index.html"
+
+clean-docs:
+	@rm -rf docs/
+
 .PHONY: all clean fclean \
 	re submodule-status \
 	install-submodules \
 	pull-submodules pre \
 	post coverage cards \
-	delete-cards
+	delete-cards docs clean-docs

@@ -88,13 +88,10 @@ int		load_local_pause(struct s_game_manager *manager, void **state_data)
 		return (1);
 	pause_state = ft_calloc(1, sizeof(struct s_game_local_pause));
 	if (!pause_state)
-		return ((manager->errmsg = "Unable to allocate pause state data"), 1);
-	if (menu_create(
-		&pause_state->menu, 
-		notcurses_stdplane(manager->nc),
-		options,
-		sizeof(options) / sizeof(options[0])))
-		return ((manager->errmsg = "Unable to create pause menu"), free(pause_state), 1);
+		return (MANAGER_RET_ERR("Unable to allocate pause state data"));
+	if (menu_create(&pause_state->menu, notcurses_stdplane(manager->nc),
+		options, sizeof(options) / sizeof(options[0])))
+		return (free(pause_state), MANAGER_RET_ERR("Unable to create pause menu"));
 	pause_state->menu->user_data = manager;
 	manager->stdin_handler = pause_input_handler;
 	manager->renderers[0].data = pause_state->menu;

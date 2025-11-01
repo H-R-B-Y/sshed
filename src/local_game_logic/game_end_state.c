@@ -93,7 +93,7 @@ int		load_local_end(struct s_game_manager *manager, void **state_data)
 		options,
 		sizeof(options) / sizeof(options[0])
 		))
-		return ((manager->errmsg = "Failed to create the end screen menu"), free_local_end(end_state), 1);
+		return (free_local_end(end_state), MANAGER_RET_ERR("Failed to create the end screen menu"));
 	end_state->menu->user_data = manager;
 	manager->renderers[0].data = end_state->menu;
 	manager->renderers[0].render_fn = (t_renderer_fn)menu_render;

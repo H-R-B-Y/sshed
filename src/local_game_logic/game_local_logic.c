@@ -2,9 +2,6 @@
 # include "game/game_local.h"
 # include "game/game_data.h"
 
-# define FRAME_TIMEOUT 1
-# define CARDS_PER_PLAYER (3 + 3 + 5) // 3 face down, 3 face up, 5 in hand
-
 static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
 	static int			cards_dealt = 0;
@@ -205,13 +202,10 @@ int	pre_render_game_update(struct s_game_manager *manager)
 			ret = end_phase(manager, game);
 			break ;
 		case (PLAY_STATE_ERROR):
-			// dprintf(STDERR_FILENO, "ERROR has occured in the update loop\n");
-			manager->errmsg = "Fatal error in the game update logic";
-			ret = 1;
+			ret = MANAGER_RET_ERR("Fatal error in the game update logic");
 			break ;
 		default:
-			manager->errmsg = "Unmatched game phase";
-			ret = 1;
+			ret = MANAGER_RET_ERR("Unmatched game phase");
 			break ;
 	}
 	return (ret);

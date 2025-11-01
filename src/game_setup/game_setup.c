@@ -128,10 +128,7 @@ int	load_game_setup_state(
 		options,
 		sizeof(options) / sizeof(options[0])
 		))
-	{
-		manager->errmsg = "Failed to create game setup menu";
-		return (1);
-	}
+		return (MANAGER_RET_ERR("Failed to create game setup menu"));
 	manager->renderers[0] = (struct s_renderer){
 		.render_fn = (t_renderer_fn)menu_render,
 		.data = setup->menu

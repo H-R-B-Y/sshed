@@ -5,6 +5,8 @@
 		"cards.h": "c",
 		"notcurses.h": "c",
 		"game_data.h": "c",
-		"deck_display.h": "c"
+		"deck_display.h": "c",
+		"game_local.h": "c",
+		"ai_state_machine.h": "c"
 	}
 }

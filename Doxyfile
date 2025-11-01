@@ -1,0 +1,51 @@
+# Minimal Doxygen configuration for your project
+PROJECT_NAME           = "SSHED - Shed Card Game"
+PROJECT_NUMBER         = "v0.0.1"
+PROJECT_BRIEF          = "Terminal-based card game to be played over SSH"
+
+INPUT                  = include/ src/ lib/
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = docs/html
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_MENUS     = YES
+HTML_DYNAMIC_SECTIONS  = NO
+GENERATE_LATEX         = NO
+
+OPTIMIZE_OUTPUT_FOR_C  = YES
+TYPEDEF_HIDES_STRUCT   = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = YES
+
+# Include source code in documentation
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+
+# Enable call graphs (requires graphviz)
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_GRAPH_MAX_NODES    = 100
+DOT_TRANSPARENT        = NO
+DOT_MULTI_TARGETS      = YES
+GENERATE_LEGEND        = YES
+COLLABORATION_GRAPH    = YES
+GROUP_GRAPHS           = YES
+
+# File patterns
+FILE_PATTERNS          = *.c *.h
+EXCLUDE_PATTERNS       = */build/* */.git/*
+
+# Output warnings for undocumented items
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES

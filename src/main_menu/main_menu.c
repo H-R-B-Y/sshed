@@ -87,12 +87,9 @@ int load_main_menu_state(
 	main_menu = ft_calloc(1, sizeof(struct s_main_menu));
 	if (!main_menu)
 		return (1);
-	if (menu_create(
-		&main_menu->menu,
-		notcurses_stdplane(manager->nc),
-		options,
-		sizeof(options) / sizeof(options[0])))
-		return ((manager->errmsg = "Failed to create main menu"), free(main_menu), 1);
+	if (menu_create(&main_menu->menu, notcurses_stdplane(manager->nc),
+		options, sizeof(options) / sizeof(options[0])))
+		return (free(main_menu), MANAGER_RET_ERR("Failed to create main menu"));
 	manager->stdin_handler = menu_input_handler; // Set stdin handler if needed
 	manager->renderers[0] = (struct s_renderer){.render_fn = (t_renderer_fn)menu_render, .data = main_menu->menu};
 	manager->renderer_count = 1;

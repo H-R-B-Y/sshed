@@ -38,37 +38,6 @@ int	render_log_display(struct s_game_local *game)
 	return (0);
 }
 
-int	pre_render_ai_update(struct s_game_manager *manager)
-{
-	t_ai_state			ai_state;
-	struct s_game_local	*game;
-
-	if (!manager)
-		return (1);
-	game = manager->state_data;
-	if (!game || manager->state != GAME_STATE_GAME_LOCAL_PLAY)
-		return (1);
-	if (game->whos_turn == 0)
-		return (0);
-	ai_state = ai_step(
-		&game->player_action,
-		&(game->ai_data[game->whos_turn - 1]),
-		game->pdisplay[game->whos_turn - 1],
-		game->pile_display
-	);
-	switch (ai_state)
-	{
-		case (AI_STATE_FUCK_FUCK_FUCK):
-			manager->errmsg = "AI Fatal error occured";
-			return (1);
-		default:
-			return (0);
-	}
-	return (0);
-}
-
-
-
 int	init_log_plane(struct s_game_manager *manager, struct s_game_local *game)
 {
 	if (!manager || !game)
@@ -83,9 +52,9 @@ int	load_visuals(struct s_game_manager *manager,struct s_game_local *game)
 	unsigned int	i;
 
 	if (deck_display_create(&game->deck_display, notcurses_stdplane(manager->nc), game->deck, 0, 0))
-		return ((manager->errmsg = "Failed to create deck display"), 1);
+		return (MANAGER_RET_ERR("Failed to create deck display"));
 	if (hand_create(&game->hand, notcurses_stdplane(manager->nc)))
-		return ((manager->errmsg = "Failed to create player hand"), 1);
+		return (MANAGER_RET_ERR("Failed to create player hand"));
 	game->pdisplay_count = game->settings.player_count;
 	i = 0;
 	while (i < game->pdisplay_count)
@@ -93,9 +62,8 @@ int	load_visuals(struct s_game_manager *manager,struct s_game_local *game)
 		if (pdisplay_create(
 			&game->pdisplay[i],
 			notcurses_stdplane(manager->nc),
-			((enum e_pdisplay_orientation[3]){PDISPLAY_ORIENTATION_TOP, PDISPLAY_ORIENTATION_LEFT, PDISPLAY_ORIENTATION_RIGHT})[i]
-			))
-			return ((manager->errmsg = "Failed to create a pdisplay"), 1);
+			((enum e_pdisplay_orientation[3]){PDISPLAY_ORIENTATION_TOP, PDISPLAY_ORIENTATION_LEFT, PDISPLAY_ORIENTATION_RIGHT})[i]))
+			return (MANAGER_RET_ERR("Failed to create a pdisplay"));
 		i++;
 	}
 	if (pile_display_create(
@@ -104,7 +72,7 @@ int	load_visuals(struct s_game_manager *manager,struct s_game_local *game)
 		CARD_WIDTH,
 		CARD_ORIENTATION_VERTICAL, PILE_DISPLAY_HORIZONTAL,
 		5, CARD_WIDTH + 5, CARD_HEIGHT * 2))
-		return ((manager->errmsg = "Failed to create pile display"), 1);
+		return (MANAGER_RET_ERR("Failed to create pile display"));
 	return (0);
 }
 
@@ -150,6 +118,46 @@ static void	_hooks(
 	manager->renderer_count = 6;
 }
 
+static int	_load_previous_game(
+	struct s_game_manager *manager,
+	struct s_game_local **game
+)
+{
+	if (manager->state_data) // This allows us to continue from a paused state
+	{
+		(*game) = manager->state_data;
+		if ((*game)->initialised)
+		{
+			_hooks(manager, *game);
+			_make_dirty(*game);
+			manager->state_data = *game;
+			return (0); // 0 means we have a valid game state
+		}
+		free_game_state(*game);
+		manager->state_data = NULL;
+	}
+	return (1); // 1 means we continue to init a new game state
+}
+
+static int	_load_game_settings(
+	struct s_game_manager *manager,
+	struct s_game_local *game
+)
+{
+	if (manager->prev_state == GAME_STATE_GAME_LOCAL_SETUP
+		&& manager->prev_state_data != NULL)
+	{
+		game->settings = *((struct s_game_local_settings *)manager->prev_state_data);
+		load_free_prev(manager);
+	}
+	else
+	{
+		manager->errmsg = "No config provided, using default";
+		game->settings = DEFAULT_SETTINGS;
+	}
+	return (0);
+}
+
 int	load_game_local(
 	struct s_game_manager *manager,
 	void **state_data
@@ -159,45 +167,19 @@ int	load_game_local(
 
 	if (!manager || !state_data)
 		return (1);
-	if (manager->state_data) // This allows us to continue from a paused state
-	{
-		game = manager->state_data;
-		if (game->initialised)
-		{
-			_hooks(manager, game);
-			_make_dirty(game);
-			(*state_data) = game;
-			return (0);
-		}
-		free_game_state(game);
-		manager->state_data = NULL;
-	}
+	if (!_load_previous_game(manager, &game))
+		return (0);
 	game = ft_calloc(1, sizeof(struct s_game_local));
 	if (!game)
-		return ((manager->errmsg = "Failed to allocated game state"), 1);
-	if (manager->prev_state == GAME_STATE_GAME_LOCAL_SETUP && manager->prev_state_data)
-	{
-		game->settings = *((struct s_game_local_settings *)manager->prev_state_data);
-		if (manager->prev_state_data_destructor)
-			manager->prev_state_data_destructor(manager->prev_state_data);
-		else
-			free(manager->prev_state_data);
-	}
-	else
-		((manager->errmsg = "No config provided, using default"), (game->settings = DEFAULT_SETTINGS));
+		return (MANAGER_RET_ERR("Failed to allocated game state"));
+	_load_game_settings(manager, game);
 	game->pdisplay_count = game->settings.player_count;
 	(*state_data) = game;
 	if (init_log_plane(manager, game))
-	{
-		free_game_state(game);
-		return (1);
-	}
+		return (free_game_state(game), MANAGER_RET_ERR("Unable to initialise the log plane"));
 	game->deck = deck_create(true);
 	if (load_visuals(manager, game))
-	{
-		free_game_state(game);
-		return (1);
-	}
+		return (free_game_state(game), MANAGER_RET_ERR("Unable to load visuals"));
 	// calculate who's turn it is
 	// No this should be calculated in the dealing phase as we need to go with the 
 	// eldest hand rules

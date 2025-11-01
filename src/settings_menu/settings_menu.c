@@ -71,13 +71,8 @@ int	load_settings_menu(
 		return (1);
 	if (menu_create(
 		&data->menu, notcurses_stdplane(manager->nc),
-		options, sizeof(options) / sizeof(options[0])
-		) != 0)
-	{
-		manager->errmsg = "Unable to create settings menu";
-		free(data);
-		return (1);
-	}
+		options, sizeof(options) / sizeof(options[0])) != 0)
+		return (free(data), MANAGER_RET_ERR("Unable to create settings menu"));
 	manager->stdin_handler = menu_input_handler;
 	manager->renderers[0] = (struct s_renderer){
 		.render_fn = (t_renderer_fn)menu_render,

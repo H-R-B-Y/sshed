@@ -50,6 +50,33 @@ int	ai_step_error(
 	return (0);
 }
 
+int	pre_render_ai_update(struct s_game_manager *manager)
+{
+	t_ai_state			ai_state;
+	struct s_game_local	*game;
+
+	if (!manager)
+		return (1);
+	game = manager->state_data;
+	if (!game || manager->state != GAME_STATE_GAME_LOCAL_PLAY)
+		return (1);
+	if (game->whos_turn == 0)
+		return (0);
+	ai_state = ai_step(
+		&game->player_action,
+		&(game->ai_data[game->whos_turn - 1]),
+		game->pdisplay[game->whos_turn - 1],
+		game->pile_display
+	);
+	switch (ai_state)
+	{
+		case (AI_STATE_FUCK_FUCK_FUCK):
+			return (MANAGER_RET_ERR("AI Fatal error occured"));
+		default:
+			return (0);
+	}
+	return (0);
+}
 
 // Really i think  we are going to need a bit more informaton at some
 // point but right now we will stick to this
