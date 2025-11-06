@@ -108,4 +108,3 @@ None right now, let me finish it :D
   - Card movement animations
   - Visual feedback for game actions
   - Note: Complex implementation, feasibility uncertain
-

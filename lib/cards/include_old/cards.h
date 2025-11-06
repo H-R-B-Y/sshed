@@ -1,7 +1,7 @@
 #ifndef CARDS_H
 # define CARDS_H
 # define FT_INCLUDE_ALL
-# include "libft.h"
+# include "libft/libft.h"
 # include <notcurses/notcurses.h>
 # include <stdio.h>
 # include <stdlib.h>
