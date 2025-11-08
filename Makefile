@@ -47,6 +47,8 @@ SRCS			:= \
 				src/ai_logic/step_idle.c \
 				src/ai_logic/step_none.c \
 				src/ai_logic/step_playing.c \
+				src/local_game_logic/organise_visuals.c \
+				src/local_game_logic/swap_phase.c \
 				\
 
 

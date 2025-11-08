@@ -22,6 +22,7 @@ int			deck_display_create(
 		.cols = CARD_WIDTH + 5,
 		.flags = 0,
 	});
+	make_plane_transparent(new_deck_display->plane);
 	if (!new_deck_display->plane)
 		return (free(new_deck_display), 1);
 	new_deck_display->deck = deck;

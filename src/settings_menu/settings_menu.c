@@ -27,16 +27,16 @@ static int	menu_input_handler(
 	struct epoll_event *event
 )
 {
-	struct s_main_menu	*main_menu;
+	struct s_game_settings_menu	*settings;
 	struct s_menu		*menu;
 	int					c_code;
 
 	if (!manager || !event)
 		return (1);
-	main_menu = manager->state_data;
-	if (!main_menu)
+	settings = manager->state_data;
+	if (!settings)
 		return (1);
-	menu = main_menu->menu;
+	menu = settings->menu;
 	if (!menu)
 		return (1);
 	if (event->data.fd != manager->reading_fd)
@@ -73,6 +73,7 @@ int	load_settings_menu(
 		&data->menu, notcurses_stdplane(manager->nc),
 		options, sizeof(options) / sizeof(options[0])) != 0)
 		return (free(data), MANAGER_RET_ERR("Unable to create settings menu"));
+	data->menu->user_data = data;
 	manager->stdin_handler = menu_input_handler;
 	manager->renderers[0] = (struct s_renderer){
 		.render_fn = (t_renderer_fn)menu_render,

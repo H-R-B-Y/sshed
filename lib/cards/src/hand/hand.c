@@ -20,6 +20,7 @@ int	hand_create(struct s_hand **hand, struct ncplane *parent)
 		.cols = HAND_AREA_WIDTH(width, height),
 		.flags = 0,
 	});
+	make_plane_transparent(new_hand->hand_plane);
 	if (!new_hand->hand_plane)
 		return (free(new_hand), 1);
 	ncplane_set_name(new_hand->hand_plane, "hand_plane");

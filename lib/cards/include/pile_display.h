@@ -54,6 +54,7 @@ struct s_pile_display
 	int									is_visible;
 	/// @brief Whether the pile display is dirty and needs to be redrawn
 	t_u8								is_dirty;
+	ssize_t								selected;
 };
 
 /**

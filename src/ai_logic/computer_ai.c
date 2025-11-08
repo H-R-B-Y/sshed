@@ -58,11 +58,12 @@ int	pre_render_ai_update(struct s_game_manager *manager)
 	if (!manager)
 		return (1);
 	game = manager->state_data;
-	if (!game || manager->state != GAME_STATE_GAME_LOCAL_PLAY)
+	if (!game)
 		return (1);
 	if (game->whos_turn == 0)
 		return (0);
 	ai_state = ai_step(
+		manager,
 		&game->player_action,
 		&(game->ai_data[game->whos_turn - 1]),
 		game->pdisplay[game->whos_turn - 1],
@@ -81,6 +82,7 @@ int	pre_render_ai_update(struct s_game_manager *manager)
 // Really i think  we are going to need a bit more informaton at some
 // point but right now we will stick to this
 t_ai_state		ai_step(
+	struct s_game_manager *manager,
 	struct s_player_action *action,
 	struct s_ai_data *data,
 	struct s_pdisplay *hand,
@@ -91,7 +93,13 @@ t_ai_state		ai_step(
 
 	if (!action || !data || !hand || !pile)
 		return (AI_STATE_FUCK_FUCK_FUCK);
-	// dprintf(STDERR_FILENO, "AI STEP CALLED");
+	if (((struct s_game_local *)manager->state_data)->play_state == PLAY_STATE_SWAP_PHASE)
+	{
+		action_default_on_cards(action);
+		action_ready(action);
+		data->state = AI_STATE_NONE;
+		return (AI_STATE_DONE);
+	}
 	if (data->state == AI_STATE_NONE)
 	{
 		ai_step_none(data, hand, pile);

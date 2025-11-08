@@ -30,6 +30,7 @@ int		deck_anon_init(
 		.rows = CARD_HEIGHT,
 	};
 	new_deck->plane = ncplane_create(parent, &popts);
+	make_plane_transparent(new_deck->plane);
 	if (!new_deck->plane)
 		return (free(new_deck), 1);
 	(*deck) = new_deck;

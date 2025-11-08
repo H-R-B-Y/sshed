@@ -77,6 +77,7 @@ int	pre_render_ai_update(
  * @return The current state of the AI after the step
  */
 t_ai_state		ai_step(
+	struct s_game_manager *manager,
 	struct s_player_action *action,
 	struct s_ai_data *data,
 	struct s_pdisplay *hand,

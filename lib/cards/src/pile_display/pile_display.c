@@ -26,15 +26,27 @@ int		pile_display_create(
 		: CARD_HEIGHT;
 	
 	new_pile_display->orientation = orientation;
+	/* Calculate plane dimensions depending on pile orientation.
+	   If the pile is horizontal, span horizontally (cols) by stacking cards
+	   If vertical, span vertically (rows) by stacking cards. */
+	unsigned int plane_cols = card_width + 5;
+	unsigned int plane_rows = card_height + 2;
+	if (max_stack > 0)
+	{
+		if (orientation == PILE_DISPLAY_HORIZONTAL)
+			plane_cols += (max_stack - 1) * padding;
+		else
+			plane_rows += (max_stack - 1) * padding;
+	}
+
 	new_pile_display->plane = ncplane_create(parent, &(struct ncplane_options){
 		.x = x,
 		.y = y,
-		// So the width is card width (or H width) + (max_stack * padding)
-		.cols = card_width + (max_stack > 0 ? (max_stack - 1) * padding : 0) + 5,
-		// So the height is card height (or H height) + (max_stack * padding)
-		.rows = card_height + (max_stack > 0 ? (max_stack - 1) * padding : 0),
+		.cols = plane_cols,
+		.rows = plane_rows,
 		.flags = 0,
 	});
+	make_plane_transparent(new_pile_display->plane);
 	if (!new_pile_display->plane)
 		return (free(new_pile_display), 1);
 	new_pile_display->cards = cdll_create();
@@ -46,6 +58,9 @@ int		pile_display_create(
 	new_pile_display->max_stack = max_stack;
 	new_pile_display->is_visible = 1;
 	new_pile_display->is_dirty = 0;
+	new_pile_display->x = x;
+	new_pile_display->y = y;
+	new_pile_display->selected = -1;
 	(*pile_display) = new_pile_display;
 	return (0);
 }

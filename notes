@@ -1,0 +1,27 @@
+Ok the swap phase is done.
+when it comes to programming this on the server, we will broadcast all swap events to all players, and wait until everyone is OK.
+during this phase we will need to send card that were swapped to the player.
+
+For multiplay (playing multiple cards of the same rank) use space to bring up a menu that allows the player to select:
+- Play 1
+- Play 2
+- Play 3
+- Play 4
+Grey out options where the user does not have the cards necessary.
+
+
+for storing cards on the server we only need 1 byte for the rank and 1 for the suit, we should make some conversation functions
+so that we can store this data in a uintptr_t for use in data / content of linked list / cdll.
+
+Rework the input the send the ncevent instead of the keycode, this way we can handle the resize events on the fly
+
+Methods for hand and pile to reset selection, clear selection, and update selection.
+Because there are multiple times where selection either doesnt show or doesnt point to the right card.
+
+MLX ideas for minirt:
+
+- Menu, much like the one we have here with options for dynamic and static text, on-select and on-deselect
+- Drag and drop for files.
+- Fonts
+- Gradient fills
+- Better line drawing API

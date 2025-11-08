@@ -42,6 +42,17 @@ struct s_game_local_settings
 	/// @brief This should include more things like house rules, etc..
 };
 
+enum e_selected_item
+{
+	SELECTED_ITEM_NONE,
+	SELECTED_ITEM_HAND,
+	SELECTED_ITEM_SWAP_MENU,
+	SELECTED_ITEM_SWAP_PILE,
+	SELECTED_ITEM_SWAP_HAND,
+	SELECTED_ITEM_LOG,
+	SELECTED_ITEM_COUNT
+};
+
 struct s_game_local
 {
 	/// @brief Whether the game has been initialised
@@ -49,6 +60,7 @@ struct s_game_local
 	/// @brief Game settings
 	struct s_game_local_settings	settings;
 	
+	enum e_selected_item			selected_item;
 	// Game components
 
 	/// @brief The deck used in the game
@@ -73,10 +85,25 @@ struct s_game_local
 	t_u8							whos_turn;
 	/// @brief The action struct representing the current player's action
 	struct s_player_action			player_action;
+	// t_u8 							player_action_count;
+
+
+	/// @brief Menu for dispaying player actions:
+	/// Default (pick up pile)
+	/// Play 1 card
+	/// Play 2 cards (only if player has multiple cards of the same rank)
+	/// Play 3 cards (only if player has multiple cards of the same rank)
+	/// Play 4 cards (only if player has multiple cards of the same rank)
+	struct s_menu					*player_action_menu;
 
 	/// @brief Who won the game (0 = player, 1-3 = AI)
 	/// @note This needs to be passed to the end game state, maybe we should have some better mechanism for retrieving this info
 	t_u8							who_won;
+
+	/// @brief The swap pile (should not exist outside of swap phase)
+	struct s_pile_display			*swap_pile;
+
+	struct s_menu					*swap_menu; // Menu to swap or not during the swap phase
 
 	/// @brief Linked list of log lines (TODO: figure out the log)
 	t_list							*game_log; 
@@ -246,5 +273,15 @@ void	free_local_end(
 	struct s_game_local_end *end_state
 );
 
+
+int	re_order_visuals(struct s_game_manager *manager, struct s_game_local *game);
+
+
+int swap_pile_clear_selection(struct s_game_local *game);
+int swap_phase_select_menu(struct s_game_local *game);
+
+
+int swap_phase_select_pile(struct s_game_local *game);
+int swap_phase_select_hand(struct s_game_local *game);
 
 #endif

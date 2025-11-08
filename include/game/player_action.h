@@ -30,13 +30,14 @@ struct s_player_action
 	t_player_action		action;
 	/*
 	Cards:
-		- If action is none this should be cleared
-		- If action is swap this should contain two cards (0 is shed, 1 is hand)
-		- If action is play this should contain 1 to 4 cards (must all be the same value)
-		- If action is default this should be cleared 
+		For play action - up to 4 cards to play
+		For swap action - Card should contain the card in the hand and swap card in the shed
+		For default action - No cards needed
 	*/
 	struct s_card_desc	cards[4];
 	t_u8				card_count;
+	struct s_card_desc	swap_cards[4];
+	t_u8				swap_card_count;
 	t_u8				ready;
 };
 

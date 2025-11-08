@@ -25,6 +25,7 @@ int		pdisplay_create(
 	});
 	if (!new_pdisplay->plane)
 		return (free(new_pdisplay), 1);
+	make_plane_transparent(new_pdisplay->plane);
 	ncplane_set_name(new_pdisplay->plane, pdisplay_orientation_str[orientation]);
 	new_pdisplay->cards = NULL;
 	new_pdisplay->card_count = 0;

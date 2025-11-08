@@ -58,7 +58,7 @@ static int	setup_input_handler(
 	return (0);
 }
 
-static char	*get_player_count_text(struct s_menu *menu)
+static char	*get_player_count_text(struct s_menu *menu, struct s_menu_option *option)
 {
 	struct s_game_manager		*manager;
 	struct s_game_local_setup	*setup;

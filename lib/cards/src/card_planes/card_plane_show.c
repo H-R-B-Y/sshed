@@ -37,6 +37,7 @@ static int	_create_plane(
 			.flags = 0,
 		}
 	);
+	make_plane_transparent(card_plane->plane);
 	if (!card_plane->plane)
 		return (1);
 	return (0);

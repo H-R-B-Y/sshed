@@ -187,6 +187,7 @@ int	load_game_local(
 	game->play_state = PLAY_STATE_DEAL_PHASE; // TODO: figure out swap phase
 	(*state_data) = game;
 	manager->state_data_destructor = (t_freefn)free_game_state;
+	re_order_visuals(manager, game);
 	game->initialised = 1;
 	return (0);
 }

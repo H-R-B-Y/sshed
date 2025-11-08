@@ -39,6 +39,7 @@ int	game_manager_run(
 			.it_value = { .tv_sec = 0, .tv_nsec = REFRESH_RATE_NS}
 		}, NULL
 	);
+	// _background(manager);
 	while (manager->running)
 	{
 		nfds = epoll_wait( manager->epoll_fd, events, 10, -1);

@@ -2,6 +2,8 @@
 # include "game/game_local.h"
 # include "game/game_data.h"
 
+int init_swap_phase(struct s_game_manager *manager, struct s_game_local *game);
+
 static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
 	static int			cards_dealt = 0;
@@ -13,8 +15,8 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 		return (1);
 	if (cards_dealt >= (game->settings.player_count + 1) * CARDS_PER_PLAYER)
 	{
-		// game->play_state = PLAY_STATE_SWAP_PHASE;
-		game->play_state = PLAY_STATE_PLAY_PHASE; // swap phase not implemented yet
+		game->play_state = PLAY_STATE_SWAP_PHASE;
+		// game->play_state = PLAY_STATE_PLAY_PHASE; // swap phase not implemented yet
 		cards_dealt = 0;
 		first_call = 1;
 		frame_countdown = FRAME_TIMEOUT;
@@ -88,19 +90,50 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 	return (0);
 }
 
+
+int unload_swap_phase(struct s_game_manager *manager, struct s_game_local *game);
+
 static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
-	(void)manager;(void)game;
-	// Not implemented yet
-	// How do we do this
-	/*
-	We need to add a new kind of display that allows the user
-	to select both a card in their hand and a card from the shed (face up)
-	so we will need some new kind of visual, maybe one that is created in load
-	we could also use this visual to allow players to play multiple cards
-	So it would need to be a pile, the AI players dont need this, they just need to
-	be aware of the game phase and return values that relate to swapping the cards
-	*/
+	// In the swap phase we want to allow the player to swap a certain number of cards
+	// from the face up cards in the shed to their hand 
+	// To do this we will use a menu and a pile
+	// the pile display will show the cards from the face up shed cards
+	// the menu will allow the player to select which cards to swap
+	// Once the player has made their selection we will swap the cards
+	// and then move to the play phase
+
+	if (!manager || !game)
+		return (1);
+	if (!game->swap_menu || !game->swap_pile)
+	{
+		init_swap_phase(manager, game);
+		deck_display_hide(game->deck_display);
+		swap_phase_select_menu(game);
+		re_order_visuals(manager, game);
+		return (0);
+	}
+	if (game->player_action.ready)
+	{
+		// Return cards to shed
+		while (game->swap_pile->cards->count)
+		{
+			struct s_card_desc card; 
+			card = ((struct s_card_plane *)game->swap_pile->cards->head->data)->card_desc;
+			pile_display_remove_card(game->swap_pile, card);
+			hand_add_card_to_shed(game->hand, card);
+		}
+		game->whos_turn++;
+		game->player_action = clean_action();
+		if (game->whos_turn > game->settings.player_count)
+		{
+			game->play_state = PLAY_STATE_PLAY_PHASE;
+			game->whos_turn = 0;//decide who goes first at some point
+			unload_swap_phase(manager, game);
+			game->selected_item = SELECTED_ITEM_HAND;
+			deck_display_show(game->deck_display);
+		}
+	}
 	return (0);
 }
 

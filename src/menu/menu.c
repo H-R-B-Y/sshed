@@ -1,4 +1,5 @@
 #include "game/menu.h"
+# include "card_plane.h"
 
 int	menu_create(
 	struct s_menu **menu,
@@ -28,9 +29,11 @@ int	menu_create(
 		.cols = 30,
 		.flags = 0,
 	});
+	make_plane_transparent((*menu)->menu_plane);
 	if (!(*menu)->menu_plane)
 		return (free(*menu), 1);
 	ncplane_set_name((*menu)->menu_plane, "menu_plane");
+	(*menu)->is_hidden = 0;
 	(*menu)->is_dirty = 1;
 	return (0);
 }
@@ -55,6 +58,8 @@ int	menu_select_next(
 	if (!menu)
 		return (1);
 	menu->selected_index = (menu->selected_index + 1) % menu->option_count;
+	if (menu->options[menu->selected_index].disabled)
+		menu->selected_index = (menu->selected_index + 1) % menu->option_count;
 	menu->is_dirty = 1;
 	return (0);
 }
@@ -76,6 +81,13 @@ int	menu_select_prev(
 		menu->selected_index = menu->option_count - 1;
 	else
 		menu->selected_index--;
+	if (menu->options[menu->selected_index].disabled)
+	{
+		if (menu->selected_index == 0)
+			menu->selected_index = menu->option_count - 1;
+		else
+			menu->selected_index--;
+	}
 	menu->is_dirty = 1;
 	return (0);
 }
@@ -132,13 +144,21 @@ int	menu_render(
 	int				ret;
 	char			*str;
 	int				no_free;
+	t_u64			channel;
+	t_u64			prev_channel;
 
 	if (!menu || !menu->is_dirty)
 		return (0);
 	ncplane_erase(menu->menu_plane);
+	if (menu->is_hidden)
+		return (0);
+	channel = NCCHANNELS_INITIALIZER(255, 255, 255, 0, 0, 0);
+	ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
 	no_free = 0;
 	ncplane_perimeter_rounded(menu->menu_plane,
-		NCSTYLE_NONE, 0, // fuck me it took so much work to figure out what the paremeters of this function mean
+		NCSTYLE_NONE,
+		channel
+		, // fuck me it took so much work to figure out what the paremeters of this function mean
 		NCBOXMASK_TOP | NCBOXMASK_RIGHT | NCBOXMASK_BOTTOM | NCBOXMASK_LEFT
 	);
 	/*
@@ -146,25 +166,52 @@ int	menu_render(
 	the channel relates to NC channels which specify the RGB of a cell
 	and the ctlword is the mask for the box sides to represent
 	*/
+	prev_channel = ncplane_channels(menu->menu_plane);
 	for (i = 0; i < menu->option_count; i++)
 	{
 		if (menu->options[i].text_type == STATIC_TEXT)
 			str = (char *)menu->options[i].option_text;
 		else
-			str = menu->options[i].get_option_text(menu);
+			str = menu->options[i].get_option_text(menu, &menu->options[i]);
 		if (!str && ++no_free)
 			str = "ERR";
-		if (i == menu->selected_index)
-			// ret = ncplane_printf_aligned(menu->menu_plane, (int)i + 1, NCALIGN_LEFT, "> %s <", str);
-			ret = ncplane_printf_yx(menu->menu_plane, i + 1, 1, "> %s <", str);
+
+		ncplane_cursor_move_yx(menu->menu_plane, i + 1, 1);
+		// ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+
+		if (menu->options[i].disabled)
+			{channel = NCCHANNELS_INITIALIZER(
+				255,0,0,
+				255,255,255);ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);}
 		else
-			// ret = ncplane_printf_aligned(menu->menu_plane, (int)i + 1, NCALIGN_LEFT, "  %s  ", str);
-			ret = ncplane_printf_yx(menu->menu_plane, i + 1, 1, "  %s  ", str);
+			{channel = NCCHANNELS_INITIALIZER(
+				255,255,255,
+				0,0,0
+			);ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);}
+		ncchannels_set_fg_alpha(&channel, NCALPHA_OPAQUE);
+		ncplane_set_channels(menu->menu_plane, channel);
+		if (i == menu->selected_index)
+		{
+			ret = ncplane_printf(
+				menu->menu_plane,
+				"> %s <",
+				str
+			);
+		}
+		else
+		{
+			ret = ncplane_printf(
+				menu->menu_plane,
+				"  %s  ",
+				str
+			);
+		}
 		if (menu->options[i].text_type == DYNAMIC_TEXT_FUNCTION && !no_free)
 			free(str);
 		if (ret < 0)
 			return (1);
 	}
+	ncplane_set_channels(menu->menu_plane, prev_channel);
 	menu->is_dirty = 0;
 	return (0);
 }

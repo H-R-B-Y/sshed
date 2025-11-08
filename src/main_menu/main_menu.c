@@ -76,7 +76,7 @@ int load_main_menu_state(
 	struct s_main_menu		*main_menu;
 	struct s_menu_option	options[] = {
 		{.text_type = STATIC_TEXT, .option_text = "Local Game", .option_action = menu_go_to_local_setup},
-		{.text_type = STATIC_TEXT, .option_text = "Settings", .option_action = menu_settings},
+		{.text_type = STATIC_TEXT, .option_text = "Settings", .option_action = menu_settings, .disabled = 1},
 		{.text_type = STATIC_TEXT, .option_text = "Exit", .option_action = menu_exit_game}
 	};
 

@@ -19,6 +19,31 @@ int	setup_reading_fd(
 	return (0);
 }
 
+static int	_background(struct s_game_manager *manager)
+{
+	struct ncplane	*stdn;
+	unsigned int	width, height;
+	struct nccell	c;
+
+	if (!manager)
+		return (1);
+	stdn = notcurses_stddim_yx(manager->nc, &height, &width);
+	nccell_init(&c);
+	if (!stdn)
+		return (1);
+	ncplane_gradient(
+		stdn,
+		0, 0,
+		height, width,
+		0, 0,
+		NCCHANNEL_INITIALIZER(0, 128, 0),
+		NCCHANNEL_INITIALIZER(0, 128, 0),
+		NCCHANNEL_INITIALIZER(0, 0, 128),
+		NCCHANNEL_INITIALIZER(0, 0, 128)
+	);
+	return (0);
+}
+
 int	load_init_state(
 	struct s_game_manager *manager,
 	void **state_data
@@ -38,6 +63,7 @@ int	load_init_state(
 		return (1);
 	setup_reading_fd(manager);
 	init_cards(manager->nc);
+	_background(manager);
 	manager->next_state = GAME_STATE_MAIN;
 	return (0);
 }

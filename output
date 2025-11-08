@@ -1,0 +1,19 @@
+Menu key handler got code: 1115004
+Menu key handler got code: 1115002
+Menu key handler got code: 1115004
+Menu key handler got code: 1115002
+Menu key handler got code: 1115004
+Menu key handler got code: 1115002
+Menu key handler got code: 1115004
+Menu key handler got code: 1115002
+Menu key handler got code: 1115004
+Menu key handler got code: 1115004
+Menu key handler got code: 1115121
+1399 renders, 301.73ms (145.14µs min, 215.68µs avg, 388.80µs max)
+1399 rasters, 115.24ms (56.55µs min, 82.38µs avg, 208.99µs max)
+1399 writes, 49.39ms (24.45µs min, 35.30µs avg, 146.60µs max)
+407B (0B min, 0B avg, 86B max) 11 inputs Ghpa: 0
+0 failed renders, 0 failed rasters, 1 refresh, 0 input errors
+RGB emits:elides: def 1:10763 fg 0:0 bg 0:0
+Cell emits:elides: 10764:29826036 (99.96%) 99.99% 0.00% 0.00%
+Bmap emits:elides: 0:0 (0.00%) 0B (0.00%) SuM: 0 (0.00%)

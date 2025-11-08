@@ -15,11 +15,14 @@ None right now, let me finish it :D
 ## TODO
 
 ### Core Game Logic
-- **Swap Phase Implementation**: Currently skipped - need to implement card swapping between hand and shed
+- (DONE)**Swap Phase Implementation**: Currently skipped - need to implement card swapping between hand and shed
   - Track selected display element (hand vs shed)
   - Allow players to select one card from hand and one from shed to swap
-  - Round-robin through players 3 times for swaps
+  - All player swaps happen in one turn per player
   - Add UI element to skip swap phase
+  - (TODO) Hide the swap menu during card selection
+  - (TODO) Allow AI to swap
+  - (TODO) Move swap pile and menu positions for easier reading
   
 - **Multiple Card Plays**: Implement ability to play multiple cards of same rank
   - Add pile display above hand for queuing cards
@@ -42,11 +45,7 @@ None right now, let me finish it :D
 
 ### Code Quality & Architecture
 - **Fix Duplicated Signatures in Headers**: Remove duplicate function declarations across header files
-- **Card Library Rebuild**: Decouple cards from displays
-  - Abstract hand/shed to collections of cards
-  - Display logic takes pointer to collection and renders
-  - Single central struct for players, bots, and server logic
-  
+
 - **Game State Management**: 
   - Data-driven game log system (not raw text)
   - Log entries as source of truth for server-client communication
@@ -76,7 +75,7 @@ None right now, let me finish it :D
   - Connect game logic to server infrastructure
   - Implement client-server communication protocol
   - Handle multiplayer game state synchronization
-
+ 
 - **Server Implementation**: Core server code for multiplayer functionality
   - Game session management
   - Player connection handling

@@ -22,7 +22,7 @@ static int	menu_input_handler(
 }
 
 // TODO: Really this could be a static text option that is created in the load function but we can do that later
-char	*who_won_text(struct s_menu *menu)
+char	*who_won_text(struct s_menu *menu, struct s_menu_option *option)
 {
 	char					*temp;
 	char					*output;

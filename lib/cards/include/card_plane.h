@@ -157,4 +157,6 @@ int	card_in_array(
 	size_t card_count
 );
 
+int make_plane_transparent(struct ncplane *plane);
+
 #endif
