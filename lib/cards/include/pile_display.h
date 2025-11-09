@@ -199,6 +199,26 @@ int	pile_display_return_to_hand(
 	void *hand
 );
 
+/**
+ * @brief Hide the pile display
+ * 
+ * @param pile_display The pile display to hide
+ * @return int 
+ */
+int pile_display_hide(
+	struct s_pile_display *pile_display
+);
+
+/**
+ * @brief Show the pile display
+ * 
+ * @param pile_display The pile display to show
+ * @return int 
+ */
+int pile_display_show(
+	struct s_pile_display *pile_display
+);
+
 
 // TODO: implement the following
 // int pile_display_set_face_down(

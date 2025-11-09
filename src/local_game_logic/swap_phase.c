@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 15:55:59 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/11/08 11:26:25 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/09 13:24:29 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int swap_cards_action(
 	game = (struct s_game_local *)manager->state_data;
 	if (!game)
 		return (1);
-	swap_phase_select_pile(game);
+	game_local_select_pile(game);
 	return (0);
 }
 
@@ -105,16 +105,12 @@ int unload_swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
 	if (!manager || !game)
 		return (1);
-	// Remove swap phase renderer
 	for (size_t i = 0; i < manager->renderer_count; i++)
 	{
 		if (manager->renderers[i].render_fn == (t_renderer_fn)render_swap_phase)
 		{
-			// Shift remaining renderers down
 			for (size_t j = i; j < manager->renderer_count - 1; j++)
-			{
 				manager->renderers[j] = manager->renderers[j + 1];
-			}
 			manager->renderer_count--;
 			break ;
 		}
@@ -135,46 +131,5 @@ int swap_pile_clear_selection(struct s_game_local *game)
 	return (0);
 }
 
-int swap_phase_select_menu(struct s_game_local *game)
-{
-	if (!game || !game->swap_menu)
-		return (1);
-	game->selected_item = SELECTED_ITEM_SWAP_MENU;
-	game->swap_menu->is_hidden = 0;
-	game->swap_menu->is_dirty = 1;
-	game->swap_pile->selected = -1;
-	game->swap_pile->is_dirty = 1;
-	game->hand->card_selected[0] = -1;
-	game->hand->card_selected[1] = -1;
-	game->hand->hand_dirty = 1;
-	return (0);
-}
 
-int swap_phase_select_pile(struct s_game_local *game)
-{
-	if (!game || !game->swap_pile)
-		return (1);
-	game->selected_item = SELECTED_ITEM_SWAP_PILE;
-	game->swap_menu->is_hidden = 1;
-	game->swap_menu->is_dirty = 1;
-	game->swap_pile->selected = 0;
-	game->swap_pile->is_dirty = 1;
-	game->hand->card_selected[0] = -1;
-	game->hand->card_selected[1] = -1;
-	game->hand->hand_dirty = 1;
-	return (0);
-}
-
-int swap_phase_select_hand(struct s_game_local *game)
-{
-	if (!game || !game->hand)
-		return (1);
-	game->selected_item = SELECTED_ITEM_SWAP_HAND;
-	game->swap_menu->is_hidden = 1;
-	game->swap_menu->is_dirty = 1;
-	game->hand->card_selected[0] = 0;
-	game->hand->card_selected[1] = -1;
-	game->hand->hand_dirty = 1;
-	return (0);
-}
 

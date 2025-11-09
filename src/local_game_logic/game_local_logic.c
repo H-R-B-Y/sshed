@@ -10,42 +10,30 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 	static int			frame_countdown = FRAME_TIMEOUT;
 	static int			first_call = 1;
 	struct s_card_desc	card;
+	int					rand;
 
 	if (!manager || !game)
 		return (1);
 	if (cards_dealt >= (game->settings.player_count + 1) * CARDS_PER_PLAYER)
 	{
 		game->play_state = PLAY_STATE_SWAP_PHASE;
-		// game->play_state = PLAY_STATE_PLAY_PHASE; // swap phase not implemented yet
 		cards_dealt = 0;
 		first_call = 1;
 		frame_countdown = FRAME_TIMEOUT;
+		game->whos_turn = 0; // TODO: decide who goes first (eldest hand)
 		return (0);
 	}
 	if (frame_countdown > 0)
-	{
-		frame_countdown--;
-		return (0);
-	}
-	// Deal a card to each player
-	/*
-	pseudo-async dealing here
-	we will have this called every frame so 60hz right now
-	we will deal a card every 10 frames
-	We want to make sure that each players starts with their
-	shed view open and visible so
-	*/
+		return (frame_countdown--, 0);
 	if (first_call)
 	{
 		ft_srand(time(NULL));
-		int i = ft_rand(10, 100);
-		while (i--)
-		{
-			deck_shuffle(game->deck, i);
-		}
+		rand = ft_rand(10, 100);
+		while (rand--)
+			deck_shuffle(game->deck, rand);
 		hand_show_shed(game->hand);
-		for (t_u8 i = 0; i < game->settings.player_count; i++)
-			pdisplay_show_shed(game->pdisplay[i]);
+		for (t_u8 p = 0; p < game->settings.player_count; p++)
+			pdisplay_show_shed(game->pdisplay[p]);
 		first_call = 0;
 	}
 	frame_countdown = FRAME_TIMEOUT;
@@ -85,16 +73,14 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 			}
 		}
 	}
-	// TODO: When we have dealt all of the cards, we need to descide who goes first
-	// Need to use eldest hand rule for accuracy, but could be changed in the game rules
 	return (0);
 }
 
-
-int unload_swap_phase(struct s_game_manager *manager, struct s_game_local *game);
-
 static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
+	static int first_call = 1;
+	static int swaps_done = 0;
+	static int last_player = 0;
 	// In the swap phase we want to allow the player to swap a certain number of cards
 	// from the face up cards in the shed to their hand 
 	// To do this we will use a menu and a pile
@@ -105,33 +91,51 @@ static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 
 	if (!manager || !game)
 		return (1);
-	if (!game->swap_menu || !game->swap_pile)
+	if (first_call)
 	{
+		last_player = game->whos_turn;
 		init_swap_phase(manager, game);
 		deck_display_hide(game->deck_display);
-		swap_phase_select_menu(game);
+		game_local_select_menu(game);
 		re_order_visuals(manager, game);
+		if (game->whos_turn != 0)
+			game_local_select_nothing(game);
+		first_call = 0;
 		return (0);
+	}
+	if (last_player != game->whos_turn)
+	{
+		last_player = game->whos_turn;
+		if (last_player == 0)
+			game_local_select_menu(game);
+		else
+			game_local_select_nothing(game);
 	}
 	if (game->player_action.ready)
 	{
-		// Return cards to shed
-		while (game->swap_pile->cards->count)
+		swaps_done++;
+		if (game->whos_turn == 0)
 		{
-			struct s_card_desc card; 
-			card = ((struct s_card_plane *)game->swap_pile->cards->head->data)->card_desc;
-			pile_display_remove_card(game->swap_pile, card);
-			hand_add_card_to_shed(game->hand, card);
+			while (game->swap_pile->cards->count)
+			{
+				struct s_card_desc card; 
+				card = ((struct s_card_plane *)game->swap_pile->cards->head->data)->card_desc;
+				pile_display_remove_card(game->swap_pile, card);
+				hand_add_card_to_shed(game->hand, card);
+			}
 		}
-		game->whos_turn++;
+		game_local_increment_whos_turn(game);
 		game->player_action = clean_action();
-		if (game->whos_turn > game->settings.player_count)
+		if (swaps_done >= game->settings.player_count + 1)
 		{
 			game->play_state = PLAY_STATE_PLAY_PHASE;
-			game->whos_turn = 0;//decide who goes first at some point
 			unload_swap_phase(manager, game);
 			game->selected_item = SELECTED_ITEM_HAND;
+			game->hand->card_selected[0] = 0;
+			hand_update_selected(game->hand);
+			game->hand->hand_dirty = 1;
 			deck_display_show(game->deck_display);
+			swaps_done = 0;
 		}
 	}
 	return (0);
@@ -140,53 +144,20 @@ static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 static int	play_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
 	int					who_won;
-	/*
-	When we are in the play phase we want to check for
-	win conditions, we dont need to do this every frame, that is too expensive
-	so maybe we could signal if a player has finished their turn recently
-	*/
+
 	if (!manager || !game)
 		return (1);
-
 	if (game->player_action.ready)
 	{
 		if (game->player_action.action == PLAYER_ACTION_NONE)
-		{
-			game->player_action.ready = 0;
-			return (0);
-		}
+			return (game->player_action.ready = 0, 0);
 		if (_handle_player_action(manager, game, &game->player_action))
-			return MANAGER_RET_ERR("Player action caused an error");
-		// Player turn went through, and side effects of their action has been dealt with
-		// Increment who's turn it is
-		game->whos_turn = (game->whos_turn + 1);
-		if (game->whos_turn > game->settings.player_count)
-			game->whos_turn = 0;
+			return (MANAGER_RET_ERR("Player action caused an error"));
+		game_local_increment_whos_turn(game);
 		game->player_action = clean_action();
-		who_won = -1;
-
-		// A player has played a card since last frame
-		// cards_played = game->cards_played;
-		// Check for win conditions here
-		if (game->hand->card_count == 0 && game->hand->shed_count == 0)
-			who_won = 0;
-		if (who_won == -1)
-		{
-			for (t_u8 i = 0; i < game->pdisplay_count; i++)
-			{
-				if (game->pdisplay[i]->card_count == 0
-					&& game->pdisplay[i]->shed_count == 0)
-				{
-					who_won = i + 1;
-					break ;
-				}
-			}
-		}
+		who_won = game_local_who_won(game);
 		if (who_won != -1)
-		{
-			game->play_state = PLAY_STATE_GAME_END;
-			game->who_won = who_won;
-		}
+			(game->play_state = PLAY_STATE_GAME_END, game->who_won = who_won);
 	}
 	return (0);
 }

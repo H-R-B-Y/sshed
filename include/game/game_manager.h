@@ -1,3 +1,18 @@
+/**
+ * @file game_manager.h
+ * @brief Core game manager structure and interface
+ * 
+ * This header defines the main game manager structure that controls the
+ * overall game loop, state management, rendering, and event handling.
+ * 
+ * The game manager:
+ * - Manages state transitions
+ * - Coordinates rendering through multiple renderers
+ * - Handles input events via stdin handler
+ * - Maintains timing through epoll and timer fd
+ * - Provides utility functions for state load/unload operations
+ */
+
 #ifndef GAME_MANAGER_H
 # define GAME_MANAGER_H
 
@@ -5,7 +20,16 @@
 # include "main_statemap.h"
 # include <notcurses/notcurses.h>
 
+/* ========================================================================== */
+/*                         CORE DATA STRUCTURES                               */
+/* ========================================================================== */
 
+/**
+ * @brief Renderer structure
+ * 
+ * Pairs a render function with its associated data.
+ * Multiple renderers can be registered per state.
+ */
 struct s_renderer
 {
 	/// @brief Function pointer to the render function
@@ -14,7 +38,12 @@ struct s_renderer
 	void			*data;
 };
 
-// Main game manager structure
+/**
+ * @brief Main game manager structure
+ * 
+ * Central control structure for the entire game engine.
+ * Manages state, rendering, events, and the main game loop.
+ */
 struct s_game_manager
 {
 	/// @brief Notcurses context
@@ -59,8 +88,19 @@ struct s_game_manager
 	size_t				renderer_count;
 };
 
+/* ========================================================================== */
+/*                    GAME MANAGER LIFECYCLE FUNCTIONS                        */
+/* ========================================================================== */
+
 /**
  * @brief Initialize the game manager
+ * 
+ * Allocates and initializes the game manager structure, setting up:
+ * - Notcurses context
+ * - Epoll file descriptor
+ * - Timer file descriptor
+ * - Initial state to NONE
+ * 
  * @param manager Pointer to store the initialized game manager
  * @return 0 on success, 1 on error
  */
@@ -70,6 +110,13 @@ int		game_manager_init(
 
 /**
  * @brief Destroy the game manager and free resources
+ * 
+ * Cleans up the game manager by:
+ * - Closing file descriptors (epoll, timer, reading)
+ * - Destroying the notcurses context
+ * - Freeing state data
+ * - Freeing the manager structure itself
+ * 
  * @param manager The game manager to destroy
  * @note This function is compatible with t_freefn for use as a destructor callback
  */
@@ -81,7 +128,11 @@ void	game_manager_destroy(
  * @brief Runs the game manager loop, does not return until exit
  * 
  * This function starts the main loop of the game manager.
- * It will set the clock for the timer fd to the defined refresh rate
+ * It will:
+ * - Set the timer fd to the defined refresh rate
+ * - Process events (timer, stdin) via epoll
+ * - Call renderers each frame
+ * - Handle state transitions
  * 
  * @param manager The game manager
  * @return 0 on normal exit, 1 on error
@@ -92,20 +143,27 @@ int		game_manager_run(
 
 /**
  * @brief Stop the game manager's main loop
+ * 
+ * Sets the running flag to 0, causing the main loop to exit.
+ * 
  * @param manager The game manager to stop
  */
 void	game_manager_stop(
 	struct s_game_manager *manager
 );
 
+/* ========================================================================== */
+/*                       STATE TRANSITION FUNCTIONS                           */
+/* ========================================================================== */
+
 /**
  * @brief Change the current game state to the next state
  * 
- * This function, in sequence, will:
- * - Call the unload callback for the current state, if set.
- * - Change the prev state to the current state.
- * - Change the current state to the next state.
- * - Call the load callback for the new current state, if set.
+ * This function performs state transition in sequence:
+ * 1. Call the unload callback for the current state (if set)
+ * 2. Set prev_state to current state
+ * 3. Set current state to next_state
+ * 4. Call the load callback for the new current state (if set)
  * 
  * @param manager The game manager
  * @return 0 on success, 1 on error
@@ -114,8 +172,15 @@ int		game_manager_change_state(
 	struct s_game_manager *manager
 );
 
+/* ========================================================================== */
+/*                      UNLOAD UTILITY FUNCTIONS                              */
+/* ========================================================================== */
+
 /**
  * @brief Utility function for unsetting the previous state data in an unload callback
+ * 
+ * Frees prev_state_data using the prev_state_data_destructor and sets both to NULL.
+ * 
  * @param manager The game manager
  */
 void	unload_unset_prev(
@@ -124,6 +189,9 @@ void	unload_unset_prev(
 
 /**
  * @brief Utility function for unsetting the stdin handler in an unload callback
+ * 
+ * Sets stdin_handler to NULL.
+ * 
  * @param manager The game manager
  */
 void	unload_unset_stdinhandler(
@@ -132,6 +200,9 @@ void	unload_unset_stdinhandler(
 
 /**
  * @brief Utility function for unsetting the renderers in an unload callback
+ * 
+ * Clears all renderers and sets renderer_count to 0.
+ * 
  * @param manager The game manager
  */
 void	unload_unset_renderers(
@@ -140,6 +211,10 @@ void	unload_unset_renderers(
 
 /**
  * @brief Utility function for setting the previous state data in an unload callback
+ * 
+ * Transfers current state data to previous state data for later retrieval.
+ * Useful when pausing a game state to resume later.
+ * 
  * @param manager The game manager
  * @param data The data to set as previous state data
  * @param free_data The function to free the previous state data
@@ -150,8 +225,16 @@ void	unload_set_prev_data(
 	t_freefn free_data
 );
 
+/* ========================================================================== */
+/*                       LOAD UTILITY FUNCTIONS                               */
+/* ========================================================================== */
+
 /**
  * @brief Utility function for freeing the previous state data in a load callback
+ * 
+ * Frees prev_state_data using the prev_state_data_destructor and sets both to NULL.
+ * Useful when transitioning to a new state that doesn't need the previous data.
+ * 
  * @param manager The game manager
  */
 void	load_free_prev(
@@ -160,6 +243,10 @@ void	load_free_prev(
 
 /**
  * @brief Utility function for unsetting the current state data in an unload callback
+ * 
+ * Sets state_data and state_data_destructor to NULL without freeing.
+ * Use when the data has been transferred elsewhere (e.g., to prev_state_data).
+ * 
  * @param manager The game manager
  */
 void	unload_unset_data(
@@ -167,12 +254,16 @@ void	unload_unset_data(
 );
 
 /**
- * @brief cleanup on unload
- * This will perform all the following:
- *  - Unsets current state data
- *  - Unsets prev state data
- *  - Unsets renderers
- *  - Unsets stdin handler
+ * @brief Cleanup on unload - comprehensive state cleanup
+ * 
+ * This performs all standard cleanup operations:
+ * - Unsets current state data
+ * - Unsets prev state data
+ * - Unsets renderers
+ * - Unsets stdin handler
+ * 
+ * Use this for simple states that don't need to preserve any data.
+ * 
  * @param manager The game manager
  */
 void	unload_clean_all(

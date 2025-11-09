@@ -1,17 +1,28 @@
+/**
+ * @file ai_state_machine.h
+ * @brief AI opponent state machine and decision logic
+ * 
+ * This header defines the AI state machine for computer opponents.
+ * The AI operates through a series of states to simulate thinking
+ * and decision-making, creating a more natural gameplay experience.
+ * 
+ * AI States:
+ * - NONE: Uninitialized
+ * - IDLE: Waiting for turn
+ * - THINKING: Analyzing hand and pile
+ * - PLAYING: Deciding which card(s) to play
+ * - DONE: Action ready for game logic
+ * - ERROR: Something went wrong
+ * 
+ * @todo Improve AI logic:
+ * - Consider special cards (2, 3, 7, 10, Jacks)
+ * - Play multiple cards of same rank
+ * - Add randomness/bluffing behavior
+ * - Better API for playing from hand vs shed
+ */
 
 #ifndef AI_STATE_MACHINE_H
 # define AI_STATE_MACHINE_H
-
-/*
-TODO:
-	- More advanced AI logic
-		- Consider special cards
-		- Consider multiple cards of the same rank
-		- Consider bluffing / random behaviour
-	- Refactor the state machine to make a cleaner API
-		- There should be functions for playing a card from the hand vs a funciton for playing from the shed
-
-*/
 
 # include "enum_macro.h"
 # include "cards.h"
@@ -19,9 +30,28 @@ TODO:
 # include "pdisplay.h"
 # include "pile_display.h"
 
-// How many frames does it take for the AI to take a step through its state machine
+/* ========================================================================== */
+/*                              CONSTANTS                                     */
+/* ========================================================================== */
+
+/// @brief Number of frames the AI waits before stepping through states
 # define AI_FRAME_TIMEOUT 2
 
+/* ========================================================================== */
+/*                         AI STATE ENUMERATION                               */
+/* ========================================================================== */
+
+/**
+ * @brief AI state machine states
+ * 
+ * Defines the states the AI can be in:
+ * - NONE: Not initialized
+ * - IDLE: Waiting (not AI's turn)
+ * - THINKING: Evaluating options
+ * - PLAYING: Making decision
+ * - DONE: Action complete
+ * - FUCK_FUCK_FUCK: Error state (colorful name for debugging)
+ */
 # define AI_STATES_LIST(prefix, func) \
 	func(prefix, NONE) \
 	func(prefix, IDLE) \
@@ -32,35 +62,63 @@ TODO:
 
 ENUM_FACTORY(AI_STATE, ai_state, AI_STATES_LIST);
 
+/* ========================================================================== */
+/*                         DATA STRUCTURES                                    */
+/* ========================================================================== */
+
+/**
+ * @brief AI state machine data structure
+ * 
+ * Contains all data needed for AI decision-making and state tracking.
+ * The AI evaluates its hand and determines the best card to play.
+ */
 struct s_ai_data
 {
-	/// @brief The current state of the AI
+	/// @brief Current AI state
 	t_ai_state	state;
-	/// @brief The number of frames left until the AI does something
+	/// @brief Frames remaining before next state step
 	int			state_frames_left;
-	/// @brief The progress through the current state
+	/// @brief Progress through current state (for multi-step states)
 	int			progress;
-	/// @brief This will later be used to play multiple cards (TODO:)
+
+	/* Card selection data */
+	/// @brief Cards to play (for future multi-card play support)
+	/// @todo Implement multi-card play
 	t_card_desc	*next_cards[4];
-	/// @brief This will later be used to play multiple cards (TODO:)
+	/// @brief Number of cards to play
+	/// @todo Currently always 1, support multiple
 	t_u8		card_count;
-	/// @brief Highest card in the hand
+
+	/* Hand analysis results */
+	/// @brief Highest rank card in hand
 	t_card_desc	*highest;
-	/// @brief Lowest card in the hand
+	/// @brief Lowest rank card in hand
 	t_card_desc	*lowest;
-	/// @brief The closest card to the last one played (ceiling)
+	/// @brief Closest card above the pile top
 	t_card_desc	*closest_up;
-	/// @brief The closest card to the last one played (floor)
+	/// @brief Closest card below the pile top (or equal)
 	t_card_desc	*closest_down;
-	/// @brief First special card in the hand
+	/// @brief First special card found (2, 3, 7, 10, Jack)
 	t_card_desc	*special;
-	/// @brief The card on top of the pile
-	/// TODO: This will point to the top card, it should actually account for the invisible cards (8 typically)
+
+	/// @brief The top card of the pile to beat
+	/// @todo Should account for invisible cards (8s typically)
 	t_card_desc	*card_to_beat;
 };
 
+/* ========================================================================== */
+/*                       AI UPDATE AND MAIN STEP                              */
+/* ========================================================================== */
+
+// Forward declaration
+struct s_game_manager;
+
 /**
- * @brief Render loop callback to update the AI state machine
+ * @brief Render loop callback to update all AI state machines
+ * 
+ * Called each frame to step through AI logic for all AI players.
+ * Manages timing and state transitions for all AIs.
+ * 
  * @param manager The game manager
  * @return 0 on success, 1 on error
  */
@@ -69,12 +127,17 @@ int	pre_render_ai_update(
 );
 
 /**
- * @brief Step the AI state machine
- * @param action The action to be filled out by the AI
- * @param data The AI data structure
+ * @brief Step the AI state machine forward
+ * 
+ * Advances the AI through its state machine based on current state.
+ * Calls the appropriate state handler function.
+ * 
+ * @param manager The game manager
+ * @param action The action structure to fill out when ready
+ * @param data The AI state machine data
  * @param hand The AI's hand display
  * @param pile The pile display
- * @return The current state of the AI after the step
+ * @return Current state after the step
  */
 t_ai_state		ai_step(
 	struct s_game_manager *manager,
@@ -84,30 +147,17 @@ t_ai_state		ai_step(
 	struct s_pile_display *pile
 );
 
-/**
- * @brief AI state machine idle step
- * 
- * Idle step, when triggered, just progresses the state machine to the next state.
- * Idle state just means it is waiting for its turn.
- * 
- * @param data The AI data structure
- * @param hand The AI's hand display
- * @param pile The pile display
- * @return 0 on success, 1 on error
- */
-int	ai_step_idle(
-	struct s_ai_data *data,
-	struct s_pdisplay *hand,
-	struct s_pile_display *pile
-);
+/* ========================================================================== */
+/*                       AI STATE HANDLER FUNCTIONS                           */
+/* ========================================================================== */
 
 /**
- * @brief AI state machine none step
+ * @brief AI none state handler
  * 
- * The None step will initialise the AI state machine to the idle state.
- * Any allocation or setup required for the AI should be done here.
+ * Initializes the AI state machine from NONE to IDLE.
+ * Performs any necessary setup or allocation.
  * 
- * @param data The AI data structure
+ * @param data The AI state machine data
  * @param hand The AI's hand display
  * @param pile The pile display
  * @return 0 on success, 1 on error
@@ -119,41 +169,35 @@ int	ai_step_none(
 );
 
 /**
- * @brief AI state machine play step
+ * @brief AI idle state handler
  * 
- * This step evaulates the AI's "thoughts" and decides what
- * would be a "good" move to make based on the data populated.
+ * Idle state - waiting for the AI's turn.
+ * When triggered (turn starts), advances to THINKING state.
  * 
- * This step probably should take some reference to the game rules
- * because we need to know if there are any special conditions to consider.
- * 
- * The result of this should be that the (first) next_cards is populated
- * and the card_count is set to the number of cards to play (1 for now).
- * 
- * @param data The AI data structure
+ * @param data The AI state machine data
  * @param hand The AI's hand display
  * @param pile The pile display
  * @return 0 on success, 1 on error
  */
-int	ai_step_play(
+int	ai_step_idle(
 	struct s_ai_data *data,
 	struct s_pdisplay *hand,
 	struct s_pile_display *pile
 );
 
 /**
- * @brief AI state machine think step
+ * @brief AI thinking state handler
  * 
- * The think step will evaluate the AI's hand and the pile
- * and populate the AI data structure with information about
- * the "best" cards to play.
+ * Evaluates the AI's hand and the pile to populate decision data.
  * 
- * This function requires multiple calls to complete to emulate
- * thinking time. Each call progresses the internal progress counter.
- * Subsequent calls will perform different parts of the evaluation.
- * The progress counter is reset when the final "thought" is made.
+ * This is a multi-step state that requires multiple calls to complete,
+ * simulating thinking time. Each call progresses the internal progress
+ * counter and performs different parts of the evaluation:
+ * - Identify highest/lowest cards
+ * - Find closest cards to pile top
+ * - Identify special cards
  * 
- * @param data The AI data structure
+ * @param data The AI state machine data
  * @param hand The AI's hand display
  * @param pile The pile display
  * @return 0 on success, 1 on error
@@ -165,15 +209,36 @@ int	ai_step_think(
 );
 
 /**
- * @brief AI state machine done step
+ * @brief AI playing state handler
  * 
- * The done step will finalise the AI's action by populating the action
- * structure and setting the action to done.
+ * Evaluates the AI's "thoughts" from the THINKING state and decides
+ * which card would be the best move to make.
  * 
- * This signals to the game logic loop that the action is ready to be processed.
+ * Uses the populated analysis data (highest, lowest, closest, special)
+ * to select a card. Populates next_cards[0] with the chosen card.
  * 
- * @param action The action to be filled out by the AI
- * @param data The AI data structure
+ * @todo Consider special card game rules
+ * @todo Support playing multiple cards of same rank
+ * 
+ * @param data The AI state machine data
+ * @param hand The AI's hand display
+ * @param pile The pile display
+ * @return 0 on success, 1 on error
+ */
+int	ai_step_play(
+	struct s_ai_data *data,
+	struct s_pdisplay *hand,
+	struct s_pile_display *pile
+);
+
+/**
+ * @brief AI done state handler
+ * 
+ * Finalizes the AI's action by populating the action structure
+ * and marking it as ready for the game logic to process.
+ * 
+ * @param action The action structure to populate
+ * @param data The AI state machine data
  * @param hand The AI's hand display
  * @param pile The pile display
  * @return 0 on success, 1 on error
@@ -186,12 +251,12 @@ int	ai_step_done(
 );
 
 /**
- * @brief AI state machine error step
+ * @brief AI error state handler
  * 
- * The error step is called when something has gone wrong in the AI logic.
- * This function currently just logs an error message.
+ * Called when something has gone wrong in the AI logic.
+ * Currently just logs an error message.
  * 
- * @param data The AI data structure
+ * @param data The AI state machine data
  * @param hand The AI's hand display
  * @param pile The pile display
  * @return 0 on success, 1 on error

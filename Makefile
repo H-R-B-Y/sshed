@@ -39,6 +39,8 @@ SRCS			:= \
 				src/local_game_logic/local_game_load.c \
 				src/local_game_logic/local_game_pause.c \
 				src/ai_logic/computer_ai.c \
+				src/local_game_logic/action_menu.c \
+				src/local_game_logic/game_local_utils.c \
 				src/local_game_logic/game_playing_input_handler.c \
 				src/player_action/player_action.c \
 				src/local_game_logic/game_handle_player_action.c \

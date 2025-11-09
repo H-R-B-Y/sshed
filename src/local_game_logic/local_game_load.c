@@ -271,7 +271,7 @@ void	free_game_state(
 	// Free the deck
 	if (game->deck)
 		deck_destroy(game->deck);
-	game->deck_display = NULL;
+	game->deck = NULL;
 	// What else
 	// ??
 	// Free the pointer

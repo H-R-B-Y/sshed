@@ -23,6 +23,7 @@ int		_hand_add_card_to_shed(struct s_hand *hand, t_card_desc card_desc)
 	hand->shed_count++;
 	if (move_sel)
 		hand->card_selected[1] = 0;
+	hand_update_selected(hand);
 	if (hand->status == HAND_DISPLAY_SHED)
 		hand->hand_dirty = 1;
 	return (0);

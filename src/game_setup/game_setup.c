@@ -37,23 +37,23 @@ static int	setup_start_game(
 
 static int	setup_input_handler(
 	struct s_game_manager *manager,
-	struct epoll_event *event
+	struct ncinput event
 )
 {
-	struct s_game_local_setup	*setup = (struct s_game_local_setup *)manager->state_data;
-	struct s_menu				*menu = setup->menu;
-	int							c_code;
+	struct s_game_local_setup	*setup;// = (struct s_game_local_setup *)manager->state_data;
+	struct s_menu				*menu;// = setup->menu;
 
-	if (!manager || !manager->state_data || !event)
+	if (!manager || !manager->state_data)
 		return (1);
-	if (event->data.fd != manager->reading_fd)
-		return (1);
-	c_code = notcurses_get_blocking(manager->nc, NULL);
-	if (c_code == NCKEY_DOWN)
+	setup = manager->state_data;
+	if (!setup)
+		return (MANAGER_RET_ERR("No setup state data"));
+	menu = setup->menu;
+	if (event.id == NCKEY_DOWN)
 		return (menu_select_next(menu));
-	else if (c_code == NCKEY_UP)
+	else if (event.id == NCKEY_UP)
 		return (menu_select_prev(menu));
-	else if (c_code == NCKEY_ENTER || c_code == '\n' || c_code == '\r')
+	else if (event.id == NCKEY_ENTER || event.id == '\n' || event.id == '\r')
 		return (menu_activate_selected(menu));
 	return (0);
 }
@@ -64,6 +64,7 @@ static char	*get_player_count_text(struct s_menu *menu, struct s_menu_option *op
 	struct s_game_local_setup	*setup;
 	char						*output;
 
+	(void)option;
 	if (!menu)
 		return (NULL);
 	manager = menu->user_data;

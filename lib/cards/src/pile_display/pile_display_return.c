@@ -30,6 +30,8 @@ int	_pile_display_return_to_hand(
 			return (dprintf(STDERR_FILENO, "Failed to add card to hand\n"), 0);
 		count++;
 	}
+	hand->hand_dirty = 1;
+	pile_display->is_dirty = 1;
 	return (count);
 }
 
@@ -58,6 +60,8 @@ int	_pile_display_return_pdisplay(
 			return (dprintf(STDERR_FILENO, "Failed to add card to pdisplay\n"), 0);
 		count++;
 	}
+	hand->pdisplay_dirty = 1;
+	pile_display->is_dirty = 1;
 	return (count);
 }
 

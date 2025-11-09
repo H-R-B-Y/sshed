@@ -25,6 +25,31 @@ int pile_display_clear_screen(
 	return (0);
 }
 
+int pile_display_hide(
+	struct s_pile_display *pile_display
+)
+{
+	if (!pile_display)
+		return (1);
+	pile_display_clear_screen(pile_display);
+	pile_display->is_visible = 0;
+	pile_display->is_dirty = 1;
+	return (0);
+}
+
+int pile_display_show(
+	struct s_pile_display *pile_display
+)
+{
+	if (!pile_display)
+		return (1);
+	pile_display_clear_screen(pile_display);
+	pile_display->is_visible = 1;
+	pile_display->is_dirty = 1;
+	pile_display_render(pile_display);
+	return (0);
+}
+
 int pile_display_toggle_visibility(
 	struct s_pile_display *pile_display
 )

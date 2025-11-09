@@ -1,3 +1,10 @@
+/**
+ * @file menu_methods.h
+ * @brief Main menu state data structure
+ * 
+ * This header defines the data structure for the main menu game state.
+ * State handler functions (load/unload) are declared in game_state_handlers.h
+ */
 
 #ifndef MENU_METHODS_H
 # define MENU_METHODS_H
@@ -5,53 +12,20 @@
 # include "menu.h"
 # include <notcurses/notcurses.h>
 
-struct s_game_manager;
-struct epoll_event;
+/* ========================================================================== */
+/*                         STATE DATA STRUCTURES                              */
+/* ========================================================================== */
 
-struct s_main_menu // nothing else needed for now
+/**
+ * @brief Main menu state data structure
+ * 
+ * Contains all the data needed for the main menu game state.
+ * Currently only requires a menu interface.
+ */
+struct s_main_menu
 {
+	/// @brief The main menu interface
 	struct s_menu			*menu;
 };
-
-int load_main_menu_state(
-	struct s_game_manager *manager,
-	void **state_data
-);
-void	unload_main_menu_state(
-	struct s_game_manager *manager,
-	void *state_data
-);
-
-// These should probably be moved somewhere else
-
-int	load_init_state(
-	struct s_game_manager *manager,
-	void **state_data
-);
-
-void	unload_init_state(
-	struct s_game_manager *manager,
-	void *state_data
-);
-
-int	load_game_setup_state(
-	struct s_game_manager *manager,
-	void **state_data
-);
-
-void	unload_game_setup_state(
-	struct s_game_manager *manager,
-	void *state_data
-);
-
-int	load_settings_menu(
-	struct s_game_manager *manager,
-	void **state_data
-);
-
-void	unload_settings_menu(
-	struct s_game_manager *manager,
-	void *state_data
-);
 
 #endif

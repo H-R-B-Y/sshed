@@ -22,6 +22,8 @@ int	menu_create(
 		return (free(*menu), 1);
 	(*menu)->option_count = option_count;
 	(*menu)->selected_index = 0;
+	if ((*menu)->options[0].on_select)
+		(*menu)->options[0].on_select(*menu, &(*menu)->options[0]);
 	(*menu)->menu_plane = ncplane_create(parent, &(struct ncplane_options){
 		.y = 0,
 		.x = 0,
@@ -57,9 +59,13 @@ int	menu_select_next(
 {
 	if (!menu)
 		return (1);
+	if (menu->options[menu->selected_index].on_deselect)
+		menu->options[menu->selected_index].on_deselect(menu, &menu->options[menu->selected_index]);
 	menu->selected_index = (menu->selected_index + 1) % menu->option_count;
 	if (menu->options[menu->selected_index].disabled)
 		menu->selected_index = (menu->selected_index + 1) % menu->option_count;
+	if (menu->options[menu->selected_index].on_select)
+		menu->options[menu->selected_index].on_select(menu, &menu->options[menu->selected_index]);
 	menu->is_dirty = 1;
 	return (0);
 }
@@ -77,6 +83,8 @@ int	menu_select_prev(
 {
 	if (!menu)
 		return (1);
+	if (menu->options[menu->selected_index].on_deselect)
+		menu->options[menu->selected_index].on_deselect(menu, &menu->options[menu->selected_index]);
 	if (menu->selected_index == 0)
 		menu->selected_index = menu->option_count - 1;
 	else
@@ -88,35 +96,8 @@ int	menu_select_prev(
 		else
 			menu->selected_index--;
 	}
-	menu->is_dirty = 1;
-	return (0);
-}
-
-int	menu_add_option(
-	struct s_menu *menu,
-	const char *option_text,
-	int (*option_action)(struct s_menu *m, struct notcurses *nc)
-)
-{
-	struct s_menu_option	*new_options;
-	unsigned int			new_count;
-
-	if (!menu || !option_text)
-		return (1);
-	new_count = menu->option_count + 1;
-	new_options = ft_memcpy(
-		ft_calloc(new_count, sizeof(struct s_menu_option)),
-		menu->options,
-		menu->option_count * sizeof(struct s_menu_option)
-	);
-	if (!new_options)
-		return (1);
-	new_options[menu->option_count].text_type = STATIC_TEXT;
-	new_options[menu->option_count].option_text = option_text;
-	new_options[menu->option_count].option_action = option_action;
-	free(menu->options);
-	menu->options = new_options;
-	menu->option_count = new_count;
+	if (menu->options[menu->selected_index].on_select)
+		menu->options[menu->selected_index].on_select(menu, &menu->options[menu->selected_index]);
 	menu->is_dirty = 1;
 	return (0);
 }
@@ -155,17 +136,7 @@ int	menu_render(
 	channel = NCCHANNELS_INITIALIZER(255, 255, 255, 0, 0, 0);
 	ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
 	no_free = 0;
-	ncplane_perimeter_rounded(menu->menu_plane,
-		NCSTYLE_NONE,
-		channel
-		, // fuck me it took so much work to figure out what the paremeters of this function mean
-		NCBOXMASK_TOP | NCBOXMASK_RIGHT | NCBOXMASK_BOTTOM | NCBOXMASK_LEFT
-	);
-	/*
-	stylemask relates to the NCSTYLE_ enums and can be configured on a per plane or per cell basis 
-	the channel relates to NC channels which specify the RGB of a cell
-	and the ctlword is the mask for the box sides to represent
-	*/
+	ncplane_perimeter_rounded(menu->menu_plane,NCSTYLE_NONE,channel,NCBOXMASK_TOP | NCBOXMASK_RIGHT | NCBOXMASK_BOTTOM | NCBOXMASK_LEFT);
 	prev_channel = ncplane_channels(menu->menu_plane);
 	for (i = 0; i < menu->option_count; i++)
 	{
@@ -175,37 +146,18 @@ int	menu_render(
 			str = menu->options[i].get_option_text(menu, &menu->options[i]);
 		if (!str && ++no_free)
 			str = "ERR";
-
 		ncplane_cursor_move_yx(menu->menu_plane, i + 1, 1);
-		// ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
-
 		if (menu->options[i].disabled)
-			{channel = NCCHANNELS_INITIALIZER(
-				255,0,0,
-				255,255,255);ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);}
+			channel = NCCHANNELS_INITIALIZER(255, 0, 0, 255, 255, 255);
 		else
-			{channel = NCCHANNELS_INITIALIZER(
-				255,255,255,
-				0,0,0
-			);ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);}
+			channel = NCCHANNELS_INITIALIZER(255, 255, 255, 0, 0, 0);
+		ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
 		ncchannels_set_fg_alpha(&channel, NCALPHA_OPAQUE);
 		ncplane_set_channels(menu->menu_plane, channel);
 		if (i == menu->selected_index)
-		{
-			ret = ncplane_printf(
-				menu->menu_plane,
-				"> %s <",
-				str
-			);
-		}
+			ret = ncplane_printf(menu->menu_plane, "> %s <", str);
 		else
-		{
-			ret = ncplane_printf(
-				menu->menu_plane,
-				"  %s  ",
-				str
-			);
-		}
+			ret = ncplane_printf(menu->menu_plane, "  %s  ", str);
 		if (menu->options[i].text_type == DYNAMIC_TEXT_FUNCTION && !no_free)
 			free(str);
 		if (ret < 0)
@@ -216,3 +168,24 @@ int	menu_render(
 	return (0);
 }
 
+int menu_show(
+	struct s_menu *menu
+)
+{
+	if (!menu)
+		return (1);
+	menu->is_hidden = 0;
+	menu->is_dirty = 1;
+	return (0);
+}
+
+int menu_hide(
+	struct s_menu *menu
+)
+{
+	if (!menu)
+		return (1);
+	menu->is_hidden = 1;
+	menu->is_dirty = 1;
+	return (0);
+}

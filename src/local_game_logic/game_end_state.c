@@ -4,31 +4,33 @@
 
 static int	menu_input_handler(
 	struct s_game_manager *manager,
-	struct epoll_event *event
+	struct ncinput event
 )
 {
 	struct s_game_local_end	*main_menu;
 	struct s_menu			*menu;
 
-	if (!manager || !manager->state_data || !event)
+	if (!manager || !manager->state_data)
 		return (1);
 	main_menu = (struct s_game_local_end *)manager->state_data;
 	if (!main_menu)
 		return (1);
 	menu = main_menu->menu;
-	if (event->data.fd != manager->reading_fd)
-		return (0);
-	return (_menu_key_handler(menu, manager->nc));
+	return (_menu_key_handler(menu, event));
 }
 
 // TODO: Really this could be a static text option that is created in the load function but we can do that later
-char	*who_won_text(struct s_menu *menu, struct s_menu_option *option)
+char	*who_won_text(
+	struct s_menu *menu,
+	struct s_menu_option *option
+)
 {
 	char					*temp;
 	char					*output;
 	struct s_game_local_end	*state;
 	struct s_game_manager	*manager;
 
+	(void)option;
 	if (!menu || !menu->user_data)
 		return (NULL);
 	manager = menu->user_data;

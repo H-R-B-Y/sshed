@@ -24,14 +24,13 @@ static int	settings_back_handler(
 
 static int	menu_input_handler(
 	struct s_game_manager *manager,
-	struct epoll_event *event
+	struct ncinput event
 )
 {
 	struct s_game_settings_menu	*settings;
 	struct s_menu		*menu;
-	int					c_code;
 
-	if (!manager || !event)
+	if (!manager)
 		return (1);
 	settings = manager->state_data;
 	if (!settings)
@@ -39,14 +38,11 @@ static int	menu_input_handler(
 	menu = settings->menu;
 	if (!menu)
 		return (1);
-	if (event->data.fd != manager->reading_fd)
-		return (0);
-	c_code = notcurses_get_blocking(manager->nc, NULL);
-	if (c_code == NCKEY_DOWN)
+	if (event.id == NCKEY_DOWN)
 		return (menu_select_next(menu));
-	else if (c_code == NCKEY_UP)
+	else if (event.id == NCKEY_UP)
 		return (menu_select_prev(menu));
-	else if (c_code == NCKEY_ENTER || c_code == '\n' || c_code == '\r')
+	else if (event.id == NCKEY_ENTER || event.id == '\n' || event.id == '\r')
 		return (menu_activate_selected(menu));
 	return (0);
 }

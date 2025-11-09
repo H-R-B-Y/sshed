@@ -51,21 +51,19 @@ static int	menu_settings(
 
 static int	menu_input_handler(
 	struct s_game_manager *manager,
-	struct epoll_event *event
+	struct ncinput event
 )
 {
 	struct s_main_menu	*main_menu;
 	struct s_menu		*menu;
 
-	if (!manager || !manager->state_data || !event)
+	if (!manager || !manager->state_data)
 		return (1);
 	main_menu = (struct s_main_menu *)manager->state_data;
 	if (!main_menu)
 		return (1);
 	menu = main_menu->menu;
-	if (event->data.fd != manager->reading_fd)
-		return (0);
-	return (_menu_key_handler(menu, manager->nc));
+	return (_menu_key_handler(menu, event));
 }
 
 int load_main_menu_state(

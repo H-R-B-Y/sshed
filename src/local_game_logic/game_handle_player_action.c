@@ -43,8 +43,6 @@ static const t_special_action	special_actions[RANK_COUNT] = {
 	[RANK_JOKER_RED]		= special_action_burn_pile
 };
 
-
-
 static int	_validate_player_turn(
 	struct s_game_manager *manager,
 	struct s_game_local *game,
@@ -193,8 +191,10 @@ we need to figure out the best way to structure the game log.
 I want it to be easy to create logs, but each state of the log struct
 has a string value that can be shown to the user, and is verbose enough
 for anyone to know the entire state of play from looking at the log.
+
 */
-int	_handle_player_action(
+
+int _handle_player_player_action(
 	struct s_game_manager *manager,
 	struct s_game_local *game,
 	struct s_player_action *action
@@ -202,8 +202,7 @@ int	_handle_player_action(
 {
 	struct s_pdisplay	*pdisplay;
 
-	if (!manager || !game || !action)
-		return (1);
+
 	if (_validate_player_turn(manager, game, action))
 	{
 		// what do we do if the turn was invalid
@@ -213,13 +212,6 @@ int	_handle_player_action(
 	}
 	if (game->whos_turn > 0)
 		pdisplay = game->pdisplay[game->whos_turn - 1];
-	/*
-	Some special cards can be played on anything
-	Some do special things when played
-	Some change what can be played next
-	How do we do this
-	*/
-
 	if (_next_card_stacks(manager, game, action))
 	//  If true move the card to the pile and increment whos turn
 	{
@@ -264,7 +256,6 @@ int	_handle_player_action(
 		}
 	}
 	else
-	//  else user picks up the pile
 	{
 		if (game->whos_turn == 0)
 		{
@@ -287,6 +278,42 @@ int	_handle_player_action(
 			pile_display_return_to_hand(game->pile_display, false, game->hand);
 		else
 			pile_display_return_to_hand(game->pile_display, true, pdisplay);
+	}
+	return (0);
+}
+
+
+int	_handle_player_action(
+	struct s_game_manager *manager,
+	struct s_game_local *game,
+	struct s_player_action *action
+)
+{
+	struct s_pdisplay	*pdisplay;
+
+	if (!manager || !game || !action)
+		return (1);
+	switch (action->action)
+	{
+		case PLAYER_ACTION_PLAY:
+			return (_handle_player_player_action(manager, game, action));
+		case PLAYER_ACTION_SWAP:
+			return (MANAGER_RET_ERR("Swap action no longer supported through action interface"));
+		case PLAYER_ACTION_DEFAULT:
+			if (game->whos_turn == 0)
+			{
+				pile_display_return_to_hand(game->pile_display, false, game->hand);
+			}
+			else
+			{
+				pdisplay = game->pdisplay[game->whos_turn - 1];
+				pile_display_return_to_hand(game->pile_display, true, pdisplay);
+			}
+			return (0);
+		case PLAYER_ACTION_NONE:
+			return (0);
+		default:
+			break ;
 	}
 	return (0);
 }

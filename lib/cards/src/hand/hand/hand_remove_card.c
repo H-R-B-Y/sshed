@@ -30,11 +30,6 @@ void	_hand_remove_card(struct s_hand *hand, t_card_desc card_desc)
 				hand_select_prev_card(hand);
 			else
 				hand_update_selected(hand);
-			if (hand->card_count == 0)
-			{
-				hand->selected_card_plane = NULL;
-				hand->card_selected[0] = -1;
-			}
 			hand->hand_dirty = 1;
 			return;
 		}

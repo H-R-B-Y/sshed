@@ -31,16 +31,16 @@ static int	_background(struct s_game_manager *manager)
 	nccell_init(&c);
 	if (!stdn)
 		return (1);
-	ncplane_gradient(
-		stdn,
-		0, 0,
-		height, width,
-		0, 0,
-		NCCHANNEL_INITIALIZER(0, 128, 0),
-		NCCHANNEL_INITIALIZER(0, 128, 0),
-		NCCHANNEL_INITIALIZER(0, 0, 128),
-		NCCHANNEL_INITIALIZER(0, 0, 128)
-	);
+	// ncplane_gradient(
+	// 	stdn,
+	// 	0, 0,
+	// 	height, width,
+	// 	"", NCSTYLE_NONE,
+	// 	NCCHANNELS_INITIALIZER(0,0,0,0, 128, 0),
+	// 	NCCHANNELS_INITIALIZER(0,0,0,0, 128, 0),
+	// 	NCCHANNELS_INITIALIZER(0,0,0,0, 0, 128),
+	// 	NCCHANNELS_INITIALIZER(0,0,0,0, 0, 128)
+	// );
 	return (0);
 }
 

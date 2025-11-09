@@ -21,6 +21,27 @@ int	_renderer_update(struct s_game_manager *manager)
 	return (0);
 }
 
+static int _event_handler(
+	struct s_game_manager *manager,
+	struct epoll_event *event
+)
+{
+	struct ncinput	input_event;
+
+	if (!manager || !event)
+		return (1);
+	if (event->data.fd != manager->reading_fd)
+		return (0);
+	notcurses_get_blocking(manager->nc, &input_event);
+	if (input_event.id == NCKEY_TAB)
+		notcurses_refresh(manager->nc, NULL, NULL);
+	else if (input_event.id == 'q')
+		manager->running = 0;
+	else if (manager->stdin_handler)
+		return (manager->stdin_handler(manager, input_event));
+	return (0);
+}
+
 // Runs the game manager loop, does not return until exit
 int	game_manager_run(
 	struct s_game_manager *manager
@@ -70,18 +91,8 @@ int	game_manager_run(
 				notcurses_render(manager->nc);
 			}
 			else if (manager->reading_fd > 0 && events[i].data.fd == manager->reading_fd)
-			{
-				// We need to regiser a function pointer for stdin handling
-				if (manager->stdin_handler)
-					manager->stdin_handler(manager, &events[i]);
-			}
+				_event_handler(manager, &events[i]);
 		}
 	}
-	if (state_handlers[manager->state].unload_fn)
-		state_handlers[manager->state].unload_fn(manager, manager->state_data);
-	if (manager->state_data && manager->state_data_destructor)
-		manager->state_data_destructor(manager->state_data);
-	if (manager->prev_state_data && manager->prev_state_data_destructor)
-		manager->prev_state_data_destructor(manager->prev_state_data);
 	return (0);
 }

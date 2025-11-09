@@ -9,29 +9,25 @@ static int	_continue_game(
 
 static int	pause_input_handler(
 	struct s_game_manager *manager,
-	struct epoll_event *event
+	struct ncinput event
 )
 {
 	struct s_game_local_pause	*main_menu;
 	struct s_menu				*menu;
-	int							c_code;
 
-	if (!manager || !manager->state_data || !event)
+	if (!manager || !manager->state_data)
 		return (1);
 	main_menu = (struct s_game_local_pause *)manager->state_data;
 	if (!main_menu)
 		return (1);
 	menu = main_menu->menu;
-	if (event->data.fd != manager->reading_fd)
-		return (0);
-	c_code = notcurses_get_blocking(manager->nc, NULL);
-	if (c_code == NCKEY_DOWN)
+	if (event.id == NCKEY_DOWN)
 		return (menu_select_next(menu));
-	else if (c_code == NCKEY_UP)
+	else if (event.id == NCKEY_UP)
 		return (menu_select_prev(menu));
-	else if (c_code == NCKEY_ENTER || c_code == '\n' || c_code == '\r')
+	else if (event.id == NCKEY_ENTER || event.id == '\n' || event.id == '\r')
 		return (menu_activate_selected(menu));
-	else if (c_code == 'p')
+	else if (event.id == 'p')
 		_continue_game(menu, manager->nc);
 	return (0);
 }
