@@ -194,6 +194,92 @@ for anyone to know the entire state of play from looking at the log.
 
 */
 
+static int remove_action_from_hand(
+	struct s_game_manager *manager,
+	struct s_game_local *game,
+	struct s_player_action *action,
+	int is_pdisplay,
+	void *hand
+)
+{
+	size_t	i;
+	struct s_pdisplay	*pdisplay;
+	struct s_hand		*hand_struct;
+
+	(void)manager;
+	(void)game;
+	i = 0;
+	while (i < action->card_count)
+	{
+		if (is_pdisplay)
+		{
+			pdisplay = (struct s_pdisplay *)hand;
+			if (pdisplay->card_count)
+				pdisplay_remove_card(pdisplay, action->cards[i]);
+			else
+				pdisplay_remove_card_shed(pdisplay, action->cards[i]);
+		}
+		else
+		{
+			hand_struct = (struct s_hand *)hand;
+			if (hand_struct->card_count)
+				hand_remove_card(hand_struct, action->cards[i]);
+			else
+				hand_remove_card_shed(hand_struct, action->cards[i]);
+		}
+		i++;
+	}
+	return (0);
+}
+
+static int move_action_to_pile(
+	struct s_game_manager *manager,
+	struct s_game_local *game,
+	struct s_player_action *action
+)
+{
+	size_t	i;
+
+	(void)manager;
+	i = 0;
+	while (i < action->card_count)
+	{
+		pile_display_add_card_top(game->pile_display, action->cards[i]);
+		i++;
+	}
+	return (0);
+}
+
+static int populate_hand(
+	struct s_game_manager *manager,
+	struct s_game_local *game,
+	struct s_player_action *action
+)
+{
+	struct s_pdisplay	*pdisplay;
+
+	(void)manager;
+	(void)action;
+	if (game->deck_display->deck->remaining == 0)
+		return (0);
+	if (game->whos_turn > 0)
+		pdisplay = game->pdisplay[game->whos_turn - 1];
+	while (game->deck_display->deck->remaining
+		&& ((game->whos_turn == 0 && game->hand->card_count < 5)
+		|| (game->whos_turn > 0 && pdisplay->card_count < 5)))
+	{
+		struct s_card_desc	card;
+		if (deck_display_draw_top_card(game->deck_display, &card))
+			break ;
+		if (game->whos_turn == 0)
+			hand_add_card(game->hand, card);
+		else
+			pdisplay_add_card(pdisplay, card);
+	}
+	return (0);
+}
+
+
 int _handle_player_player_action(
 	struct s_game_manager *manager,
 	struct s_game_local *game,
@@ -204,80 +290,33 @@ int _handle_player_player_action(
 
 
 	if (_validate_player_turn(manager, game, action))
-	{
-		// what do we do if the turn was invalid
-		// Nothing, reset the action and dont change who's turn it is
-		(*action) = clean_action();
-		return (0);
-	}
+		return (((*action) = clean_action()), 0);
 	if (game->whos_turn > 0)
 		pdisplay = game->pdisplay[game->whos_turn - 1];
 	if (_next_card_stacks(manager, game, action))
-	//  If true move the card to the pile and increment whos turn
 	{
-		if (game->whos_turn == 0)
-		{
-			if (game->hand->card_count)
-				hand_remove_card(game->hand, action->cards[0]);
-			else
-				hand_remove_card_shed(game->hand, action->cards[0]);
-		}
-		else
-		{
-			if (pdisplay->card_count)
-				pdisplay_remove_card(pdisplay, action->cards[0]);
-			else
-				pdisplay_remove_card_shed(pdisplay, action->cards[0]);
-		}
-		pile_display_add_card_top(game->pile_display, action->cards[0]);
+		remove_action_from_hand(manager, game, action,
+			(game->whos_turn > 0), (game->whos_turn > 0) ? (void *)pdisplay : (void *)game->hand);
+		move_action_to_pile(manager, game, action);
 		if (special_actions[action->cards[0].rank])
 			special_actions[action->cards[0].rank](manager, game, action);
-		if (game->deck_display->deck->remaining)
-		{
-			struct s_card_desc	card;
-			if (game->whos_turn == 0)
-			{
-				while (game->hand->card_count < 5)
-				{
-					if (deck_display_draw_top_card(game->deck_display, &card))
-						break ;
-					hand_add_card(game->hand, card);
-				}
-			}
-			else
-			{
-				while (pdisplay->card_count < 5)
-				{
-					if (deck_display_draw_top_card(game->deck_display, &card))
-						break ;
-					pdisplay_add_card(pdisplay, card);
-				}
-			}
-		}
+		populate_hand(manager, game, action);
 	}
 	else
 	{
+		remove_action_from_hand(manager, game, action,
+			(game->whos_turn > 0), (game->whos_turn > 0) ? (void *)pdisplay : (void *)game->hand);
+		move_action_to_pile(manager, game, action);
 		if (game->whos_turn == 0)
 		{
-			if (game->hand->card_count)
-				hand_remove_card(game->hand, action->cards[0]);
-			else
-				hand_remove_card_shed(game->hand, action->cards[0]);
 			hand_show_hand(game->hand);
+			pile_display_return_to_hand(game->pile_display, false, game->hand);
 		}
 		else
 		{
-			if (pdisplay->card_count)
-				pdisplay_remove_card(pdisplay, action->cards[0]);
-			else
-				pdisplay_remove_card_shed(pdisplay, action->cards[0]);
 			pdisplay_show_hand(pdisplay);
-		}
-		pile_display_add_card_top(game->pile_display, action->cards[0]);
-		if (game->whos_turn == 0)
-			pile_display_return_to_hand(game->pile_display, false, game->hand);
-		else
 			pile_display_return_to_hand(game->pile_display, true, pdisplay);
+		}
 	}
 	return (0);
 }
@@ -289,8 +328,6 @@ int	_handle_player_action(
 	struct s_player_action *action
 )
 {
-	struct s_pdisplay	*pdisplay;
-
 	if (!manager || !game || !action)
 		return (1);
 	switch (action->action)
@@ -301,14 +338,9 @@ int	_handle_player_action(
 			return (MANAGER_RET_ERR("Swap action no longer supported through action interface"));
 		case PLAYER_ACTION_DEFAULT:
 			if (game->whos_turn == 0)
-			{
 				pile_display_return_to_hand(game->pile_display, false, game->hand);
-			}
 			else
-			{
-				pdisplay = game->pdisplay[game->whos_turn - 1];
-				pile_display_return_to_hand(game->pile_display, true, pdisplay);
-			}
+				pile_display_return_to_hand(game->pile_display, true, game->pdisplay[game->whos_turn - 1]);
 			return (0);
 		case PLAYER_ACTION_NONE:
 			return (0);

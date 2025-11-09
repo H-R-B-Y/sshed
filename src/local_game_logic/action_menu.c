@@ -197,6 +197,7 @@ int game_local_action_menu_init(
 		{.text_type = STATIC_TEXT, .option_text = "Play 2 cards", .option_action = play_two_cards_action, .disabled = 1},
 		{.text_type = STATIC_TEXT, .option_text = "Play 3 cards", .option_action = play_three_cards_action, .disabled = 1},
 		{.text_type = STATIC_TEXT, .option_text = "Play 4 cards", .option_action = play_four_cards_action, .disabled = 1},
+		{.text_type = STATIC_TEXT, .option_text = "Sort hand", .option_action = NULL},
 		{.text_type = STATIC_TEXT, .option_text = "Cancel", .option_action = cancel_action}
 	};
 
