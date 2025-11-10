@@ -15,19 +15,8 @@ None right now, let me finish it :D
 ## TODO
 
 ### Core Game Logic
-- (DONE)**Swap Phase Implementation**: Currently skipped - need to implement card swapping between hand and shed
-  - Track selected display element (hand vs shed)
-  - Allow players to select one card from hand and one from shed to swap
-  - All player swaps happen in one turn per player
-  - Add UI element to skip swap phase
-  - (TODO) Hide the swap menu during card selection
-  - (TODO) Allow AI to swap
-  - (TODO) Move swap pile and menu positions for easier reading
-  
-- **Multiple Card Plays**: Implement ability to play multiple cards of same rank
-  - Add pile display above hand for queuing cards
-  - Reset pile if different rank is selected
-  - Add separate UI element to confirm play
+- **Swap Phase Implementation**:
+  -  Allow AI to swap
   
 - **Special Card Effects**:
   - Configurable card precedence and effects from rules menu
@@ -44,15 +33,10 @@ None right now, let me finish it :D
 - **AI Multiple Cards**: AI should be able to play multiple cards like human players
 
 ### Code Quality & Architecture
-- **Fix Duplicated Signatures in Headers**: Remove duplicate function declarations across header files
-
 - **Game State Management**: 
   - Data-driven game log system (not raw text)
   - Log entries as source of truth for server-client communication
   - Robust and easy-to-produce log format
-
-- **Bug Fixes**:
-  - **Card Play Bug**: Sometimes selected card doesn't play - turn logic advances but card not removed from hand
 
 ### User Interface
 - **In-Game Help Menu**: Display key bindings and controls during gameplay
