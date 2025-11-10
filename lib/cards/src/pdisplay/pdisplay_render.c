@@ -128,7 +128,10 @@ int _pdisplay_render_left_right(
 	}
 	else
 	{
-		ncplane_erase_region(pdisplay->plane,0,
+		ncplane_erase_region(pdisplay->plane,
+			((height / 2)
+			- (cards_to_render * (CARD_H_HEIGHT)) / 2)
+			+ (cards_to_render * (CARD_H_HEIGHT)) + 1,
 			(pdisplay->orientation == PDISPLAY_ORIENTATION_LEFT) ? 1 : 0, 1, 10);
 	}
 	return (0);
@@ -189,7 +192,7 @@ int _pdisplay_render_top(
 	}
 	else
 	{
-		ncplane_erase_region(pdisplay->plane,0,
+		ncplane_erase_region(pdisplay->plane, 0,
 			(width / 2) + ((cards_to_render * (CARD_WIDTH)) / 2) + 1, 1, 10);
 	}
 	return (0);

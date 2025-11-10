@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 15:55:59 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/11/09 13:24:29 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/10 18:05:52 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,14 @@ int no_swap_action(
 	return (0);
 }
 
+int	swap_phase_render_hooks(struct s_game_manager *manager, struct s_game_local *game)
+{
+	manager->renderers[manager->renderer_count].render_fn = (t_renderer_fn)render_swap_phase;
+	manager->renderers[manager->renderer_count].data = game;
+	manager->renderer_count++;
+	return (0);
+}
+
 int init_swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
 	struct s_menu_option options[] = {
@@ -77,9 +85,14 @@ int init_swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 	
 	if (!manager || !game)
 		return (1);
-	if (menu_create(&game->swap_menu, notcurses_stdplane(manager->nc),
+	if (!game->swap_menu)
+	{
+		if (menu_create(&game->swap_menu, notcurses_stdplane(manager->nc),
 		options, sizeof(options) / sizeof(options[0])))
 		return (MANAGER_RET_ERR("Unable to create swap menu"));
+	}
+	else
+		menu_show(game->swap_menu);
 	game->swap_menu->user_data = manager;
 	// Initialize swap pile
 	if (!game->swap_pile)
@@ -95,9 +108,9 @@ int init_swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 			pile_display_add_card_top(game->swap_pile, card);
 		}
 	}
-	manager->renderers[manager->renderer_count].render_fn = (t_renderer_fn)render_swap_phase;
-	manager->renderers[manager->renderer_count].data = game;
-	manager->renderer_count++;
+	else
+		pile_display_show(game->swap_pile);
+	swap_phase_render_hooks(manager, game);
 	return (0);
 }
 
@@ -112,7 +125,6 @@ int unload_swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 			for (size_t j = i; j < manager->renderer_count - 1; j++)
 				manager->renderers[j] = manager->renderers[j + 1];
 			manager->renderer_count--;
-			break ;
 		}
 	}
 	menu_destroy(game->swap_menu);

@@ -7,7 +7,7 @@ int			deck_display_hide(
 {
 	if (!deck_display)
 		return (1);
-	ncplane_erase(deck_display->plane);
+	deck_display_clear_screen(deck_display);
 	deck_display->hidden = 1;
 	deck_display->is_dirty = 1;
 	return (0);

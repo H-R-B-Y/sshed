@@ -31,6 +31,7 @@ static int	setup_start_game(
 		return (1);
 	if (manager->state != GAME_STATE_GAME_LOCAL_SETUP)
 		return (1);
+	reset_phase_data();
 	manager->next_state = GAME_STATE_GAME_LOCAL_PLAY;
 	return (0);
 }

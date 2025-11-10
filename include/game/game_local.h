@@ -184,6 +184,8 @@ struct s_game_local
 	/// @brief Whether the log needs to be re-rendered
 	t_u8							log_dirty;
 
+	struct ncplane					*help_menu;
+
 	/* End game data */
 
 	/// @brief Who won the game (0 = player, 1-3 = AI)
@@ -555,5 +557,41 @@ int game_local_action_menu_cleanup(
  * @return 0 on success, 1 on error
  */
 int game_local_select_hand(struct s_game_local *game);
+
+/**
+ * @brief Setup the render hooks for the swap phase
+ * 
+ * @param manager The game manager
+ * @param game The game local state
+ * @return int 
+ */
+int	swap_phase_render_hooks(struct s_game_manager *manager, struct s_game_local *game);
+
+/**
+ * @brief Setup the render hooks for the action menu
+ * 
+ * @param manager The game manager
+ * @param local The game local state
+ * @return int 
+ */
+int	game_local_action_menu_render_hooks(
+	struct s_game_manager *manager,
+	struct s_game_local *game
+);
+/**
+ * @brief Reset phase data
+ * 
+ * @return int 
+ */
+int	reset_phase_data(void);
+
+/**
+ * @brief Initialise the swap phase data
+ * 
+ * @param manager The game manager
+ * @param game The game state data
+ * @return int 
+ */
+int	init_swap_phase(struct s_game_manager *manager, struct s_game_local *game);
 
 #endif

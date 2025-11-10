@@ -185,6 +185,7 @@ int menu_hide(
 {
 	if (!menu)
 		return (1);
+	ncplane_erase(menu->menu_plane);
 	menu->is_hidden = 1;
 	menu->is_dirty = 1;
 	return (0);

@@ -2,46 +2,70 @@
 # include "game/game_local.h"
 # include "game/game_data.h"
 
-int init_swap_phase(struct s_game_manager *manager, struct s_game_local *game);
+struct s_phase_data
+{
+	int	deal_first_call;
+	int	deal_frame_timeout;
+	int	deal_cards_dealt;
+	int	swap_first_call;
+	int	swap_swaps_done;
+	int	swap_last_player;
+};
+
+static struct s_phase_data *staticphase_data(void)
+{
+	static struct s_phase_data dat;
+	return (&dat);
+}
+int	reset_phase_data(void)
+{
+	struct s_phase_data *dat;
+
+	dat = staticphase_data();
+	dat->deal_first_call = 1;
+	dat->deal_cards_dealt = 0;
+	dat->deal_frame_timeout = FRAME_TIMEOUT;
+	dat->swap_first_call = 1;
+	return (0);
+}
 
 static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
-	static int			cards_dealt = 0;
-	static int			frame_countdown = FRAME_TIMEOUT;
-	static int			first_call = 1;
+	struct s_phase_data	*dat;
 	struct s_card_desc	card;
 	int					rand;
 
 	if (!manager || !game)
 		return (1);
-	if (cards_dealt >= (game->settings.player_count + 1) * CARDS_PER_PLAYER)
+	dat = staticphase_data();
+	if (dat->deal_cards_dealt >= (game->settings.player_count + 1) * CARDS_PER_PLAYER)
 	{
 		game->play_state = PLAY_STATE_SWAP_PHASE;
-		cards_dealt = 0;
-		first_call = 1;
-		frame_countdown = FRAME_TIMEOUT;
+		dat->deal_cards_dealt = 0;
+		dat->deal_first_call = 1;
+		dat->deal_frame_timeout = FRAME_TIMEOUT;
 		game->whos_turn = 0; // TODO: decide who goes first (eldest hand)
 		return (0);
 	}
-	if (frame_countdown > 0)
-		return (frame_countdown--, 0);
-	if (first_call)
+	if (dat->deal_frame_timeout > 0)
+		return (dat->deal_frame_timeout--, 0);
+	if (dat->deal_first_call)
 	{
 		ft_srand(time(NULL));
-		rand = ft_rand(10, 100);
+		rand = ft_rand(100, 400);
 		while (rand--)
 			deck_shuffle(game->deck, rand);
 		hand_show_shed(game->hand);
 		for (t_u8 p = 0; p < game->settings.player_count; p++)
 			pdisplay_show_shed(game->pdisplay[p]);
-		first_call = 0;
+		dat->deal_first_call = 0;
 	}
-	frame_countdown = FRAME_TIMEOUT;
+	dat->deal_frame_timeout = FRAME_TIMEOUT;
 	for (t_u8 i = 0; i < game->settings.player_count + 1; i++)
 	{
 		if (deck_display_draw_top_card(game->deck_display, &card))
 			return (1);
-		cards_dealt++;
+		dat->deal_cards_dealt++;
 		if (i == 0)
 		{
 			if (game->hand->shed_count < 6)
@@ -78,9 +102,7 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 
 static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 {
-	static int first_call = 1;
-	static int swaps_done = 0;
-	static int last_player = 0;
+	struct s_phase_data	*dat;
 	// In the swap phase we want to allow the player to swap a certain number of cards
 	// from the face up cards in the shed to their hand 
 	// To do this we will use a menu and a pile
@@ -88,32 +110,32 @@ static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 	// the menu will allow the player to select which cards to swap
 	// Once the player has made their selection we will swap the cards
 	// and then move to the play phase
-
+	dat = staticphase_data();
 	if (!manager || !game)
 		return (1);
-	if (first_call)
+	if (dat->swap_first_call)
 	{
-		last_player = game->whos_turn;
+		dat->swap_last_player = game->whos_turn;
 		init_swap_phase(manager, game);
 		deck_display_hide(game->deck_display);
 		game_local_select_menu(game);
 		re_order_visuals(manager, game);
 		if (game->whos_turn != 0)
 			game_local_select_nothing(game);
-		first_call = 0;
+		dat->swap_first_call = 0;
 		return (0);
 	}
-	if (last_player != game->whos_turn)
+	if (dat->swap_last_player != game->whos_turn)
 	{
-		last_player = game->whos_turn;
-		if (last_player == 0)
+		dat->swap_last_player = game->whos_turn;
+		if (dat->swap_last_player == 0)
 			game_local_select_menu(game);
 		else
 			game_local_select_nothing(game);
 	}
 	if (game->player_action.ready)
 	{
-		swaps_done++;
+		dat->swap_swaps_done++;
 		if (game->whos_turn == 0)
 		{
 			while (game->swap_pile->cards->count)
@@ -126,7 +148,7 @@ static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 		}
 		game_local_increment_whos_turn(game);
 		game->player_action = clean_action();
-		if (swaps_done >= game->settings.player_count + 1)
+		if (dat->swap_swaps_done >= game->settings.player_count + 1)
 		{
 			game->play_state = PLAY_STATE_PLAY_PHASE;
 			unload_swap_phase(manager, game);
@@ -135,7 +157,8 @@ static int	swap_phase(struct s_game_manager *manager, struct s_game_local *game)
 			hand_update_selected(game->hand);
 			game->hand->hand_dirty = 1;
 			deck_display_show(game->deck_display);
-			swaps_done = 0;
+			dat->swap_swaps_done = 0;
+			dat->swap_first_call = 1;
 		}
 	}
 	return (0);

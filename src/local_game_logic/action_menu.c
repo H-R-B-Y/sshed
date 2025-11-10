@@ -46,10 +46,39 @@ int play_one_card_action(
 	game = (struct s_game_local *)manager->state_data;
 	if (!game)
 		return (1);
-	action_default_on_cards(&game->player_action);
+	hand_update_selected(game->hand);
+	action_play_cards(&game->player_action, &game->hand->selected_card_plane->card_desc, 1);
 	action_ready(&game->player_action);
 	game_local_select_hand(game);
 	game_local_action_menu_cleanup(manager, game);
+	return (0);
+}
+
+static int	multi_card_action(
+	struct s_game_local *game,
+	struct s_player_action *action,
+	unsigned int match,
+	int count
+)
+{
+	struct s_card_desc	cards[4];
+	t_list				*lst;
+	struct s_card_plane	*plane;
+	int					idx;
+
+	if (!game || !action || count < 1)
+		return (1);
+	lst = game->hand->cards;
+	idx = 0;
+	while (lst && idx < count)
+	{
+		plane = lst->content;
+		if (match == plane->card_desc.rank)
+			cards[idx++] = plane->card_desc;
+		lst = lst->next;
+	}
+	action_play_cards(action, cards, count);
+	action_ready(action);
 	return (0);
 }
 
@@ -69,8 +98,7 @@ int play_two_cards_action(
 	game = (struct s_game_local *)manager->state_data;
 	if (!game)
 		return (1);
-	action_default_on_cards(&game->player_action);
-	action_ready(&game->player_action);
+	multi_card_action(game, &game->player_action, game->hand->selected_card_plane->card_desc.rank, 2);
 	game_local_select_hand(game);
 	game_local_action_menu_cleanup(manager, game);
 	return (0);
@@ -92,8 +120,7 @@ int play_three_cards_action(
 	game = (struct s_game_local *)manager->state_data;
 	if (!game)
 		return (1);
-	action_default_on_cards(&game->player_action);
-	action_ready(&game->player_action);
+	multi_card_action(game, &game->player_action, game->hand->selected_card_plane->card_desc.rank, 3);
 	game_local_select_hand(game);
 	game_local_action_menu_cleanup(manager, game);
 	return (0);
@@ -115,8 +142,7 @@ int play_four_cards_action(
 	game = (struct s_game_local *)manager->state_data;
 	if (!game)
 		return (1);
-	action_default_on_cards(&game->player_action);
-	action_ready(&game->player_action);
+	multi_card_action(game, &game->player_action, game->hand->selected_card_plane->card_desc.rank, 4);
 	game_local_select_hand(game);
 	game_local_action_menu_cleanup(manager, game);
 	return (0);
@@ -138,6 +164,37 @@ int cancel_action(
 	game = (struct s_game_local *)manager->state_data;
 	if (!game)
 		return (1);
+	game_local_select_hand(game);
+	game_local_action_menu_cleanup(manager, game);
+	return (0);
+}
+
+static int	card_compare(struct s_card_plane *a, struct s_card_plane *b)
+{
+	return (b->card_desc.rank - a->card_desc.rank);
+}
+
+int	sort_hand(
+	struct s_menu *menu,
+	struct notcurses *nc
+)
+{
+	struct s_game_manager	*manager;
+	struct s_game_local		*game;
+	t_list					*head;
+
+	(void)nc;
+	manager = menu->user_data;
+	if (!manager)
+		return (1);
+	game = manager->state_data;
+	if (!game)
+		return (1);
+	head = ft_lstsort(game->hand->cards, (void *)card_compare);
+	if (head)
+		game->hand->cards = head;
+	game->hand->hand_dirty = 1;
+	hand_update_selected(game->hand);
 	game_local_select_hand(game);
 	game_local_action_menu_cleanup(manager, game);
 	return (0);
@@ -167,7 +224,6 @@ int	count_of_same_rank(
 		current = current->next;
 		i++;
 	}
-	
 	return (count);
 }
 
@@ -185,6 +241,17 @@ int	render_player_action_menu(
 	return (0);
 }
 
+int	game_local_action_menu_render_hooks(
+	struct s_game_manager *manager,
+	struct s_game_local *game
+)
+{
+	manager->renderers[manager->renderer_count].render_fn = (t_renderer_fn)render_player_action_menu;
+	manager->renderers[manager->renderer_count].data = game;
+	manager->renderer_count++;
+	return (0);
+}
+
 int game_local_action_menu_init(
 	struct s_game_manager *manager,
 	struct s_game_local *game
@@ -192,46 +259,44 @@ int game_local_action_menu_init(
 {
 
 	struct s_menu_option	menu_opts[] = {
+		{.text_type = STATIC_TEXT, .option_text = "Sort hand", .option_action = sort_hand},
 		{.text_type = STATIC_TEXT, .option_text = "Pick up pile", .option_action = pick_up_pile_action},
 		{.text_type = STATIC_TEXT, .option_text = "Play 1 card", .option_action = play_one_card_action, .disabled = 1},
 		{.text_type = STATIC_TEXT, .option_text = "Play 2 cards", .option_action = play_two_cards_action, .disabled = 1},
 		{.text_type = STATIC_TEXT, .option_text = "Play 3 cards", .option_action = play_three_cards_action, .disabled = 1},
 		{.text_type = STATIC_TEXT, .option_text = "Play 4 cards", .option_action = play_four_cards_action, .disabled = 1},
-		{.text_type = STATIC_TEXT, .option_text = "Sort hand", .option_action = NULL},
 		{.text_type = STATIC_TEXT, .option_text = "Cancel", .option_action = cancel_action}
 	};
 
 	if (!game)
 		return (1);
-	if (menu_create(&game->player_action_menu,
-		notcurses_stdplane(manager->nc),
-		menu_opts,
-		sizeof(menu_opts) / sizeof(menu_opts[0])))
-		return (MANAGER_RET_ERR("Unable to create player action menu"));
+	if (!game->player_action_menu)
+	{
+		if (menu_create(&game->player_action_menu,
+			notcurses_stdplane(manager->nc),
+			menu_opts,
+			sizeof(menu_opts) / sizeof(menu_opts[0])))
+			return (MANAGER_RET_ERR("Unable to create player action menu"));
+	}
+	else
+		menu_show(game->player_action_menu);
 	game->player_action_menu->user_data = manager;
 	switch (count_of_same_rank(game))
 	{
-		case (4):
-			game->player_action_menu->options[4].disabled = 0;
+		case (4): game->player_action_menu->options[5].disabled = 0;
+		
 			// fallthrough
-		case (3):
-			game->player_action_menu->options[3].disabled = 0;
+		case (3): game->player_action_menu->options[4].disabled = 0;
 			// fallthrough
-		case (2):
-			game->player_action_menu->options[2].disabled = 0;
+		case (2): game->player_action_menu->options[3].disabled = 0;
 			// fallthrough
-		case (1):
-			game->player_action_menu->options[1].disabled = 0;
+		case (1): game->player_action_menu->options[2].disabled = 0;
 			break ;
-		default:
-			break ;
+		default: break ;
 	}
-	ncplane_move_yx(game->player_action_menu->menu_plane, // we should move it just next to where the deck is. (check swap menu position)
-		5, 5
-	);
-	manager->renderers[manager->renderer_count].render_fn = (t_renderer_fn)render_player_action_menu;
-	manager->renderers[manager->renderer_count].data = game;
-	manager->renderer_count++;
+	// we should move it just next to where the deck is. (check swap menu position)
+	ncplane_move_yx(game->player_action_menu->menu_plane, 5, 5);
+	game_local_action_menu_render_hooks(manager, game);
 	return (0);
 }
 
@@ -249,7 +314,6 @@ int game_local_action_menu_cleanup(
 			for (size_t j = i; j < manager->renderer_count - 1; j++)
 				manager->renderers[j] = manager->renderers[j + 1];
 			manager->renderer_count--;
-			break ;
 		}
 	}
 	menu_destroy(game->player_action_menu);

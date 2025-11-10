@@ -57,14 +57,22 @@ int	load_visuals(struct s_game_manager *manager,struct s_game_local *game)
 		return (MANAGER_RET_ERR("Failed to create player hand"));
 	game->pdisplay_count = game->settings.player_count;
 	i = 0;
-	while (i < game->pdisplay_count)
+	if (game->pdisplay_count == 1)
 	{
-		if (pdisplay_create(
-			&game->pdisplay[i],
-			notcurses_stdplane(manager->nc),
-			((enum e_pdisplay_orientation[3]){PDISPLAY_ORIENTATION_TOP, PDISPLAY_ORIENTATION_LEFT, PDISPLAY_ORIENTATION_RIGHT})[i]))
+		if (pdisplay_create(&game->pdisplay[0], notcurses_stdplane(manager->nc), PDISPLAY_ORIENTATION_TOP))
 			return (MANAGER_RET_ERR("Failed to create a pdisplay"));
-		i++;
+	}
+	else
+	{
+		while (i < game->pdisplay_count)
+		{
+			if (pdisplay_create(
+				&game->pdisplay[i],
+				notcurses_stdplane(manager->nc),
+				((enum e_pdisplay_orientation[3]){PDISPLAY_ORIENTATION_LEFT, PDISPLAY_ORIENTATION_TOP, PDISPLAY_ORIENTATION_RIGHT})[i]))
+				return (MANAGER_RET_ERR("Failed to create a pdisplay"));
+			i++;
+		}
 	}
 	if (pile_display_create(
 		&game->pile_display,
@@ -92,6 +100,12 @@ static void	_make_dirty(struct s_game_local *game)
 		if (game->pdisplay[i])
 			game->pdisplay[i]->pdisplay_dirty = 1;
 	}
+	if (game->swap_menu && game->selected_item == SELECTED_ITEM_SWAP_MENU)
+		menu_show(game->swap_menu);
+	if (game->swap_pile)
+		game->swap_pile->is_dirty = 1;
+	if (game->player_action_menu && game->selected_item == SELECTED_ITEM_ACTION_MENU)
+		menu_show(game->player_action_menu);
 	return ;
 }
 
@@ -130,6 +144,10 @@ static int	_load_previous_game(
 		{
 			_hooks(manager, *game);
 			_make_dirty(*game);
+			if ((*game)->play_state == PLAY_STATE_SWAP_PHASE)
+				swap_phase_render_hooks(manager, *game);
+			if ((*game)->selected_item == SELECTED_ITEM_ACTION_MENU)
+				game_local_action_menu_render_hooks(manager, *game);
 			manager->state_data = *game;
 			return (0); // 0 means we have a valid game state
 		}
@@ -205,6 +223,12 @@ static void	_clear_game_display(
 	deck_display_clear_screen(game->deck_display);
 	for (int i = 0; i < game->pdisplay_count; i++)
 		pdisplay_clear_screen(game->pdisplay[i]);
+	if (game->swap_menu)
+		menu_hide(game->swap_menu);
+	if (game->swap_pile)
+		pile_display_clear_screen(game->swap_pile);
+	if (game->player_action_menu)
+		menu_hide(game->player_action_menu);
 	return ;
 }
 
@@ -275,5 +299,6 @@ void	free_game_state(
 	// What else
 	// ??
 	// Free the pointer
+	reset_phase_data();
 	free(game);
 }

@@ -16,9 +16,9 @@ int deck_display_render(
 		return (1);
 	if (!deck_display->is_dirty)
 		return (0);
+	deck_display_clear_screen(deck_display);
 	if (deck_display->hidden)
 		return (0);
-	deck_display_clear_screen(deck_display);
 	remaining_cards = deck_display_remaining_cards(deck_display);
 	nc = ncplane_notcurses(deck_display->plane);
 	struct ncvisual_options vopts = {
@@ -53,6 +53,5 @@ int			deck_display_clear_screen(
 	}
 	if (deck_display->plane)
 		ncplane_erase(deck_display->plane);
-	deck_display->is_dirty = 1;
 	return (0);
 }
