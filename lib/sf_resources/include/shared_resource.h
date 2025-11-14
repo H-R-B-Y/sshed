@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 11:01:30 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/10/10 16:29:30 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/14 12:51:07 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <stddef.h>
 # include <sys/socket.h>
 # include <sys/epoll.h>
+# include <sys/eventfd.h>
 # include <sys/stat.h>
 # include <sys/un.h>
 # include <time.h>

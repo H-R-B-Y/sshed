@@ -61,6 +61,7 @@ SRCS			:= \
 				src/card_planes/card_checks.c \
 				src/hand/hand_checks.c \
 				src/pdisplay/pdisplay_checks.c \
+				src/hand/hand_sort.c \
 				\
 
 

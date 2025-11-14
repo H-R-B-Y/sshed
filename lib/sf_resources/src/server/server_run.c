@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 14:53:31 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/10/11 12:41:21 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/14 12:50:38 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,17 @@ void	server_run(struct s_server *srv)
 						break ;
 					case 1:
 						printf("TERMINAL: Internal error occured\n");
+						break ;
+				}
+			}
+			else if (aux_event_exists(srv, ev[idx].data.fd))
+			{
+				switch (handle_aux_events(srv, &ev[idx]))
+				{
+					case 0:
+						break ;
+					case -1:
+						printf("AUX EVENT: error handling event fd %d\n", ev[idx].data.fd);
 						break ;
 				}
 			}

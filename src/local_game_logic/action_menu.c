@@ -169,11 +169,6 @@ int cancel_action(
 	return (0);
 }
 
-static int	card_compare(struct s_card_plane *a, struct s_card_plane *b)
-{
-	return (b->card_desc.rank - a->card_desc.rank);
-}
-
 int	sort_hand(
 	struct s_menu *menu,
 	struct notcurses *nc
@@ -181,7 +176,6 @@ int	sort_hand(
 {
 	struct s_game_manager	*manager;
 	struct s_game_local		*game;
-	t_list					*head;
 
 	(void)nc;
 	manager = menu->user_data;
@@ -190,12 +184,7 @@ int	sort_hand(
 	game = manager->state_data;
 	if (!game)
 		return (1);
-	head = ft_lstsort(game->hand->cards, (void *)card_compare);
-	if (head)
-		game->hand->cards = head;
-	game->hand->hand_dirty = 1;
-	hand_update_selected(game->hand);
-	game_local_select_hand(game);
+	hand_sort_cards(game->hand);
 	game_local_action_menu_cleanup(manager, game);
 	return (0);
 }

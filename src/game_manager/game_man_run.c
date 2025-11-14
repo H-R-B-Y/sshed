@@ -47,6 +47,7 @@ int	game_manager_run(
 	struct s_game_manager *manager
 )
 {
+	static ssize_t		nc_refresh_timeout;
 	struct epoll_event	events[10];
 	int					nfds;
 	uint64_t			expirations;
@@ -61,6 +62,7 @@ int	game_manager_run(
 		}, NULL
 	);
 	// _background(manager);
+	nc_refresh_timeout = 0;
 	while (manager->running)
 	{
 		nfds = epoll_wait( manager->epoll_fd, events, 10, -1);
@@ -88,6 +90,16 @@ int	game_manager_run(
 				else if (expirations > 1)
 				{;}// dprintf(STDERR_FILENO, "Warning: Timer fd expirations: %llu\n", (unsigned long long)expirations);
 				_renderer_update(manager);
+				if (manager->settings.refresh_timeout > 0)
+				{
+					nc_refresh_timeout += 1;
+					if (nc_refresh_timeout
+						>= (ssize_t)(manager->settings.refresh_timeout))
+					{
+						notcurses_refresh(manager->nc, NULL, NULL);
+						nc_refresh_timeout = 0;
+					}
+				}
 				notcurses_render(manager->nc);
 			}
 			else if (manager->reading_fd > 0 && events[i].data.fd == manager->reading_fd)

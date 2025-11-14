@@ -275,6 +275,8 @@ static int populate_hand(
 			hand_add_card(game->hand, card);
 		else
 			pdisplay_add_card(pdisplay, card);
+		if (game->whos_turn == 0 && manager->settings.auto_sort)
+			hand_sort_cards(game->hand);
 	}
 	return (0);
 }
@@ -311,6 +313,8 @@ int _handle_player_player_action(
 		{
 			hand_show_hand(game->hand);
 			pile_display_return_to_hand(game->pile_display, false, game->hand);
+			if (manager->settings.auto_sort)
+				hand_sort_cards(game->hand);
 		}
 		else
 		{
@@ -341,6 +345,8 @@ int	_handle_player_action(
 				pile_display_return_to_hand(game->pile_display, false, game->hand);
 			else
 				pile_display_return_to_hand(game->pile_display, true, game->pdisplay[game->whos_turn - 1]);
+			if (game->whos_turn == 0 && manager->settings.auto_sort)
+				hand_sort_cards(game->hand);
 			return (0);
 		case PLAYER_ACTION_NONE:
 			return (0);

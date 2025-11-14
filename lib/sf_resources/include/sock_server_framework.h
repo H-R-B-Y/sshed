@@ -15,6 +15,8 @@
 
 #include "shared_resource.h"
 
+# define SERVER_MAX_AUX_EVENTS 16
+
 typedef t_u64	t_connection_id;
 
 /*
@@ -156,19 +158,37 @@ Ran on initial connection to the server.
 Return 1 if everything is ok
 Return 0 if there was an error (server will cleanup)
 */
-typedef int		(*t_on_connect_fn)(struct s_server *srv, struct s_connection *conn, void *appdata);
+typedef int		(*t_on_connect_fn)(struct s_server *srv,
+	struct s_connection *conn, void *appdata);
 
 /*
 Ran on when a full message has been read from the server
 Return 1 if everything is ok
 Return 0 if there was an error (server will cleanup)
 */
-typedef int		(*t_on_message_fn)(struct s_server *srv, struct s_message *message, void *appdata);
+typedef int		(*t_on_message_fn)(struct s_server *srv,
+	struct s_message *message, void *appdata);
 
 /*
 Ran when client has been disconnnected from the server (for any reason)
 */
-typedef void	(*t_on_disconnect_fn)(struct s_server *srv, struct s_connection *conn, void *appdata);
+typedef void	(*t_on_disconnect_fn)(struct s_server *srv,
+	struct s_connection *conn, void *appdata);
+
+
+typedef int	(*t_event_callback_fn)(
+	struct s_server *srv,
+	struct epoll_event *event_data,
+	void *appdata
+);
+
+struct s_event_config
+{
+	int						event_fd;
+	int						events; // EPOLLIN, EPOLLOUT, etc
+	t_event_callback_fn		callback;
+	void					*appdata;
+};
 
 /*
 How do we handle disconnects from rooms (threads)
@@ -198,6 +218,8 @@ struct s_server
 	t_on_disconnect_fn			on_disconnect;
 	t_on_message_fn				on_message;
 
+	struct s_event_config		aux_events[SERVER_MAX_AUX_EVENTS];
+	size_t						aux_event_count;
 	/*
 	Should also have some kind of event queue, that can be pushed too
 	from threads or something
@@ -282,7 +304,7 @@ Helper functions
  * @param size The size of the content, can be 0 if no content
  * @return int 0 on success, -1 on failure
  */
-int		send_global_message(struct s_server *srv, struct s_header_chunk *header, void *content, size_t size);
+int		send_global(struct s_server *srv, struct s_header_chunk *header, void *content, size_t size);
 
 int	send_to_connection_ref(
 	struct s_server *srv, 
@@ -308,6 +330,28 @@ int	send_to_connection_id(
  * @return int 0 on success, -1 on failure
  */
 int		send_to_room(struct s_server *srv, t_cdll *room, struct s_header_chunk *header, void *content);
+
+
+int	send_message_to_connection_ref(
+	struct s_server *srv,
+	struct s_connection *conn,
+	struct s_message *msg
+);
+int	send_message_to_connection_id(
+	struct s_server *srv,
+	t_connection_id id,
+	struct s_message *msg
+);
+int	send_message_to_room(
+	struct s_server *srv,
+	t_cdll *room,
+	struct s_message *msg
+);
+int send_message_global(
+	struct s_server *srv,
+	struct s_message *msg
+);
+
 /*
 ToDo:
 - Implement the code
@@ -317,4 +361,77 @@ ToDo:
 - limits for reading
 
 */
+
+/**
+ * @brief Register an auxiliary event to be monitored by the server
+ * 
+ * @note appdata can  differ from the server appdata, as the aux event
+ * still contains a reference to the server instance.
+ * 
+ * @note The event fd must be a valid fd that can be monitored by epoll.
+ * 
+ * @warning This event will be monitored in the main server loop, so the callback
+ * must be non-blocking and return quickly, otherwise it will block the server.
+ * 
+ * @param srv The server instance
+ * @param event_fd The fd to monitor
+ * @param events The events to monitor (EPOLLIN, EPOLLOUT, etc)
+ * @param callback callback function to call when event is triggered
+ * @param appdata Data to pass to the callback
+ * @return int 
+ */
+int	register_aux_event(
+	struct s_server *srv,
+	int event_fd,
+	int events,
+	t_event_callback_fn callback,
+	void *appdata
+);
+
+/**
+ * @brief Unregister an auxiliary event from the server
+ * 
+ * @warning This will close the fd related to the event,
+ * so ensure that it is no longer needed before calling this.
+ * 
+ * @param srv The server instance
+ * @param event_fd The fd to unregister
+ * @return int 
+ */
+int	unregister_aux_event(
+	struct s_server *srv,
+	int event_fd
+);
+
+/**
+ * @brief Handle an auxiliary event that has been triggered
+ * 
+ * @param srv The server instance
+ * @param event_data The epoll event data
+ * @return int 
+ */
+int	handle_aux_events(
+	struct s_server *srv,
+	struct epoll_event *event_data
+);
+
+/**
+ * @brief Update the events monitored for an auxiliary event
+ * 
+ * @param srv The server instance
+ * @param event_fd The event fd to update
+ * @param new_events The new events to monitor
+ * @return int 
+ */
+int	update_aux_event_events(
+	struct s_server *srv,
+	int event_fd,
+	int new_events
+);
+
+int	aux_event_exists(
+	struct s_server *srv,
+	int event_fd
+);
+
 #endif

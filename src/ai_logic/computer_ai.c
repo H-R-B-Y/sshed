@@ -111,23 +111,23 @@ t_ai_state		ai_step(
 		{
 			case (AI_STATE_IDLE):
 				stat = ai_step_idle(data, hand, pile);
-				data->state_frames_left = AI_FRAME_TIMEOUT;
+				data->state_frames_left = manager->settings.ai_timeout;
 				break ;
 			case (AI_STATE_THINKING):
 				stat = ai_step_think(data, hand, pile);
-				data->state_frames_left = AI_FRAME_TIMEOUT;
+				data->state_frames_left = manager->settings.ai_timeout;
 				break ;
 			case (AI_STATE_PLAYING):
 				stat = ai_step_play(data, hand, pile);
-				data->state_frames_left = AI_FRAME_TIMEOUT;
+				data->state_frames_left = manager->settings.ai_timeout;
 				break ;
 			case (AI_STATE_DONE):
 				stat = ai_step_done(action, data, hand, pile);
-				data->state_frames_left = AI_FRAME_TIMEOUT;
+				data->state_frames_left = manager->settings.ai_timeout;
 				break ;
 			case (AI_STATE_FUCK_FUCK_FUCK):
 				stat = ai_step_error(data, hand, pile);
-				data->state_frames_left = AI_FRAME_TIMEOUT;
+				data->state_frames_left = manager->settings.ai_timeout;
 				break ;
 			default:
 				stat = 1;

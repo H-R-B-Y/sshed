@@ -25,6 +25,21 @@
 					"description": "Set Disassembly Flavor to Intel",
 					"text": "-gdb-set disassembly-flavor intel",
 					"ignoreFailures": true
+				},
+				{
+					"description": "Setup some env vars",
+					"text": "set env SSHED_DISPLAY_NAME Tester",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Setup some env vars",
+					"text": "set env SSHED_SORT_HAND true",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Setup some env vars",
+					"text": "set env SSHED_REFRESH 100",
+					"ignoreFailures": true
 				}
 			],
 			"preLaunchTask": "make",

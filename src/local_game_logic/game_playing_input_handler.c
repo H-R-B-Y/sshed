@@ -59,6 +59,7 @@ int swap_pile_display_handling(
 }
 
 int swap_hand_handling(
+	struct s_game_manager *manager,
 	struct s_game_local *game,
 	struct s_hand *hand,
 	struct ncinput event
@@ -102,6 +103,8 @@ int swap_hand_handling(
 		pile_display_remove_card(game->swap_pile, pile_card);
 		pile_display_add_card_top(game->swap_pile, hand_card);
 		game_local_select_menu(game);
+		if (manager->settings.auto_sort)
+			hand_sort_cards(hand);
 	}
 	else if (event.id == NCKEY_BACKSPACE)
 		game_local_select_pile(game);
@@ -122,7 +125,7 @@ int	swap_phase_handling(
 		case SELECTED_ITEM_SWAP_PILE:
 			return (swap_pile_display_handling(game, game->swap_pile, event));
 		case SELECTED_ITEM_SWAP_HAND:
-			return (swap_hand_handling(game, game->hand, event));
+			return (swap_hand_handling(manager, game, game->hand, event));
 		default:
 			break ;
 	}

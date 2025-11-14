@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 12:49:30 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/10/11 15:18:35 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/14 13:27:14 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,3 +39,11 @@ int		send_to_room(struct s_server *srv, t_cdll *room, struct s_header_chunk *hea
 	return (0);
 }
 
+int send_message_to_room(
+	struct s_server *srv,
+	t_cdll *room,
+	struct s_message *msg
+)
+{
+	return (send_to_room(srv, room, msg->header, msg->content));
+}

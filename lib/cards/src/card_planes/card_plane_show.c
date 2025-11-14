@@ -9,6 +9,7 @@ static int	_destroy_plane(
 		return (1);
 	if (!card_plane->plane_shown || card_plane->plane == NULL)
 		return (1);
+	ncplane_erase(card_plane->plane);
 	ncplane_destroy(card_plane->plane);
 	card_plane->plane = NULL;
 	card_plane->plane_shown = 0;

@@ -248,4 +248,12 @@ int	hand_card_in_hand(
 	struct s_card_desc card_desc
 );
 
+/**
+ * @brief Sort the hand by card rank in descending order
+ * 
+ * @param hand The hand to sort
+ * @return int 
+ */
+int	hand_sort_cards(struct s_hand *hand);
+
 #endif

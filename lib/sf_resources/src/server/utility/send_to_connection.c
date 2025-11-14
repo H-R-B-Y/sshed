@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 19:20:59 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/10/11 15:17:32 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/14 13:27:52 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,31 @@ int	send_to_connection_id(
 	if (!conn)
 		return (-1);
 	return (send_to_connection_ref(srv, conn, header, content));
+}
+
+int send_message_to_connection_ref(
+	struct s_server *srv,
+	struct s_connection *conn,
+	struct s_message *msg
+)
+{
+	if (!srv || !conn || !msg)
+		return (0);
+	return (send_to_connection_ref(srv, conn, msg->header, msg->content));
+}
+
+int	send_message_to_connection_id(
+	struct s_server *srv,
+	t_connection_id id,
+	struct s_message *msg
+)
+{
+	struct s_connection	*conn;
+
+	if (!srv || id == 0 || !msg)
+		return (0);
+	conn = get_connection_by_id(&srv->connection_data, id);
+	if (!conn)
+		return (-1);
+	return (send_to_connection_ref(srv, conn, msg->header, msg->content));
 }

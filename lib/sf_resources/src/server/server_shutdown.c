@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 14:53:52 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/10/09 17:59:09 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/14 12:53:32 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,13 @@ void	server_shutdown(struct s_server *srv)
 {
 	if (!srv)
 		return ;
+	if (srv->aux_event_count > 0)
+	{
+		// Unregister all aux events
+		for (size_t i = 0; i < srv->aux_event_count; i++)
+			unregister_aux_event(srv, srv->aux_events[i].event_fd);
+		srv->aux_event_count = 0;
+	}
 	// Cleanup connections in room
 	cdll_destroy(&srv->server_room, NULL); // No need to free connection here
 	// Close all connections

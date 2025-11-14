@@ -46,6 +46,7 @@ SRCS			:= \
 				src/local_game_logic/game_handle_player_action.c \
 				src/utils/unload_utils.c \
 				src/ai_logic/step_thinking.c \
+				src/game_manager/game_manager_settings.c \
 				src/ai_logic/step_idle.c \
 				src/ai_logic/step_none.c \
 				src/ai_logic/step_playing.c \

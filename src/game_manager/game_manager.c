@@ -40,7 +40,9 @@ static int		_game_manager_setup_epoll(struct s_game_manager *manager)
 	return (0);
 }
 
-int		game_manager_init(struct s_game_manager **manager)
+int		game_manager_init(
+	struct s_game_manager **manager
+)
 {
 	if (!manager)
 		return (1);
@@ -53,7 +55,7 @@ int		game_manager_init(struct s_game_manager **manager)
 	(*manager)->prev_state = GAME_STATE_NONE;
 	if (_game_manager_setup_epoll(*manager) != 0)
 		return (free(*manager), 1);
-	// Initialize renderers cdll
+	setup_settings(*manager);
 	(*manager)->renderer_count = 0;
 	return (0);
 }
@@ -79,6 +81,8 @@ void	game_manager_destroy(struct s_game_manager *manager)
 		notcurses_stop(manager->nc);
 		destroy_cards();
 	}
+	if (manager->settings.display_name)
+		free(manager->settings.display_name);
 	free(manager);
 }
 

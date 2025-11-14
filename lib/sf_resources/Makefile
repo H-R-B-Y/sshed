@@ -55,6 +55,7 @@ SERVER_SRCS			:= \
 			./src/server/connection_lookup/connection/delete_connection.c \
 			./src/server/terminate_srv.c \
 			./src/server/handle_management/handle_disconnect.c \
+			./src/server/aux_events/aux_event.c \
 					\
 
 BIN				:= \

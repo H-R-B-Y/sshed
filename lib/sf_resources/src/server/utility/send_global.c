@@ -6,7 +6,7 @@
 /*   By: hbreeze <hbreeze@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 19:34:07 by hbreeze           #+#    #+#             */
-/*   Updated: 2025/10/11 13:14:04 by hbreeze          ###   ########.fr       */
+/*   Updated: 2025/11/14 13:27:56 by hbreeze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 Again, really really bad implementation, 
 TODO: implement partial write for non-blocking sockets
 */
-int send_global_message(
+int send_global(
 	struct s_server *srv,
 	struct s_header_chunk *header,
 	void *content,
@@ -48,3 +48,10 @@ id, header, content) == -1)
 	return (result);
 }
 
+int send_global_message(
+	struct s_server *srv,
+	struct s_message *msg
+)
+{
+	return (send_global(srv, msg->header, msg->content, msg->header->content_length));
+}

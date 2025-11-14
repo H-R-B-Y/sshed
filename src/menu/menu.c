@@ -62,7 +62,7 @@ int	menu_select_next(
 	if (menu->options[menu->selected_index].on_deselect)
 		menu->options[menu->selected_index].on_deselect(menu, &menu->options[menu->selected_index]);
 	menu->selected_index = (menu->selected_index + 1) % menu->option_count;
-	if (menu->options[menu->selected_index].disabled)
+	while (menu->options[menu->selected_index].disabled)
 		menu->selected_index = (menu->selected_index + 1) % menu->option_count;
 	if (menu->options[menu->selected_index].on_select)
 		menu->options[menu->selected_index].on_select(menu, &menu->options[menu->selected_index]);
@@ -89,7 +89,7 @@ int	menu_select_prev(
 		menu->selected_index = menu->option_count - 1;
 	else
 		menu->selected_index--;
-	if (menu->options[menu->selected_index].disabled)
+	while (menu->options[menu->selected_index].disabled)
 	{
 		if (menu->selected_index == 0)
 			menu->selected_index = menu->option_count - 1;

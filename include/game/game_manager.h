@@ -39,6 +39,30 @@ struct s_renderer
 };
 
 /**
+ * @brief Settings for the client
+ * 
+ * Should be accessed through the manager.
+ * Items should be loaded from the environment.
+ */
+struct s_game_settings
+{
+	unsigned int	refresh_timeout;
+	t_u8			auto_sort;
+	unsigned int	ai_timeout;
+	t_u32			background_channel;
+	char			*display_name;
+	t_u8			key_mode;
+};
+
+/**
+ * @brief Set the up settings object from environment variables
+ * 
+ * @param manager The manager to set the settings for
+ * @return int 
+ */
+int	setup_settings(struct s_game_manager *manager);
+
+/**
  * @brief Main game manager structure
  * 
  * Central control structure for the entire game engine.
@@ -48,6 +72,8 @@ struct s_game_manager
 {
 	/// @brief Notcurses context
 	struct notcurses	*nc;
+
+	struct s_game_settings	settings;
 
 	/// @brief Next game state
 	/// @note If this is not GAME_STATE_NONE and not the same as current state,

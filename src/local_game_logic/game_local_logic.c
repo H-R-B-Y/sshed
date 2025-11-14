@@ -79,6 +79,8 @@ static int	deal_phase(struct s_game_manager *manager, struct s_game_local *game)
 					hand_show_hand(game->hand);
 				if (hand_add_card(game->hand, card))
 					return (1);
+				if (manager->settings.auto_sort)
+					hand_sort_cards(game->hand);
 			}
 		}
 		else

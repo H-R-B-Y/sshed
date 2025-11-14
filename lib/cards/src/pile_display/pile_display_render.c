@@ -9,6 +9,7 @@ int		pile_display_render(
 )
 {	unsigned int idx = 0;
 	struct s_card_plane *last = NULL;
+	struct s_cdll_node *current;
 
 	if (!pile_display)
 		return (1);
@@ -16,7 +17,7 @@ int		pile_display_render(
 		return (ncplane_erase(pile_display->plane), 0);
 	if (!pile_display->is_dirty)
 		return (0);
-	for (struct s_cdll_node *current = pile_display->cards->head;
+	for (current = pile_display->cards->head;
 		current != NULL && idx < min(pile_display->max_stack, pile_display->cards->count);
 		last = current->data, current = current->next, idx++)
 	{
@@ -36,7 +37,12 @@ int		pile_display_render(
 				: 0
 			);
 		}
-
+	}
+	for (; current != pile_display->cards->head; current = current->next)
+	{
+		struct s_card_plane *card_plane = (struct s_card_plane *)current->data;
+		if (card_plane)
+			hide_card_plane(card_plane);
 	}
 	if (pile_display->cards->count > pile_display->max_stack)
 	{
