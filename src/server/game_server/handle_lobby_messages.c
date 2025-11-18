@@ -15,7 +15,13 @@ int handle_game_room_message(
 
 	pdata = get_player_data_from_conn(conn);
 	if (!pdata)
+	{
+		send_error_to_client(
+				conn,
+				ERROR_INVALID_MESSAGE
+			);
 		return (0);  // No player data, disconnect
+	}
 	switch ((enum e_message_types)msg->header->msg_type)
 	{
 		case MTYPE_LOBBY_CREATE:
@@ -31,7 +37,10 @@ int handle_game_room_message(
 		case MTYPE_GAME_START:
 			return handle_game_start(game_srv, conn, pdata);
 		default:
-			// Message not handled here
+			send_error_to_client(
+				conn,
+				ERROR_INVALID_MESSAGE
+			);
 			return (1);  // Ignore unknown message
 	}
 }

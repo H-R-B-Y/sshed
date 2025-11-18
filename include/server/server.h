@@ -190,4 +190,50 @@ int game_server_message_handler(struct s_server *srv,
 	struct s_message *message, void *appdata);
 
 
+// Some of the action handling functions go here:
+
+int	room_handle_player_message(
+	struct s_game_room *room,
+	struct s_connection *conn,
+	struct s_message *msg
+);
+int	handle_player_action_play(
+	struct s_game_room *room,
+	struct s_connection *conn,
+	struct s_player_data *pdata,
+	struct s_player_action_data *action
+);
+int	handle_player_action_swap(
+	struct s_game_room *room,
+	struct s_connection *conn,
+	struct s_player_data *pdata,
+	struct s_player_action_data *action
+);
+
+// generic error messsage 
+
+/**
+ * @brief Send an error message to the client
+ * 
+ * The following error types are defined in enum e_error_message_types:
+ * ERROR_NONE,
+ * ERROR_UNKNOWN,
+ * ERROR_DISCONNECT,
+ * ERROR_INVALID_MESSAGE,
+ * ERROR_FAILED_TO_CREATE_ROOM,
+ * ERROR_FAILED_TO_JOIN_ROOM,
+ * ERROR_NOT_IN_ROOM,
+ * ERROR_GAME_NOT_STARTED,
+ * ERROR_NOT_YOUR_TURN,
+ * ERROR_INVALID_ACTION
+ * 
+ * @param conn The connection to send the error to
+ * @param error_type The type of error to send
+ * @return int 0 on success, -1 on failure
+ */
+int	send_error_to_client(
+	struct s_connection *conn,
+	enum e_error_message_types error_type
+)
+
 #endif

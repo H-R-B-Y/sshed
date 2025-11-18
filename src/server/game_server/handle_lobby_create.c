@@ -11,12 +11,28 @@ int	handle_lobby_create(
 	struct s_header_chunk	header;
 
 	if (pdata->session != NULL)
+	{
+		send_error_to_client(
+				conn,
+				ERROR_INVALID_MESSAGE
+			);
 		return (1);  // Already in session, ignore request
+	}
 	room = game_server_add_new_room(game_srv);
 	if (!room)
+	{
+		send_error_to_client(
+				conn,
+				ERROR_FAILED_TO_CREATE_ROOM
+			);
 		return (1);  // Failed to create room, but don't disconnect
+	}
 	if (game_room_add_player(room, conn) != 0)
 	{
+		send_error_to_client(
+				conn,
+				ERROR_FAILED_TO_JOIN_ROOM
+			);
 		// Failed to add player to room
 		game_server_add_room_to_cleanup(game_srv, room);
 		return (1);  // Failed but don't disconnect

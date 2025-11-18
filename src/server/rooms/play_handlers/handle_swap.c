@@ -10,9 +10,7 @@ int	handle_player_action_swap(
 {
 	switch (action->data_type)
 	{
-		case PLAYER_ACTION_DATA_PLAY_CARDS:
-			return (-1); // Not play phase yet send error
-			break;
+
 		case PLAYER_ACTION_DATA_SWAP_CARDS:
 			/*
 			Handle swapping cards
@@ -29,9 +27,7 @@ int	handle_player_action_swap(
 					player_remove_card(pdata, action->data.swap_cards.shed_face_up[i]);
 					// if there was a card already face up here, move it to hand
 					if (pdata->shed_face_up_mask & (1 << i))
-					{
 						player_add_card(pdata, pdata->shed_face_up[i]);
-					}
 					// place new card face up
 					pdata->shed_face_up[i] = action->data.swap_cards.shed_face_up[i];
 					pdata->shed_face_up_mask |= (1 << i);
@@ -39,14 +35,24 @@ int	handle_player_action_swap(
 				else
 				{
 					// invalid swap, player does not have the card in hand
-					return (-1);
+					// TODO: send a error to the client
+					send_error_to_client(
+						conn,
+						ERROR_INVALID_ACTION
+					);
+					return (1);
 				}
 			}
 			break ;
 		case PLAYER_ACTION_DATA_DEFAULT:
 			break;
+		case PLAYER_ACTION_DATA_PLAY_CARDS:
 		default:
-			return (-1); // Unknown action type
+			send_error_to_client(
+				conn,
+				ERROR_INVALID_ACTION
+			);
+			return (1); // Unknown action type, ignore
 	}
 	room->swaps_done++;
 	if (room->swaps_done >= room->player_count
@@ -56,5 +62,5 @@ int	handle_player_action_swap(
 		room_handle_phase(room);
 	}
 	increment_current_player(room);
-	return (0);
+	return (1);
 }

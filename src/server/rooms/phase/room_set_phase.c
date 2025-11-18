@@ -55,9 +55,7 @@ int	room_handle_phase(
 	switch (room->e_phase)
 	{
 		case PHASE_NONE:
-			// Game hasn't started yet
-			// we are still in the lobby so this doesnt do anything
-			break;
+			return (0); // No action needed
 		case PHASE_DEAL_CARDS:
 			return room_handle_deal_cards_phase(room);
 		case PHASE_SWAP:

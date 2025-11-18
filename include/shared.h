@@ -217,6 +217,51 @@ struct s_player_chat
 	char	message[256];
 };
 
+/// @brief Error message types
+enum e_error_message_types
+{
+	/// @brief No error, failed successfully
+	ERROR_NONE,
+	/// @brief Unknown error occurred
+	ERROR_UNKNOWN,
+	/// @brief Forced disconnect by server
+	ERROR_DISCONNECT,
+	/// @brief Invalid message format or content
+	ERROR_INVALID_MESSAGE,
+	/// @brief Server failed to create a new room
+	ERROR_FAILED_TO_CREATE_ROOM,
+	/// @brief Server failed to add player to room
+	ERROR_FAILED_TO_JOIN_ROOM,
+	/// @brief Player not in a room but sent a room message
+	ERROR_NOT_IN_ROOM,
+	/// @brief Game not started but player sent game action
+	ERROR_GAME_NOT_STARTED,
+	/// @brief Player sent action when it was not their turn
+	ERROR_NOT_YOUR_TURN,
+	/// @brief Player sent an invalid action
+	ERROR_INVALID_ACTION,
+	/// @brief Count of error message types
+	ERROR_TYPE_COUNT
+};
 
+__attribute__((unused))
+static const char *g_error_message_strings[ERROR_TYPE_COUNT] = {
+	"None",
+	"Unknown error occurred.",
+	"Disconnected by server.",
+	"Invalid message format or content.",
+	"Failed to create a new game room.",
+	"Failed to join the game room.",
+	"Player not in a room.",
+	"Game has not started.",
+	"Not your turn.",
+	"Invalid action.",
+};
+
+/// @brief Structure of the error message
+struct s_error_message
+{
+	enum e_error_message_types	error_type;
+};
 
 #endif

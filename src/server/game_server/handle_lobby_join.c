@@ -23,9 +23,21 @@ int	handle_lobby_join(
 		&join_req->room_id
 	);
 	if (!room)
+	{
+		send_error_to_client(
+				conn,
+				ERROR_UNKNOWN
+			);
 		return (1);  // Room not found, ignore request
+	}
 	if (game_room_add_player(room, conn) != 0)
+	{
+		send_error_to_client(
+				conn,
+				ERROR_FAILED_TO_JOIN_ROOM
+			);
 		return (1);  // Failed to add player, ignore request
+	}
 	// Successfully added player to room
 	header.content_length = sizeof(struct s_lobby_update);
 	header.msg_type = MTYPE_LOBBY_UPDATE;

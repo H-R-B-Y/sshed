@@ -33,7 +33,15 @@ int game_room_message_handler(
 	{
 		case MTYPE_JOIN_HEADER:
 			// Already have player data, should not receive this again
-			return (0);  // Disconnect (security concern)
+			send_error_to_client(
+				message->sender,
+				ERROR_INVALID_MESSAGE
+			);
+			// TODO: We should have some way to disconnect a client gracefully
+			// allowing us to flush any pending messages to them before we disconnect them
+			// maybe like a soft disconnect message type?
+			// because this should disconnect the client but we want to send them a message first
+			return (1);
 		
 		case MTYPE_LOBBY_LEFT:
 			// Player leaving room - can happen any time (pre-game or in-game)
@@ -70,11 +78,17 @@ int game_room_message_handler(
 		case MTYPE_GAME_OVER:
 		case MTYPE_WRONG:
 		case MTYPE_ERROR_MSG:
-			// Invalid message direction, disconnect
-			return (0);
+			send_error_to_client(
+				message->sender,
+				ERROR_INVALID_MESSAGE
+			);
+			return (1);
 		
 		default:
-			// Unknown message type, ignore
+			send_error_to_client(
+				message->sender,
+				ERROR_INVALID_MESSAGE
+			);
 			return (1);
 	}
 }

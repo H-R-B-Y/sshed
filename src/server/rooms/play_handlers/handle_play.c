@@ -182,7 +182,7 @@ static int	handle_play_cards(
 			room->who_won = pdata->player_lobby_id;
 			room_set_phase(room, PHASE_GAME_OVER);
 			room_handle_phase(room);
-			return (0);
+			return (1);
 		}
 		// Advance to next player
 		increment_current_player(room);
@@ -194,7 +194,7 @@ static int	handle_play_cards(
 		// Advance to next player
 		increment_current_player(room);
 	}
-	return (0);
+	return (1);
 }
 
 int	handle_player_action_play(
@@ -217,7 +217,11 @@ int	handle_player_action_play(
 
 	case PLAYER_ACTION_DATA_SWAP_CARDS:
 		/* if they swap in play, just send them and error */
-		return (-1);
+		send_error_to_client(
+				conn,
+				ERROR_INVALID_ACTION
+			);
+		return (1);
 	
 	case PLAYER_ACTION_DATA_DEFAULT:
 		/*
@@ -225,10 +229,10 @@ int	handle_player_action_play(
 		*/
 		move_play_pile_to_player_hand(room, pdata);
 		increment_current_player(room);
-		return (0);
+		return (1);
 	
 	default:
-		return (-1);
+		return (1);
 	}
-	return (0);
+	return (1);
 }
